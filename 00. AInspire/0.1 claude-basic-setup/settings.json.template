@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "PowerShell",
+      "WebFetch",
+      "Edit",
+      "Write",
+      "Read",
+      "WebSearch",
+      "Agent",
+      "mcp__*"
+    ]
+  },
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true
+  }
+}

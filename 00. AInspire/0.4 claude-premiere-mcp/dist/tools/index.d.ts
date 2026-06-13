@@ -1,0 +1,124 @@
+/**
+ * MCP Tools for Adobe Premiere Pro
+ *
+ * This module provides tools that can be called by AI agents to perform
+ * various video editing operations in Adobe Premiere Pro.
+ */
+import { z } from 'zod';
+import type { PremiereProTransport } from '../bridge/types.js';
+export interface MCPTool {
+    name: string;
+    description: string;
+    inputSchema: z.ZodSchema<any>;
+}
+export declare class PremiereProTools {
+    private bridge;
+    private logger;
+    constructor(bridge: PremiereProTransport);
+    getAvailableTools(): MCPTool[];
+    executeTool(name: string, args: Record<string, any>): Promise<any>;
+    private listProjectItems;
+    private listSequences;
+    private listSequenceTracks;
+    private getProjectInfo;
+    private buildMotionGraphicsDemo;
+    private getMotionRange;
+    private hasColorAdjustments;
+    private assembleProductSpot;
+    private buildBrandSpotFromMogrtAndAssets;
+    private createProject;
+    private openProject;
+    private saveProject;
+    private saveProjectAs;
+    private importMedia;
+    private importFolder;
+    private createBin;
+    private createSequence;
+    private duplicateSequence;
+    private deleteSequence;
+    private addToTimeline;
+    private removeFromTimeline;
+    private moveClip;
+    private trimClip;
+    private splitClip;
+    private razorTimelineAtTime;
+    private applyEffect;
+    private removeEffect;
+    private addTransition;
+    private addTransitionToClip;
+    private adjustAudioLevels;
+    private addAudioKeyframes;
+    private muteTrack;
+    private addTextOverlay;
+    private colorCorrect;
+    private applyLut;
+    private exportSequence;
+    private exportFrame;
+    private stabilizeClip;
+    private speedChange;
+    private addMarker;
+    private deleteMarker;
+    private updateMarker;
+    private listMarkers;
+    private addTrack;
+    private deleteTrack;
+    private lockTrack;
+    private toggleTrackVisibility;
+    private linkAudioVideo;
+    private applyAudioEffect;
+    private createNestedSequence;
+    private unnestSequence;
+    private duplicateClip;
+    private reverseClip;
+    private enableDisableClip;
+    private replaceClip;
+    private getSequenceSettings;
+    private setSequenceSettings;
+    private getClipProperties;
+    private setClipProperties;
+    private addToRenderQueue;
+    private getRenderQueueStatus;
+    private getPlayheadPosition;
+    private setPlayheadPosition;
+    private getSelectedClips;
+    private listAvailableEffects;
+    private listAvailableTransitions;
+    private listAvailableAudioEffects;
+    private listAvailableAudioTransitions;
+    private addKeyframe;
+    private removeKeyframe;
+    private getKeyframes;
+    private setWorkArea;
+    private getWorkArea;
+    private batchAddTransitions;
+    private findProjectItemByName;
+    private moveItemToBin;
+    private setActiveSequence;
+    private getActiveSequence;
+    private getClipAtPosition;
+    private autoReframeSequence;
+    private detectSceneEdits;
+    private createCaptionTrack;
+    private createSubclip;
+    private relinkMedia;
+    private setColorLabel;
+    private getColorLabel;
+    private getMetadata;
+    private setMetadata;
+    private getFootageInterpretation;
+    private setFootageInterpretation;
+    private checkOfflineMedia;
+    private exportAsFcpXml;
+    private undo;
+    private setSequenceInOutPoints;
+    private getSequenceInOutPoints;
+    private exportAaf;
+    private consolidateDuplicates;
+    private refreshMedia;
+    private importSequencesFromProject;
+    private createSubsequence;
+    private importMogrt;
+    private importMogrtFromLibrary;
+    private manageProxies;
+}
+//# sourceMappingURL=index.d.ts.map
