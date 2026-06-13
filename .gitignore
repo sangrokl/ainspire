@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+._.DS_Store
+._*
+
+# Node
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Large media outputs (too big for git)
+02. OUTPUTS/
+99. 자료실/
+
+# Env
+.env
