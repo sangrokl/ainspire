@@ -1,0 +1,9 @@
+# 생성 이미지·영상 (용량 문제로 제외)
+projects/**/*.png
+projects/**/*.jpg
+projects/**/*.jpeg
+projects/**/*.mp4
+projects/**/*.webp
+
+# 런타임 파일
+review_console/runtime/
