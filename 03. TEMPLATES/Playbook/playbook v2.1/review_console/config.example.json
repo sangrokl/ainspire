@@ -1,0 +1,5 @@
+{
+  "port": 8765,
+  "backend": "mock",
+  "_note": "모든 이미지·영상 생성은 Higgsfield MCP 전용. 실가동은 backend=agent + Claude 에이전트가 큐 처리(AGENT_QUEUE_GUIDE.md). 별도 API 키 불필요(Higgsfield는 MCP OAuth)."
+}
