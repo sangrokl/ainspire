@@ -224,14 +224,14 @@
 ## GATE 9 — 생성 실행 & 에러 핸들링 (Higgsfield CLI/MCP · Magnific 플로우)
 
 > **4단계 생성 원칙:** 컷마다 바로 최종본을 뽑지 않는다.
-> ① G9a — gpt_image_2 · 21:9 · 1K Mid로 30컷 프리뷰 시트 1장 생성 → 전체 구성 확인
+> ① G9a — gpt_image_2 · 16:9 · 1K High로 30컷 프리뷰 시트 1장 생성 → 전체 구성 확인
 > ② G9a-rev — 수정 필요 컷만 nano_banana Pro · 16:9 · 2K · 1/4 output · Unlimited ON으로 개별 생성
-> ③ G9a-final — 수정 완료 후 21:9 · 2K · High quality로 최종 확인 시트 재생성 → 승인
+> ③ G9a-final — 수정 완료 후 16:9 · 2K · High quality로 최종 확인 시트 재생성 → 승인
 > ④ G9b — 만족하면 nano_banana Pro · 16:9 · 2K · 1/4 output · Unlimited ON으로 30개 개별 이미지 일괄 생성
 
 ---
 
-### G9a — 프리뷰 시트 (gpt_image_2 · 21:9 · 1K Mid · 단일 호출)
+### G9a — 프리뷰 시트 (gpt_image_2 · 16:9 · 1K High · 단일 호출)
 
 **목적:** 30컷 전체 구성·구도·색감을 1장의 Hollywood pre-vis 스토리보드 시트로 빠르게 확인.
 
@@ -239,24 +239,24 @@
 | 항목 | 값 |
 |---|---|
 | 모델 | `gpt_image_2` |
-| 비율 | 21:9 (울트라와이드) |
-| 해상도 | 1K · Mid quality |
-| 레이아웃 | 3행 × 10열 = 30프레임, 얇은 다크 보더 구분 |
+| 비율 | 16:9 (와이드) |
+| 해상도 | 1K · High quality |
+| 레이아웃 | 5행 × 6열 = 30프레임, 얇은 다크 보더 구분 |
 | 프레임 번호 | 각 프레임 좌상단 — 소형 검정 탭 + 흰 숫자 01~30 |
 
 ```
 # MCP 경로
 generate_image({
   model: "gpt_image_2",
-  prompt: "Hollywood cinematic pre-visualisation storyboard sheet. Single page, 21:9 ultra-wide format. 3 rows × 10 columns = 30 sequential frames, each frame separated by a thin dark border. Each frame has a small solid-black tab at its top-left corner with a white two-digit frame number (01–30). Mid quality. The frames depict: [컷 01 장면 한 줄] … [컷 30 장면 한 줄]. " + 규칙0[A] + IMG_ENHANCE,
+  prompt: "Hollywood cinematic pre-visualisation storyboard sheet. Single page, 16:9 wide format. 5 rows × 6 columns = 30 sequential frames, each frame separated by a thin dark border. Each frame has a small solid-black tab at its top-left corner with a white two-digit frame number (01–30). High quality. The frames depict: [컷 01 장면 한 줄] … [컷 30 장면 한 줄]. " + 규칙0[A] + IMG_ENHANCE,
   resolution: "1k",
-  aspect_ratio: "21:9"
+  aspect_ratio: "16:9"
 }) → preview/storyboard_sheet_v1.png
 
 # CLI 경로
 higgsfield generate create gpt_image_2 \
-  --prompt "Hollywood cinematic pre-vis storyboard sheet. 21:9, 3×10 grid, 30 frames, black tab + white number 01–30 top-left each frame. [컷별 장면 요약] " \
-  --aspect_ratio 21:9 --resolution 1k --wait
+  --prompt "Hollywood cinematic pre-vis storyboard sheet. 16:9, 5×6 grid, 30 frames, black tab + white number 01–30 top-left each frame. [컷별 장면 요약] " \
+  --aspect_ratio 16:9 --resolution 1k --wait
 ```
 
 - 저장: `projects/{project}/{version}/preview/storyboard_sheet_v1.png`
@@ -301,7 +301,7 @@ higgsfield generate create nano_banana_2 \
 
 ---
 
-### G9a-final — 최종 확인 시트 (21:9 · 2K · High quality · 승인용)
+### G9a-final — 최종 확인 시트 (16:9 · 2K · High quality · 승인용)
 
 **목적:** 개별 수정이 모두 끝난 뒤, 확정된 프롬프트로 고품질 시트를 재생성해 최종 승인을 받는다.
 
@@ -309,16 +309,16 @@ higgsfield generate create nano_banana_2 \
 | 항목 | 값 |
 |---|---|
 | 모델 | `gpt_image_2` |
-| 비율 | 21:9 |
+| 비율 | 16:9 |
 | 해상도 | 2K · **High quality** |
-| 레이아웃 | 3행 × 10열, 번호 01~30 (G9a 동일 포맷) |
+| 레이아웃 | 5행 × 6열, 번호 01~30 (G9a 동일 포맷) |
 
 ```
 generate_image({
   model: "gpt_image_2",
-  prompt: "Hollywood cinematic pre-visualisation storyboard sheet. Single page, 21:9 ultra-wide. 3 rows × 10 columns = 30 frames, thin dark border, black tab + white number 01–30 top-left. High quality. [확정된 컷별 장면 묘사] " + 규칙0[A] + IMG_ENHANCE,
+  prompt: "Hollywood cinematic pre-visualisation storyboard sheet. Single page, 16:9 wide. 5 rows × 6 columns = 30 frames, thin dark border, black tab + white number 01–30 top-left. High quality. [확정된 컷별 장면 묘사] " + 규칙0[A] + IMG_ENHANCE,
   resolution: "2k",
-  aspect_ratio: "21:9",
+  aspect_ratio: "16:9",
   quality: "high"
 }) → preview/storyboard_sheet_final.png
 ```

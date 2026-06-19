@@ -198,9 +198,9 @@ G0 생성 엔진 연결 확인 (Higgsfield CLI/MCP · Magnific — 최소 하나
 G1 제품 정의 → G2 광고 접근방식 ★ → G3 감정 서사 컨셉 ★ → G4 주인공·관계·공간
 → G5 3막 구조 & 제품의 역할 → G6 비주얼 문법 → G7 일관성 전략
 → [기획안 정리·승인] → G8 생성 전 체크
-→ G9a gpt_image_2 · 21:9 · 1K Mid — 30컷 프리뷰 시트 1장 생성 → [구성 확인]
+→ G9a gpt_image_2 · 16:9 · 1K High — 30컷 프리뷰 시트 1장 생성 → [구성 확인]
 → G9a-rev nano_banana Pro · 16:9 · 2K · 1/4 · Unlimited ON — 수정 컷 개별 생성 (반복)
-→ G9a-final gpt_image_2 · 21:9 · 2K · High quality — 최종 확인 시트 재생성 → [승인]
+→ G9a-final gpt_image_2 · 16:9 · 2K · High quality — 최종 확인 시트 재생성 → [승인]
 → G9b nano_banana Pro · 16:9 · 2K · 1/4 · Unlimited ON — 30개 개별 이미지 일괄 생성(+에러)
 → G10 HTML 빌드·검수 → G11 수정=새 버전
 
