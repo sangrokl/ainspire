@@ -117,6 +117,8 @@ VERSION  = "v2026-06-03_v3"
 > **시행착오 #21 — gpt-image 계열은 인물에 쓰지 않는 이유:** gpt-image-2 계열은 **레퍼런스 얼굴을 왜곡**한다(컷마다 다른 사람). 속도도 느리다. → **인물/얼굴 ref 컷은 무조건 nano_banana_2 계열**: Higgsfield `nano_banana_2`(2k=2752×1536, 4k 가능) / Magnific `imagen-nano-banana-2`(NB Pro, sota·한글 텍스트 최강) / `imagen-nano-banana-2-flash`(NB2, 43초·무인물 대량용). `gpt_image_2`(Higgsfield)는 인물 없는 제품·로고·텍스트 컷에 보조로만.
 > **시행착오 #22 — 속도맵:** Magnific 기준 flux-2-klein 5s / grok 9s / **seedream-4 13s(포토리얼 강함, 속도 최우선 시 표준)** / NB2 flash 43s / NB Pro 68s. 동시한도: **Magnific 24(이미지 단위)**, **Higgsfield 계정당 8**.
 > **시행착오 #23 — 영상은 HF2(ultra) 전용:** HF1 무료플랜은 Kling 3.0·Seedance 2.0 모두 플랜 게이트. `kling3_0` pro 실출력은 소스 비율을 따라간다 — 시작 이미지를 정확히 1920×1080으로 만들면 1920×1080이 나온다.
+> **시행착오 #37 — 멀티패널 캐릭터 레퍼런스 시트(턴어라운드)는 `soul_2`가 아니라 `gpt_image_2`로:** `soul_2`(Higgsfield Soul 2.0)는 `enhance_prompt`가 서버에서 강제 ON이고 끌 수 없다(`enhance_prompt:false`를 보내도 "Higgsfield Soul 2.0 does not support this parameter"로 무시됨) — 그 결과 "TOP ROW 4뷰 + BOTTOM ROW 3뷰" 같은 명시적 멀티패널 구도 지시가 서버에서 임의로 단일 포트레이트 묘사로 재작성되어 통째로 무시된다. 반면 `gpt_image_2`는 프롬프트를 그대로 통과시켜 패널 구조(로우·컬럼·배치)를 지킨다 — 단, #21의 얼굴 왜곡 위험은 여전히 있으므로 패널별 얼굴 일치는 생성 후 직접 확인이 필요.
+> **시행착오 #38 — 개별 컷 이미지 모델은 `nano_banana_2`로 통일, `soul_2` 미사용(최종 결정):** `soul_2`는 인물 얼굴 일관성은 좋지만 미디어 첨부가 1장으로 제한되고(`medias` max 1) `enhance_prompt` 강제로 구도 지시를 재작성하는 등 제약이 많다. 운영 단순화를 위해 **개별 컷(인물·제품 불문)은 전부 `nano_banana_2`로 통일**하고, **모든 생성 호출에 해당 레퍼런스 이미지(얼굴 ref·제품 ref, 필요시 둘 다)를 항상 medias로 첨부**한다 — `nano_banana_2`는 멀티 레퍼런스 첨부가 가능해 얼굴+제품을 동시에 걸 수 있다. `soul_2`는 멀티패널 시트가 아예 안 되므로(#37) 더더욱 쓸 이유가 없다. **결론: 개별 컷=`nano_banana_2`(레퍼런스 항상 첨부), 멀티패널 캐릭터 시트(턴어라운드)=`gpt_image_2`. `soul_2`는 이 플레이북에서 미사용.**
 
 ### E-2. 인물 컷 문법 — "보도사진" 회피의 핵심
 
@@ -152,7 +154,7 @@ VERSION  = "v2026-06-03_v3"
 ### E-6. 다음 프로젝트 스타트 체크리스트 (이대로 시작)
 
 1. 얼굴 ref 크롭 → **의상 시트·장소 시트** 생성(균일조명) → 시트 ref + **LOOK OVERRIDE 재조명** 조합 확정.
-2. 인물=nano_banana_2(단독 얼굴 CU/OTS) / 무인물=NB Pro 또는 seedream-4 / 한글 텍스트=NB Pro+글리프 명시+3테이크+병렬 QA.
+2. 개별 컷=nano_banana_2로 통일(인물·제품 불문, soul_2 미사용 — #38), 모든 호출에 얼굴·제품 레퍼런스 항상 첨부 / 무인물=NB Pro 또는 seedream-4 / 한글 텍스트=NB Pro+글리프 명시+3테이크+병렬 QA / 멀티패널 캐릭터 턴어라운드 시트=gpt_image_2(#37 — soul_2는 enhance_prompt 강제로 멀티패널을 단일컷으로 뭉갬).
 3. 매니페스트(json: _blocks+컷별 scene) → 채널별 백그라운드 에이전트 일괄 제출 → 라이브 픽커.
 4. 잠금 룩: 노을+블라인드·로우키·백라이트 림·더치/로우/하이·데마이·신용카드 스케일·정면/아이레벨 0.
 5. 브랜드 자산: 순흑+엣지검증 → 루마키(풀프레임) → 그린 1920×1080 → HF2 Kling/Seedance 모션.
