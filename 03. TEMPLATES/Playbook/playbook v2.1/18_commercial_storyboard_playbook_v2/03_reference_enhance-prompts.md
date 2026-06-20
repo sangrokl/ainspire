@@ -16,6 +16,8 @@
 **우선순위:** 규칙0 [A][B] > IMG_ENHANCE/VID_ENHANCE > 유형별 확장 상수.  
 충돌 시 규칙0이 항상 이긴다.
 
+> **`gpt_image_2` 프롬프트 작성:** `--prompt` 본문은 `gpt-image-prompt` 스킬(Scene/Subject/Important details/Use case/Constraints 5단 구조 + 안티슬롭 규칙 — "stunning" 대신 구체적 시각 정보, 텍스트는 따옴표+폰트 명시)을 적용해 작성한다. 위 우선순위표보다 하위 — 규칙0·`IMG_ENHANCE`/`IMG_ENHANCE_OBJECT`와 충돌 시 그쪽이 이긴다. (인물/얼굴 ref 컷에는 여전히 쓰지 않음 — 부록 E #21.)
+
 ---
 
 ## 규칙 0 — 이미지·영상 생성 시 무조건·강제 (NON-NEGOTIABLE)

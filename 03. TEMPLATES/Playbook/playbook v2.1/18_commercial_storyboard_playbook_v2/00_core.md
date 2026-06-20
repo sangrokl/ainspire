@@ -114,6 +114,7 @@ higgsfield generate create seedance_2_0 --prompt "<규칙0[B] No-BGM + VID_ENHAN
 ```
 > **결과 저장(CLI):** CLI는 결과 **URL을 반환**한다 → `projects/{project}/{version}/images|videos/…`에 쌓으려면 URL 다운로드(PowerShell `Invoke-WebRequest -OutFile`, mac/linux `curl -o`) 한 단계를 붙인다. (MCP 경로는 도구가 경로/URL을 함께 반환.)
 > **엔진 선택 디테일:** 인물 일관성·시리즈 = nano_banana_2 계열(셋 다 보유). 한글 텍스트·포토리얼 = Magnific NB Pro/seedream. 업스케일·누끼·캐릭터학습·TTS = Magnific 전용. 세부 속도·동시한도 맵은 `04_reference_lessons-appendix.md` 부록 E.
+> **`gpt_image_2` 프롬프트 작성:** `--prompt` 본문은 `gpt-image-prompt` 스킬(Scene/Subject/Important details/Use case/Constraints 5단 구조 + 안티슬롭 규칙 — "stunning" 대신 구체적 시각 정보, 텍스트는 따옴표+폰트 명시)을 적용해 작성한다. 단, 규칙 0[A]·`IMG_ENHANCE`(아래)가 더 상위 — 충돌 시 규칙 0이 이긴다. (인물/얼굴 ref 컷에는 여전히 쓰지 않음 — 부록 E #21.)
 > **공통 규칙(경로 무관 동일):** 규칙0 프리픽스 + ENHANCE 상수 주입(`03`), 상표는 디자인 언어로, 결과는 새 버전 폴더 저장(덮어쓰기 금지).
 
 ### CLI 설치 안내 (선택 — CLI를 쓰려는데 미설치일 때 사용자에게 그대로 전달)
