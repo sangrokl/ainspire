@@ -80,20 +80,22 @@
 
 ---
 
-## GATE 14 — 내레이션 VO (Higgsfield TTS 기본, ElevenLabs 대안)
+## GATE 14 — 내레이션 VO (ElevenLabs MCP 기본, Higgsfield TTS·ElevenLabs 직접 API 백업)
 
 **왜:** 영문 보이스오버. 스토리보드 비트에 맞춘 카피 + 톤에 맞는 성우.
 
 ### 준비: 엔진 선택
-**기본 = Higgsfield TTS(`inworld_text_to_speech`).** Higgsfield 연결(STEP 0)만 있으면 OK, 별도 키·`.env` 불필요 — CLI `higgsfield generate create inworld_text_to_speech --prompt "..."` 또는 MCP `generate_audio`로 바로 생성.
+**기본 = ElevenLabs MCP(`text_to_speech`).** 이 환경에 연결되어 있으면 OK, 별도 키·`.env` 불필요 — MCP `text_to_speech`로 바로 생성. 보이스 탐색은 MCP `search_voices`/`search_voice_library`.
 
-**대안: ElevenLabs 직접 API.** (내레이션 = 선택 산출물, 이 경로 쓸 거면 키 필수)
+**백업1: Higgsfield TTS(`inworld_text_to_speech`).** Higgsfield 연결(STEP 0)만 있으면 OK, 별도 키·`.env` 불필요 — CLI `higgsfield generate create inworld_text_to_speech --prompt "..."` 또는 MCP `generate_audio`로 생성.
+
+**백업2: ElevenLabs 직접 API.** (ElevenLabs MCP도 안 될 때만 — 내레이션 = 선택 산출물, 이 경로 쓸 거면 키 필수)
 `ELEVENLABS_API_KEY`가 `system_v2/.env`에 있어야 한다. **에이전트는 키를 대신 발급/OAuth할 수 없으므로**, 없으면 사용자에게 이렇게 안내한다:
 1. `https://elevenlabs.io/app/settings/api-keys`에서 키 발급(무료 플랜 가능)
 2. `system_v2/.env`를 열어 `ELEVENLABS_API_KEY=` 뒤에 키 붙여넣기 (파일은 이미 있음)
 3. `node system_v2/check_api_connections.mjs`로 확인 (`ElevenLabs: OK`면 됨)
 
-`GET /v1/voices`로 동작 확인 + 보이스 목록 확보(ElevenLabs 경로일 때만).
+`GET /v1/voices`로 동작 확인 + 보이스 목록 확보(직접 API 경로일 때만).
 
 ### Q14-1. 톤·성우 (객관식, 카테고리에 맞게)
 | 톤 | 추천 보이스(예) |
@@ -106,9 +108,9 @@
 - **스토리보드 막 구조에 맞춰** 6줄 내외(30초 = 천천히 ~45~60단어). 각 줄을 **막의 시작 컷**에 매핑(타임코드).
 - 3안을 **서로 다른 톤/성우**로 제안해 비교하게 한다.
 
-### 실행 (`system_v2/_gen_*_vo.py`)
+### 실행 — 기본: MCP `text_to_speech` 직접 호출 / 백업2: `system_v2/_gen_*_vo.py`
 ```python
-# POST https://api.elevenlabs.io/v1/text-to-speech/{voice_id}
+# 백업2(직접 API)만 해당: POST https://api.elevenlabs.io/v1/text-to-speech/{voice_id}
 # headers: xi-api-key, Accept: audio/mpeg
 # body: {"text":..., "model_id":"eleven_multilingual_v2", "voice_settings":{...}}
 ```

@@ -24,7 +24,7 @@
 15. **막히면 레퍼런스를 분석하라** — 무한 재생성 말고, 실존 명작 광고를 웹 검색·분석해 문법을 빌려 다시 제안.
 16. **영상은 동시 8개 한도** — 8개씩 큐, 폴링·다운로드는 백그라운드 에이전트 위임. `declined_preset_id`로 프리셋 강제 거절, NSFW 오탐(포옹)은 표현 우회.
 17. **BGM은 API 자동생성 안 함 → Suno 프롬프트 제안 + 사용자 수동 생성(GATE 13)** — 생성 영상 자체는 SFX only, BGM은 후반 조립에서 얹는다.
-18. **내레이션은 비트 매핑 + 톤별 성우** — 막 시작 컷에 한 줄씩 타임코드 매핑. 차분=stability↑/style↓, 강렬=반대. **기본은 Higgsfield TTS(`inworld_text_to_speech`)** — 별도 키·`.env` 불필요, Higgsfield 연결만 있으면 됨. 대안으로 ElevenLabs 쓸 때만 `ELEVENLABS_API_KEY`(`.env`) 필요(내레이션 자체는 선택 산출물).
+18. **내레이션은 비트 매핑 + 톤별 성우** — 막 시작 컷에 한 줄씩 타임코드 매핑. 차분=stability↑/style↓, 강렬=반대. **기본은 ElevenLabs MCP(`text_to_speech`)** — 이 환경에 연결되어 있으면 별도 키·`.env` 불필요. 백업1 Higgsfield TTS(`inworld_text_to_speech`, Higgsfield 연결만 있으면 됨) · 백업2 ElevenLabs 직접 API 쓸 때만 `ELEVENLABS_API_KEY`(`.env`) 필요(내레이션 자체는 선택 산출물).
 19. **로고는 블랙 생성 → 루마키 투명 → 오토크롭**. 짧은 단어도 철자 검수. 제품 워드마크 가로화는 목업 img2img.
 20. **최종 완성본은 기획안+VO+컷을 한 HTML로** — 이미지는 최종 버전 폴더 소스, `_FINAL` 새 파일(덮어쓰기 금지).
 21. **리뷰는 채팅이 아니라 콘솔로(GATE 17)** — 생성 후 리뷰 HTML 자동 팝업 → 카드 선택→수정요청 Enter→즉시 재생성. HTML은 MCP를 직접 못 부르니 **로컬서버+큐+에이전트 워처** 브리지로 잇고, 이미지=nano_banana_2/gpt_image_2(모델·화질 선택), 영상=Seedance 2.0(초수·화질 선택). 재생성은 새 버전 폴더.

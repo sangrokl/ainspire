@@ -12,7 +12,7 @@
    - Higgsfield MCP: 데스크톱 앱 로그인 후 클라이언트에 연결 (사용자 요청).
    - Magnific MCP: 클라이언트 MCP 설정에 `https://mcp.magnific.com`(streamable HTTP) 추가 → OAuth (사용자 요청).
    - **Higgsfield CLI (선택):** 쓰려는데 미설치면 사용자에게 안내 — `npm install -g @higgsfield/cli` → `higgsfield auth login` → (선택) `npx skills add higgsfield-ai/skills`.
-4. **MCP 하나라도 연결되면 생성(G8 이후)으로 간다 — CLI 없이도 OK.** 여러 개면 역할 분담(단발=MCP, 일괄=CLI가 편함, 업스케일/누끼=Magnific). **내레이션(TTS) = Higgsfield `inworld_text_to_speech`**(CLI `higgsfield generate create inworld_text_to_speech` 또는 MCP `generate_audio`) — 별도 키·`.env` 불필요, Higgsfield 연결만 있으면 됨. *(대안: ElevenLabs 직접 API — `system_v2/.env`의 `ELEVENLABS_API_KEY`, `node system_v2/check_api_connections.mjs`로 확인.)*
+4. **MCP 하나라도 연결되면 생성(G8 이후)으로 간다 — CLI 없이도 OK.** 여러 개면 역할 분담(단발=MCP, 일괄=CLI가 편함, 업스케일/누끼=Magnific). **내레이션(TTS) = ElevenLabs MCP(`text_to_speech`)**(이 환경에 연결되어 있으면 별도 키 불필요) — 기본. *(백업1: Higgsfield TTS(`inworld_text_to_speech`) — CLI `higgsfield generate create inworld_text_to_speech` 또는 MCP `generate_audio`, Higgsfield 연결만 있으면 됨. 백업2: ElevenLabs 직접 API — `system_v2/.env`의 `ELEVENLABS_API_KEY`, `node system_v2/check_api_connections.mjs`로 확인.)*
 
 ## ⭐ 시작 규칙 (반드시 지켜라)
 0. **위 [STEP 0]에서 생성 엔진 연결을 먼저 확인·완료한다.** (안 되어 있으면 생성 단계로 가지 말 것)
@@ -34,7 +34,7 @@
   - **Higgsfield MCP** *(기본)*: 데스크톱 앱 OAuth. 세션 내 즉석 단발에 편함. **이것만으로 전 과정 가능.**
   - **Higgsfield CLI** *(선택)*: 깔려 있으면 대량 일괄·무인에 편함(`--wait` 폴링 처리, `--json` 배치, 결과 URL→다운로드). **미설치 시 사용자에게 안내:** `npm install -g @higgsfield/cli` → `higgsfield auth login` → (선택) `npx skills add higgsfield-ai/skills`. (상세 = `00_core.md` [CLI 설치 안내])
   - **Magnific MCP** *(선택)*: 클라이언트 MCP 설정에 `https://mcp.magnific.com` 추가 후 OAuth. 업스케일·누끼·Soul 학습 전용.
-- **내레이션(VO) = Higgsfield TTS(`inworld_text_to_speech`)** — CLI `higgsfield generate create inworld_text_to_speech --prompt "..."` 또는 MCP `generate_audio`. Higgsfield 연결만 있으면 OK, 별도 키·`.env` 불필요. *(대안: ElevenLabs 직접 API — `system_v2/.env`에 `ELEVENLABS_API_KEY`)*
+- **내레이션(VO) = ElevenLabs MCP(`text_to_speech`)** — 이 환경에 연결되어 있으면 바로 사용, 별도 키 불필요. *(백업1: Higgsfield TTS(`inworld_text_to_speech`) — CLI `higgsfield generate create inworld_text_to_speech --prompt "..."` 또는 MCP `generate_audio`, Higgsfield 연결만 있으면 OK. 백업2: ElevenLabs 직접 API — `system_v2/.env`에 `ELEVENLABS_API_KEY`)*
 - **BGM = Suno 프롬프트 제안(GATE 13) → 사용자가 직접 생성** — 에이전트는 Suno 프롬프트만 제안, 실제 생성은 사용자(별도 키 불필요). 후처리(HTML·로고·조립)는 `system_v2`의 Python/ffmpeg.
 
 ## 불변 규칙 (요약 — 풀텍스트는 00_core·03)
