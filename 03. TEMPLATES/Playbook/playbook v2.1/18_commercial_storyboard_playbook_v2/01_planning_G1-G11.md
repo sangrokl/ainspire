@@ -201,6 +201,35 @@
 
 ---
 
+## ★ 시나리오 산출물 포맷 — 컷별 마크다운 구조
+
+BRIEF 승인 후 컷별 프롬프트는 아래 마크다운 구조로 한 컷씩 작성해 `projects/{project}/{version}/scenario.md`에 30개 컷 전체를 누적한다. GATE 8 프롬프트 프리뷰 테이블·G9a 이미지 프롬프트(`[first frame]`)·GATE 12 영상 프롬프트(`[video prompt]`)·사운드 디자인(`[sound]`)이 모두 이 파일 하나에서 파생된다 — 컷마다 흩어져 있던 정보를 한 곳에 모아둔다.
+
+### 포맷
+```
+## Cut 01
+[duration]: 1.0s
+[shot]: ECU eye reflection
+[first frame]: Extreme close-up on JUNE's eye, a tiny strawberry reflected in the iris, soft window light, shallow depth of field
+[video prompt]: RUNTIME: 6 seconds. / CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. / TIME: soft morning light. / CHARACTER: JUNE, same face as reference. / SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) eye in stillness / ACTION (0:01-0:04) blinks slowly, reflection shimmers / TRANSITION (0:04-0:05) pupil contracts / ENDS WITH (0:05-0:06) macro hold on strawberry reflection. / LIGHT: soft window backlight, gentle negative fill. / SFX: soft inhale, distant chime.
+[sound]: soft inhale, distant chime
+```
+
+### 필드 설명
+| 필드 | 내용 | 비고 |
+|---|---|---|
+| `[duration]` | **최종 편집상의 컷 길이**(초) — 컷마다 다르게 줄 수 있다(0.5~6s 등, 더 이상 전부 고정 아님) | **전체 합이 목표 광고 길이(보통 30s)와 맞는지 GATE 8에서 합계 검증.** ⚠️ 이는 GATE 16 최종 조립 시 트림 기준이며, Hailuo 2.3(기본) 실제 생성 길이와는 다르다 — **생성은 항상 6초 고정**(변경하지 않음), `[duration]`이 6초보다 짧으면 6초로 그대로 생성한 뒤 최종 조립에서 잘라낸다. |
+| `[shot]` | 샷 타입·앵글 한 줄 요약 (예: ECU eye reflection, OTS wide, dutch-angle macro) | GATE 6 비주얼 문법과 일치해야 함 |
+| `[first frame]` | 정지 첫 프레임(이미지) 생성 프롬프트의 장면 묘사 | G9a/G9b 호출 시 규칙0[A]+IMG_ENHANCE(또는 PERSON/OBJECT)가 자동으로 합쳐진다 — 여기엔 장면만 적는다 |
+| `[video prompt]` | 영상 생성 프롬프트(기본 Hailuo 2.3, 백업 Seedance 2.0) — `03_reference_enhance-prompts.md`의 `VIDEO_PROMPT_FORMAT` 필드 순서(RUNTIME→CAMERA→TIME→CHARACTER→SHOT GROUP[BEGINS WITH/ACTION/TRANSITION/ENDS WITH 타임스탬프 비트]→LIGHT→SFX)를 그대로 따른다 | GATE 12 호출 시 규칙0[B](No BGM·SFX only)가 맨 앞에 자동으로 합쳐진다. **전체 700자 이내**(공백 포함) — 넘으면 SHOT GROUP 비트 묘사부터 줄인다. SHOT GROUP 4비트 합은 항상 6초 |
+| `[sound]` | 효과음 디자인 | diegetic SFX만 — **BGM·내레이션 절대 금지**(규칙0[B], BGM은 GATE 13 별도) |
+
+### 저장 위치·버전 규칙
+- `projects/{project}/{version}/scenario.md` — `## Cut 01`~`## Cut 30` 전체를 한 파일에 누적.
+- 수정 시 새 버전 파일로 누적(`scenario_v2.md` 등) — GATE 11 "수정 = 새 버전, 덮어쓰기 금지" 원칙과 동일.
+
+---
+
 ## GATE 8 — 생성 전 체크 (필수 4종 + 프리뷰)
 
 생성 호출 **직전** 반드시 표로 보여주고 OK 받는다:
@@ -216,8 +245,8 @@
 
 > **모델 파라미터 확정:** 생성 전 반드시 모델 파라미터를 확인한다 — CLI `higgsfield model get nano_banana_2 --json` / Higgsfield MCP `models_explore(action='get', model_id='nano_banana_2')` / Magnific `images_models_show`. Higgsfield 대안 `gpt_image_2`. 엔진별 플로우는 `00_core.md`의 [생성 엔진] 참조.
 
-그리고 **컷별 프롬프트 프리뷰 테이블(한글 요약)** 을 함께 보여준다. (#·막·장면·제품역할)  
-프리뷰에 **"규칙 0 MANDATORY 프리픽스 + IMG_ENHANCE 주입됨"** 표기.
+그리고 `scenario.md`(★ 시나리오 산출물 포맷)에서 파생한 **컷별 프롬프트 프리뷰 테이블(한글 요약)** 을 함께 보여준다. (#·막·장면·제품역할)  
+프리뷰에 **"규칙 0 MANDATORY 프리픽스 + IMG_ENHANCE 주입됨"** 표기. 이때 `scenario.md`의 `[duration]` 합계가 목표 광고 길이(보통 30s)와 맞는지 검증한다.
 
 ---
 
@@ -330,11 +359,11 @@ generate_image({
 
 ### G9b — 30개 개별 이미지 일괄 생성 (nano_banana Pro · 16:9 · 2K · 1/4 output · Unlimited ON)
 
-**목적:** G9a-final 승인 후, 확정된 프롬프트 그대로 ref·소울ID 적용해 30개 개별 이미지를 생성한다.
+**목적:** G9a-final 승인 후, 확정된 프롬프트 그대로 ref 적용해 30개 개별 이미지를 생성한다.
 
 > **개별 컷(및 재생성) 생성 시 반드시 참조할 2종:**
 > 1. **승인된 `storyboard_sheet_final.png`(G9a-final)** — **구도·배열·막 흐름만** 기준으로 삼는다. **이 시트의 조명은 참조하지 않는다** — 시트는 빠른 프리뷰용 합성이라 조명이 균일/평탄할 수 있고, 그걸 그대로 따라가면 시네마틱이 죽는다(시행착오 #25와 동일 원리). 프롬프트에 "구도(카메라 앵글·배치·뎁스 레이어)는 시트를 따르되, 조명은 무시하고 규칙0[A]+IMG_ENHANCE의 로우키·웜 백라이트 림·네거티브 필로 재조명(relight)한다"를 명시 — LOOK OVERRIDE.
-> 2. **최신 레퍼런스 이미지** — 1차 키비주얼(`ref_face.png`)에 만족스러운 컷이 나오면 그 컷으로 레퍼런스를 다시 뽑아(`ref_face_v2.png` 등) 갈아끼운다. **개별 컷 이미지 생성은 `nano_banana_2`로 통일한다 — `soul_2` 미사용**(부록 E #38). `nano_banana_2`는 얼굴·제품 레퍼런스를 동시에 여러 장 첨부할 수 있으므로, **모든 생성 호출에 해당하는 레퍼런스 이미지(얼굴·제품)를 항상 medias로 첨부**한다. 멀티패널 캐릭터 턴어라운드 시트만 예외로 `gpt_image_2` 사용(부록 E #37 — `soul_2`는 `enhance_prompt` 강제로 멀티패널을 단일컷으로 뭉갬). 새 레퍼런스가 나오면 이후 모든 개별 컷·재생성은 그걸 기준으로 한다(레퍼런스도 새 버전 파일로 누적, 덮어쓰기 금지).
+> 2. **최신 레퍼런스 이미지** — 1차 얼굴 레퍼런스(`projects/{project}/{version}/ref/ref_face.png`)는 사진 5장 이상 있으면 Soul Character 학습으로 만든다(`03_reference`의 `SOUL_CHARACTER_TRAINING`, 부록 E #39 — 동일 인물은 `soul_id` 재학습 없이 재사용). 5장 미만이면 `gpt_image_2` 턴어라운드 시트(`CHAR_TURNAROUND_SHEET`, 부록 E #37)로 대체. 만족스러운 컷이 나오면 그 컷으로 레퍼런스를 다시 뽑아(`ref_face_v2.png` 등) 갈아끼운다. **개별 컷 이미지 생성은 `nano_banana_2`로 통일한다 — `soul_2`는 1차 레퍼런스 스틸 생성에만 쓰고 개별 컷에는 미사용**(부록 E #38). `nano_banana_2`는 얼굴·제품 레퍼런스를 동시에 여러 장 첨부할 수 있으므로, **모든 생성 호출에 해당하는 레퍼런스 이미지(얼굴·제품)를 항상 medias로 첨부**한다. 새 레퍼런스가 나오면 이후 모든 개별 컷·재생성은 그걸 기준으로 한다(레퍼런스도 새 버전 파일로 누적, 덮어쓰기 금지).
 
 **생성 사양:**
 | 항목 | 값 |

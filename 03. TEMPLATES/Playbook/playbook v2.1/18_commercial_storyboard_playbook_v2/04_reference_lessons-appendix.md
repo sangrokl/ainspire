@@ -27,7 +27,7 @@
 18. **내레이션은 비트 매핑 + 톤별 성우** — 막 시작 컷에 한 줄씩 타임코드 매핑. 차분=stability↑/style↓, 강렬=반대. **기본은 ElevenLabs MCP(`text_to_speech`)** — 이 환경에 연결되어 있으면 별도 키·`.env` 불필요. 백업1 Higgsfield TTS(`inworld_text_to_speech`, Higgsfield 연결만 있으면 됨) · 백업2 ElevenLabs 직접 API 쓸 때만 `ELEVENLABS_API_KEY`(`.env`) 필요(내레이션 자체는 선택 산출물).
 19. **로고는 블랙 생성 → 루마키 투명 → 오토크롭**. 짧은 단어도 철자 검수. 제품 워드마크 가로화는 목업 img2img.
 20. **최종 완성본은 기획안+VO+컷을 한 HTML로** — 이미지는 최종 버전 폴더 소스, `_FINAL` 새 파일(덮어쓰기 금지).
-21. **리뷰는 채팅이 아니라 콘솔로(GATE 17)** — 생성 후 리뷰 HTML 자동 팝업 → 카드 선택→수정요청 Enter→즉시 재생성. HTML은 MCP를 직접 못 부르니 **로컬서버+큐+에이전트 워처** 브리지로 잇고, 이미지=nano_banana_2/gpt_image_2(모델·화질 선택), 영상=Seedance 2.0(초수·화질 선택). 재생성은 새 버전 폴더.
+21. **리뷰는 채팅이 아니라 콘솔로(GATE 17)** — 생성 후 리뷰 HTML 자동 팝업 → 카드 선택→수정요청 Enter→즉시 재생성. HTML은 MCP를 직접 못 부르니 **로컬서버+큐+에이전트 워처** 브리지로 잇고, 이미지=nano_banana_2/gpt_image_2(모델·화질 선택), 영상=Hailuo 2.3(초수·화질 선택, 백업 Seedance 2.0). 재생성은 새 버전 폴더.
 
 ---
 
@@ -52,7 +52,7 @@
 - **모델 파라미터 사전 확정:** 생성 전 Higgsfield `models_explore(action='get', model_id=...)` / Magnific `images_models_show`로 resolution 라벨·reference 입력 형식 확인.
 
 ### C-2. 영상화 — 재개 가능(resumable) 워커 (대량·장시간 안전)
-- 단일 에이전트로 30컷을 한 번에 도는 건 **턴 한도로 깨진다**. → **작업상태 파일**(`videos/seedance/_jobs.json`, cut별 `pending`/`running`(+`job_id`)/`done`)을 두고 라운드 반복:
+- 단일 에이전트로 30컷을 한 번에 도는 건 **턴 한도로 깨진다**. → **작업상태 파일**(`videos/hailuo/_jobs.json`, cut별 `pending`/`running`(+`job_id`)/`done`)을 두고 라운드 반복:
   1. `running` 잡을 `job_status(sync:true)`로 reap → 완료분 즉시 rawUrl 다운로드 → `done`, **매 변경마다 `_jobs.json` 저장**.
   2. `running < 8`인 동안 `pending` 컷을 업로드 + `generate_video` 제출 → `job_id` 기록(`running`).
   3. 전부 `done`이 아니면 ~20s 후 반복. 라운드/예산 한도면 상태 저장 후 종료 → **메인이 재호출해 이어감**(진행분 보존).
@@ -118,7 +118,9 @@ VERSION  = "v2026-06-03_v3"
 > **시행착오 #22 — 속도맵:** Magnific 기준 flux-2-klein 5s / grok 9s / **seedream-4 13s(포토리얼 강함, 속도 최우선 시 표준)** / NB2 flash 43s / NB Pro 68s. 동시한도: **Magnific 24(이미지 단위)**, **Higgsfield 계정당 8**.
 > **시행착오 #23 — 영상은 HF2(ultra) 전용:** HF1 무료플랜은 Kling 3.0·Seedance 2.0 모두 플랜 게이트. `kling3_0` pro 실출력은 소스 비율을 따라간다 — 시작 이미지를 정확히 1920×1080으로 만들면 1920×1080이 나온다.
 > **시행착오 #37 — 멀티패널 캐릭터 레퍼런스 시트(턴어라운드)는 `soul_2`가 아니라 `gpt_image_2`로:** `soul_2`(Higgsfield Soul 2.0)는 `enhance_prompt`가 서버에서 강제 ON이고 끌 수 없다(`enhance_prompt:false`를 보내도 "Higgsfield Soul 2.0 does not support this parameter"로 무시됨) — 그 결과 "TOP ROW 4뷰 + BOTTOM ROW 3뷰" 같은 명시적 멀티패널 구도 지시가 서버에서 임의로 단일 포트레이트 묘사로 재작성되어 통째로 무시된다. 반면 `gpt_image_2`는 프롬프트를 그대로 통과시켜 패널 구조(로우·컬럼·배치)를 지킨다 — 단, #21의 얼굴 왜곡 위험은 여전히 있으므로 패널별 얼굴 일치는 생성 후 직접 확인이 필요.
-> **시행착오 #38 — 개별 컷 이미지 모델은 `nano_banana_2`로 통일, `soul_2` 미사용(최종 결정):** `soul_2`는 인물 얼굴 일관성은 좋지만 미디어 첨부가 1장으로 제한되고(`medias` max 1) `enhance_prompt` 강제로 구도 지시를 재작성하는 등 제약이 많다. 운영 단순화를 위해 **개별 컷(인물·제품 불문)은 전부 `nano_banana_2`로 통일**하고, **모든 생성 호출에 해당 레퍼런스 이미지(얼굴 ref·제품 ref, 필요시 둘 다)를 항상 medias로 첨부**한다 — `nano_banana_2`는 멀티 레퍼런스 첨부가 가능해 얼굴+제품을 동시에 걸 수 있다. `soul_2`는 멀티패널 시트가 아예 안 되므로(#37) 더더욱 쓸 이유가 없다. **결론: 개별 컷=`nano_banana_2`(레퍼런스 항상 첨부), 멀티패널 캐릭터 시트(턴어라운드)=`gpt_image_2`. `soul_2`는 이 플레이북에서 미사용.**
+> **시행착오 #38 — 개별 컷 이미지 모델은 `nano_banana_2`로 통일, `soul_2` 미사용(최종 결정):** `soul_2`는 인물 얼굴 일관성은 좋지만 미디어 첨부가 1장으로 제한되고(`medias` max 1) `enhance_prompt` 강제로 구도 지시를 재작성하는 등 제약이 많다. 운영 단순화를 위해 **개별 컷(인물·제품 불문)은 전부 `nano_banana_2`로 통일**하고, **모든 생성 호출에 해당 레퍼런스 이미지(얼굴 ref·제품 ref, 필요시 둘 다)를 항상 medias로 첨부**한다 — `nano_banana_2`는 멀티 레퍼런스 첨부가 가능해 얼굴+제품을 동시에 걸 수 있다. `soul_2`는 멀티패널 시트가 아예 안 되므로(#37) 더더욱 쓸 이유가 없다. **결론: 개별 컷=`nano_banana_2`(레퍼런스 항상 첨부). `soul_2`는 개별 컷에는 미사용 — 단 #39의 1차 레퍼런스 학습 용도는 예외.**
+> **시행착오 #39 — 1차 캐릭터 레퍼런스는 Higgsfield Soul Character 학습으로 전환, `ref/` 폴더로 표준화 + 캐릭터 동결:** 사진 5장 이상이 있으면 `gpt_image_2` 멀티패널 턴어라운드(#37)보다 Higgsfield `show_characters(action:'train')`로 재사용 가능한 Soul Character(`soul_id`)를 학습하는 쪽을 기본값으로 한다 — 사진만 있으면 멀티패널 구도 작성·왜곡 위험(#21) 없이 바로 identity model을 얻는다. **#38의 "개별 컷=soul_2 미사용" 결정과 충돌하지 않는다** — Soul 학습은 1차 얼굴 레퍼런스 스틸(`ref_face.png`)을 `soul_2`로 한 장 뽑는 용도로만 쓰고, 그 스틸을 이후 `nano_banana_2` 컷 생성에 medias로 첨부한다. **저장 위치는 전역 레지스트리(`assets/character_refs/{name}/character.json`, 학습 1회) + 프로젝트별 포인터(`projects/{project}/{version}/ref/{name}_character.json`)로 분리** — `images/ref/`·`keyvisual/` 등 과거 변형 위치는 신규 프로젝트에 쓰지 않고 `ref/`로 통일. **캐릭터 동결:** 동일 인물을 여러 프로젝트에서 쓸 때 `soul_id`를 재학습하지 않고 그대로 재사용한다 — 외형(헤어·의상)이 바뀌어도 인물이 같으면 동일 `soul_id` + 프롬프트로 외형만 조정. 사진이 5장 미만일 때만 #37의 `gpt_image_2` 턴어라운드로 대체.
+> **시행착오 #40 — `scenario.md`의 `[duration]`은 편집 길이일 뿐, 생성 길이는 항상 고정값:** `## Cut NN` 마크다운에 적는 `[duration]`(예: 1.0s)은 **최종 조립 시 그 컷을 몇 초로 쓸지**를 가리키는 편집 타임라인 값이다 — 실제 영상 생성(GATE 12 `--duration`)을 그 값으로 바꾸지 않는다. `[duration]`이 고정 생성 길이보다 짧으면 일단 고정 길이 그대로 생성한 뒤 GATE 16 최종 조립에서 필요한 길이만큼 잘라 쓴다. GATE 8에서는 `[duration]` 합계가 목표 광고 길이(보통 30s)와 맞는지만 검증하고, GATE 12의 모델 호출 파라미터에는 영향을 주지 않는다. **연혁:** 2026-06-21 Seedance 2.0 4초→5초 상향 → **2026-06-22 기본 모델을 Seedance 2.0 → Minimax Hailuo 2.3(Unlimited·768p)로 전환하며 생성 길이도 6초로 상향**(크레딧 절약 목적, 백업 Seedance 2.0 사용 시에는 5초로 되돌린다).
 
 ### E-2. 인물 컷 문법 — "보도사진" 회피의 핵심
 
@@ -153,8 +155,8 @@ VERSION  = "v2026-06-03_v3"
 
 ### E-6. 다음 프로젝트 스타트 체크리스트 (이대로 시작)
 
-1. 얼굴 ref 크롭 → **의상 시트·장소 시트** 생성(균일조명) → 시트 ref + **LOOK OVERRIDE 재조명** 조합 확정.
-2. 개별 컷=nano_banana_2로 통일(인물·제품 불문, soul_2 미사용 — #38), 모든 호출에 얼굴·제품 레퍼런스 항상 첨부 / 무인물=NB Pro 또는 seedream-4 / 한글 텍스트=NB Pro+글리프 명시+3테이크+병렬 QA / 멀티패널 캐릭터 턴어라운드 시트=gpt_image_2(#37 — soul_2는 enhance_prompt 강제로 멀티패널을 단일컷으로 뭉갬).
+1. 사진 5장 이상이면 Soul Character 학습(#39, `assets/character_refs/{name}/` + `projects/{project}/{version}/ref/` 포인터, 동일 인물 재사용)으로 1차 얼굴 ref 확보 → 부족하면 gpt_image_2 턴어라운드(#37)로 대체 → **의상 시트·장소 시트** 생성(균일조명) → 시트 ref + **LOOK OVERRIDE 재조명** 조합 확정.
+2. 개별 컷=nano_banana_2로 통일(인물·제품 불문, soul_2는 1차 레퍼런스 스틸 생성에만 — #38·#39), 모든 호출에 얼굴·제품 레퍼런스 항상 첨부 / 무인물=NB Pro 또는 seedream-4 / 한글 텍스트=NB Pro+글리프 명시+3테이크+병렬 QA.
 3. 매니페스트(json: _blocks+컷별 scene) → 채널별 백그라운드 에이전트 일괄 제출 → 라이브 픽커.
 4. 잠금 룩: 노을+블라인드·로우키·백라이트 림·더치/로우/하이·데마이·신용카드 스케일·정면/아이레벨 0.
 5. 브랜드 자산: 순흑+엣지검증 → 루마키(풀프레임) → 그린 1920×1080 → HF2 Kling/Seedance 모션.
@@ -314,4 +316,5 @@ Relentless high-speed forward FPV/macro push, continuously accelerating, heavy m
 - **리뷰 콘솔(review console)**: 생성물(이미지/영상)을 카드 그리드로 띄워 선택→수정요청→Enter로 즉시 재생성하는 자동 팝업 HTML(GATE 17).
 - **브리지 큐(bridge queue)**: 샌드박스된 HTML이 MCP를 직접 못 부르므로, 로컬 서버가 요청을 `revision_queue.jsonl`에 적고 에이전트가 그걸 읽어 처리하는 중계 방식.
 - **nano_banana_2**: Higgsfield의 고품질 이미지 모델(4K·텍스트 강점). 인물 ref 컷 기본 모델. (대안 `gpt_image_2`)
+- **minimax_hailuo** (`--model minimax-2.3` = "Hailuo 2.3"): Higgsfield의 영상 생성 모델(job id `minimax_hailuo`, 변형 선택은 `--model` 플래그로 `minimax`/`minimax-fast`/`minimax-2.3`/`minimax-2.3-fast` 중 선택, 기본 `minimax-2.3`). `--aspect_ratio`/`--start-image` 없음 — 입력은 `--image`, 출력 비율은 입력 이미지를 따름. `--duration`은 6 또는 10만 허용(기본 6), `--resolution`은 512/768/1080 중 선택("p" 접미사 없음, 기본 768). 2026-06-22부터 영상 기본값(6초·768, 크레딧 절약). (백업 `seedance_2_0`)
 - **declined_preset_id**: Higgsfield가 프리셋 추천으로 생성을 막을 때, 같은 params에 추천된 preset id를 넣어 리터럴 생성을 강제하는 파라미터.
