@@ -52,7 +52,7 @@
 - **모델 파라미터 사전 확정:** 생성 전 Higgsfield `models_explore(action='get', model_id=...)` / Magnific `images_models_show`로 resolution 라벨·reference 입력 형식 확인.
 
 ### C-2. 영상화 — 재개 가능(resumable) 워커 (대량·장시간 안전)
-- 단일 에이전트로 30컷을 한 번에 도는 건 **턴 한도로 깨진다**. → **작업상태 파일**(`videos/kling/_jobs.json`, cut별 `pending`/`running`(+`job_id`)/`done`)을 두고 라운드 반복:
+- 단일 에이전트로 30컷을 한 번에 도는 건 **턴 한도로 깨진다**. → **작업상태 파일**(`videos/seedance/_jobs.json`, cut별 `pending`/`running`(+`job_id`)/`done`)을 두고 라운드 반복:
   1. `running` 잡을 `job_status(sync:true)`로 reap → 완료분 즉시 rawUrl 다운로드 → `done`, **매 변경마다 `_jobs.json` 저장**.
   2. `running < 8`인 동안 `pending` 컷을 업로드 + `generate_video` 제출 → `job_id` 기록(`running`).
   3. 전부 `done`이 아니면 ~20s 후 반복. 라운드/예산 한도면 상태 저장 후 종료 → **메인이 재호출해 이어감**(진행분 보존).

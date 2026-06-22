@@ -44,9 +44,9 @@
 > **시행착오 #17 — `fetch failed`:** 노드 fetch 일시 실패(네트워크/게이트웨이). 특정 컷에서 1~3회 날 수 있음 → 재시도.
 > **media_id TTL:** 업로드 후 약 15분 내 제출. 만료 시 잡이 조용히 실패 → 재업로드 후 재제출.
 
-**산출물:** `videos/kling/halo_cNN.mp4` 30개 + 한 페이지 영상 리뷰 HTML(`<video autoplay muted loop>`).
+**산출물:** `videos/seedance/halo_cNN.mp4` 30개 + 한 페이지 영상 리뷰 HTML(`<video autoplay muted loop>`).
 
-> **→ 일괄 영상화 + 리뷰:** 확정 스토리보드를 **"전체 영상으로 돌리기"** 한 방으로 배치 생성하고, 끝나면 **GATE 17 영상 리뷰 콘솔**을 자동 팝업해 컷별로 초수·화질을 고르고 수정요청을 Enter로 보내 Kling 3.0 Turbo 재생성을 건다.
+> **→ 일괄 영상화 + 리뷰:** 확정 스토리보드를 **"전체 영상으로 돌리기"** 한 방으로 배치 생성하고, 끝나면 **GATE 17 영상 리뷰 콘솔**을 자동 팝업해 컷별로 초수·화질을 고르고 수정요청을 Enter로 보내 Seedance 2.0(Mini→백업1 Fast→백업2 standard) 재생성을 건다.
 
 ---
 
