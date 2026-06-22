@@ -6,20 +6,20 @@
 
 ---
 
-## GATE 12 — 영상화 (Minimax Hailuo 2.3, 기본 · Higgsfield CLI/MCP · Magnific — 백업: Seedance 2.0)
+## GATE 12 — 영상화 (Seedance 2.0 "Mini", 기본 · Higgsfield CLI/MCP · Magnific — 백업1: Seedance 2.0 Fast · 최종 백업: Seedance 2.0 standard)
 
-**왜:** 정지 스토리보드를 컷당 6초 움직이는 클립으로. "모든 영상에 다이내믹 무브먼트"가 들어가야 영상다워진다.
+**왜:** 정지 스토리보드를 컷당 4초 움직이는 클립으로. "모든 영상에 다이내믹 무브먼트"가 들어가야 영상다워진다.
 
 ### Q12-1. 설정 (4종 + 승인)
 | 항목 | 기본 |
 |---|---|
-| MODEL | CLI/Higgsfield MCP `minimax_hailuo`(기본, `--model minimax-2.3`) 또는 Magnific `video_generate`(`video_models_list`로 모델 확인) — 백업: `seedance_2_0` |
-| 해상도 | `768`(`--resolution` 값은 "p" 접미사 없는 숫자 — 512/768/1080 중 선택, 기본 768) |
-| 비율 | (전용 플래그 없음 — 입력 `--image`의 비율을 그대로 따름. 16:9 키프레임 입력 시 16:9 출력) |
-| 길이 | **6초 고정**(`--duration`은 `6` 또는 `10`만 허용, 기본 6 — 다른 정수값 불가) — `scenario.md`의 컷별 `[duration]`이 더 짧으면 6초로 그대로 생성한 뒤 GATE 16 최종 조립에서 트림 |
-| 오디오 | Hailuo 2.3은 `generate_audio` 파라미터 없음 → 무음(영상 프롬프트 SFX 지시로 디제틱 사운드) |
+| MODEL | CLI/Higgsfield MCP `seedance_2_0`("Seedance 2.0 Mini" 프리셋, 기본) 또는 Magnific `video_generate`(`video_models_list`로 모델 확인) — Mini가 카탈로그에 없으면 백업1: `seedance_2_0` + `mode:'fast'`("Seedance 2.0 Fast") → 그래도 안 되면 백업2(최종): `seedance_2_0` + `mode:'std'`("Seedance 2.0 standard"). Kling 3.0 Turbo는 백업에서 제외 |
+| 해상도 | `720p`(`--resolution` 옵션은 `480p`/`720p`/`1080p` 허용, 모델 기본값도 720p — 이 플레이북은 720p로 고정) |
+| 비율 | `--aspect_ratio`로 `16:9`/`9:16`/`1:1`/`4:3`/`3:4`/`21:9`/`auto` 중 선택(기본 16:9). `medias` role은 `image`/`start_image`/`end_image`/`video`/`audio` |
+| 길이 | **4초 고정**(`--duration`은 4~15초 범위 허용, 모델 기본값 5 — 이 플레이북은 항상 4) — `scenario.md`의 컷별 `[duration]`이 더 짧으면 4초로 그대로 생성한 뒤 GATE 16 최종 조립에서 트림 |
+| 오디오 | `generate_audio`가 **기본 true** → 규칙0[B](No-BGM) 위반을 막기 위해 매 호출 `generate_audio:false`로 명시(디제틱 SFX는 영상 프롬프트 SFX 필드 지시로만) |
 
-- **비용 미리보기**: `generate_video(get_cost:true)` — 모델·해상도·길이 조합에 따라 단가가 다르므로 **반드시 `get_cost:true`로 실제 견적 확인 후** `balance`로 잔액 확인 후 승인(추정치로 단정하지 않는다). 정확한 파라미터는 호출 전 `models_explore(action='get', model_id='minimax_hailuo')` 또는 CLI `higgsfield model get minimax_hailuo --json`으로 확정(`higgsfield-ai/cli` 공식 `MODELS.md` 기준, 2026-06-22 확인 — `--aspect_ratio`/`--start-image` 없음, 입력은 `--image`). Unlimited 토글의 정확한 파라미터명은 별도 확인 필요(공식 CLI 스키마에 노출되지 않음 — Higgsfield MCP/앱 쪽 기능일 가능성).
+- **비용 미리보기**: `generate_video(get_cost:true)` — 모델·해상도·길이 조합에 따라 단가가 다르므로 **반드시 `get_cost:true`로 실제 견적 확인 후** `balance`로 잔액 확인 후 승인(추정치로 단정하지 않는다). 정확한 파라미터는 호출 전 `models_explore(action='get', model_id='seedance_2_0')` 또는 CLI `higgsfield model get seedance_2_0 --json`으로 확정(2026-06-22 확인). ⚠️ "Seedance 2.0 Mini"는 Higgsfield 웹 UI에 같은 날 신규(EXCLUSIVE) 노출된 모델로, CLI/MCP 카탈로그에는 아직 별도 model_id로 안 잡힌다 — 호출 전 `models_explore(action='search', query='seedance 2.0 mini')`로 재확인하고, 없으면 위 `seedance_2_0` 파라미터로 호출한다.
 
 ### Q12-2. 컷별 카메라 무브먼트 (상황에 맞게 배정 — TV CF 문법)
 컷마다 **하나**를 명시: 핸드헬드 / 달리인·푸시인 / 아크·오빗 / 크레인업·풀업 / **로봇암 다이내믹 스윕** / 크래시줌 / 틸트업 / 오버숄더 망원. 정지 컷이 아니라 **"움직이는 샷의 키프레임"**으로 프롬프트를 쓴다(중간동작·모션블러). 앞 컷→뒤 컷 매치컷/트랜지션 연결고리도 프롬프트에 한 줄.
@@ -30,12 +30,12 @@
 
 ### 실행 절차 (검증된 순서)
 1. **업로드**: `media_upload(files[])`로 30컷 presigned URL 발급 → 각 PNG를 `urllib PUT`(또는 curl) → `media_confirm(media_ids[])`. (이미지 ≤1792×1008·4MB 확인. magnific 2K 업스케일본은 1080p jpg q92로 다운스케일 후 업로드.)
-2. **생성**: 컷마다 `generate_video({model:'minimax_hailuo', params:{model:'minimax-2.3', duration:6, resolution:'768'}, prompt(VIDEO_PROMPT_FORMAT 7필드, 700자 이내), medias:[{role:"image", value:<media_id>}]})` → `job_id` 수집. (정확한 파라미터 중첩 구조는 호출 전 `models_explore(action='get', model_id='minimax_hailuo')`로 확정 — 위 형태는 CLI 플래그를 그대로 옮긴 추정이다.)
-3. **폴링·다운로드는 메인에서 하지 말고 백그라운드 에이전트에 위임** — 8-동시 한도를 지키며 완료분을 받는 대로 `videos/hailuo/{cut}.mp4`로 저장.
+2. **생성**: 컷마다 `generate_video({model:'seedance_2_0', params:{resolution:'720p', generate_audio:false}, duration:4, aspect_ratio:'16:9', prompt(VIDEO_PROMPT_FORMAT 7필드, 700자 이내), medias:[{role:"start_image", value:<media_id>}]})` → `job_id` 수집. (정확한 파라미터 중첩 구조는 호출 전 `models_explore(action='get', model_id='seedance_2_0')`로 확정 — 위 형태는 CLI 플래그를 그대로 옮긴 추정이다.)
+3. **폴링·다운로드는 메인에서 하지 말고 백그라운드 에이전트에 위임** — 8-동시 한도를 지키며 완료분을 받는 대로 `videos/seedance/{cut}.mp4`로 저장.
 
-> **Higgsfield CLI로 영상화할 때 (업로드·폴링 자동):** 컷마다 `higgsfield generate create minimax_hailuo --model minimax-2.3 --prompt "<규칙0[B] No-BGM + VIDEO_PROMPT_FORMAT 7필드(700자 이내)>" --image <컷이미지_경로_또는_jobID> --duration 6 --resolution 768 --wait`. `--image`가 업로드를 자동 처리(media TTL 신경 안 씀), `--wait`가 폴링까지 흡수해 Claude 토큰 0. 8-동시 한도는 셸에서 동시 실행 수로 조절. 비용 견적은 `higgsfield generate cost minimax_hailuo …`. 결과 URL은 `videos/hailuo/{cut}.mp4`로 다운로드.
+> **Higgsfield CLI로 영상화할 때 (업로드·폴링 자동):** 컷마다 `higgsfield generate create seedance_2_0 --prompt "<규칙0[B] No-BGM + VIDEO_PROMPT_FORMAT 7필드(700자 이내)>" --image <컷이미지_경로_또는_jobID> --duration 4 --resolution 720p --generate_audio false --wait`. `--image`가 업로드를 자동 처리(media TTL 신경 안 씀), `--wait`가 폴링까지 흡수해 Claude 토큰 0. 8-동시 한도는 셸에서 동시 실행 수로 조절. 비용 견적은 `higgsfield generate cost seedance_2_0 …`. 결과 URL은 `videos/seedance/{cut}.mp4`로 다운로드.
 
-> **백업 엔진 (Seedance 2.0):** Hailuo 2.3 연결이 안 되거나 결과가 만족스럽지 않으면 동일 구조로 `seedance_2_0`(해상도 1080p, duration 5)을 대신 호출한다.
+> **백업 체인 (전부 `seedance_2_0`, `mode`만 다름):** "Seedance 2.0 Mini"가 카탈로그에 안 잡히거나 결과가 만족스럽지 않으면 → **백업1** 동일 구조에 `mode:'fast'`("Seedance 2.0 Fast", CLI `--mode fast`)를 추가해 재호출 → 그래도 안 되면 → **백업2(최종)** `mode:'std'`("Seedance 2.0 standard", CLI `--mode std`, 모델 기본 모드와 동일)로 재호출. 해상도·길이·`generate_audio:false`는 세 단계 모두 동일(720p·4초·무음). Kling 3.0 Turbo는 더 이상 이 백업 체인에 포함하지 않는다.
 
 ### 에러 핸들링 (실제로 겪음)
 > **시행착오 #14 — 동시 8개 한도:** 플랜상 **max 8 concurrent jobs**. 9번째는 `Rate limit reached`. → 8개씩 큐로 돌리며 완료될 때마다 다음 제출. 이 반복은 백그라운드 에이전트가 관리.
@@ -44,9 +44,9 @@
 > **시행착오 #17 — `fetch failed`:** 노드 fetch 일시 실패(네트워크/게이트웨이). 특정 컷에서 1~3회 날 수 있음 → 재시도.
 > **media_id TTL:** 업로드 후 약 15분 내 제출. 만료 시 잡이 조용히 실패 → 재업로드 후 재제출.
 
-**산출물:** `videos/hailuo/halo_cNN.mp4` 30개 + 한 페이지 영상 리뷰 HTML(`<video autoplay muted loop>`).
+**산출물:** `videos/kling/halo_cNN.mp4` 30개 + 한 페이지 영상 리뷰 HTML(`<video autoplay muted loop>`).
 
-> **→ 일괄 영상화 + 리뷰:** 확정 스토리보드를 **"전체 영상으로 돌리기"** 한 방으로 배치 생성하고, 끝나면 **GATE 17 영상 리뷰 콘솔**을 자동 팝업해 컷별로 초수·화질을 고르고 수정요청을 Enter로 보내 Hailuo 2.3 재생성을 건다.
+> **→ 일괄 영상화 + 리뷰:** 확정 스토리보드를 **"전체 영상으로 돌리기"** 한 방으로 배치 생성하고, 끝나면 **GATE 17 영상 리뷰 콘솔**을 자동 팝업해 컷별로 초수·화질을 고르고 수정요청을 Enter로 보내 Kling 3.0 Turbo 재생성을 건다.
 
 ---
 
@@ -164,7 +164,7 @@
 ### 17-0. 동작 요약 (사용자 입장)
 1. 이미지를 다 뽑으면 **리뷰 콘솔 HTML이 자동으로 팝업**(브라우저)된다.
 2. 맘에 안 드는 컷을 **클릭해 선택** → 그 컷 번호 칸에 **수정 요청을 한글로 입력** → **Enter**.
-3. 입력 즉시 **생성 엔진(Higgsfield CLI/MCP 또는 Magnific)이 그 컷만 재생성**(이미지=nano_banana_2/gpt_image_2 또는 Magnific `images_generate`, 영상=minimax_hailuo(백업 seedance_2_0) 또는 Magnific `video_generate`). 카드는 '처리중 → 완료(새 썸네일)'로 자동 갱신.
+3. 입력 즉시 **생성 엔진(Higgsfield CLI/MCP 또는 Magnific)이 그 컷만 재생성**(이미지=nano_banana_2/gpt_image_2 또는 Magnific `images_generate`, 영상=seedance_2_0 "Mini"(백업1 `mode:'fast'`→백업2·최종 `mode:'std'`) 또는 Magnific `video_generate`). 카드는 '처리중 → 완료(새 썸네일)'로 자동 갱신.
 4. **모델·화질**(이미지) / **초수·화질**(영상)을 **매 수정마다 카드에서 선택**.
 5. 콘솔 상단의 **"전체 영상으로 돌리기"** 버튼으로 확정 스토리보드를 **한 번에 영상화** → 끝나면 **영상 미리보기 콘솔**이 같은 디자인으로 팝업.
 
@@ -183,7 +183,7 @@
 [에이전트 워처  (백그라운드 Agent 위임)]
    │ (3) 큐 폴링 → 항목별 처리 (동시 8 한도 준수)
    │     · 이미지: media_upload(원본 컷) → generate_image(model, prompt=수정요청, medias:[{role:'image',value:media_id}], resolution=화질)
-   │     · 영상  : media_upload(원본 컷) → generate_video(minimax_hailuo, params:{model:'minimax-2.3'}, prompt=수정요청, duration=초수, resolution=화질, medias:[{role:'image',value:media_id}])
+   │     · 영상  : media_upload(원본 컷) → generate_video(seedance_2_0, prompt=수정요청, duration=초수, resolution=화질, generate_audio:false, medias:[{role:'start_image',value:media_id}])
    │ (4) 결과를 새 버전 폴더에 저장 → results.json 갱신
    ▼
 [HTML] (5) results.json 을 4초마다 폴링 → 해당 카드 썸네일·상태칩 자동 교체
@@ -218,9 +218,9 @@ python review_console/start.py --media-dir <프로젝트 이미지/영상 폴더
 - **수정 패널**:
   | 컨트롤 | 옵션 |
   |---|---|
-  | 초수 (드롭다운) | 4 / **6** / 8s |
-  | 화질 (드롭다운) | 480p / 720p / **768**(Hailuo, "p" 없는 표기) / 1080p |
-  | 수정 요청 (입력창) | 한글 자유 입력, **Enter=제출** → Hailuo 2.3 재생성(백업 Seedance 2.0) |
+  | 초수 (드롭다운) | **4**(Seedance 2.0 Mini) / 8 / 12s |
+  | 화질 (드롭다운) | **720p**(Seedance 2.0 Mini) / 1080p |
+  | 수정 요청 (입력창) | 한글 자유 입력, **Enter=제출** → Seedance 2.0 Mini 재생성(백업1 Fast, 최종 백업 standard) |
   | 상태칩 | 대기 → 처리중 → 완료 |
 - **상단바**: **[전체 스토리보드 → 영상 일괄 생성]**(배치, 동시 8 큐), 기본 초수·화질.
 
@@ -262,8 +262,8 @@ input.addEventListener('keydown', e => {
 revision_queue.jsonl 의 새 줄을 읽어 항목별로:
   이미지 → media_upload(원본 PNG) → generate_image({model, prompt:request, resolution:quality,
             medias:[{role:'image', value:media_id}]}) → 새 버전 폴더 저장
-  영상   → media_upload(원본 컷) → generate_video({model:'minimax_hailuo', params:{model:'minimax-2.3'}, prompt:request,
-            duration, resolution:quality, medias:[{role:'image', value:media_id}]}) → 저장
+  영상   → media_upload(원본 컷) → generate_video({model:'seedance_2_0', prompt:request,
+            duration, resolution:quality, generate_audio:false, medias:[{role:'start_image', value:media_id}]}) → 저장
   결과 경로를 results.json[cut] 에 기록(HTML이 폴링해 갱신).
 처리 실패(fetch failed/preset/NSFW)는 GATE 12의 핸들링 그대로 재시도.
 ```
@@ -278,4 +278,4 @@ revision_queue.jsonl 의 새 줄을 읽어 항목별로:
 - `worker.py` — 큐 워처 / `webroot/` — 콘솔 UI / `requirements.txt` — Pillow 등.
 - 런타임 파일(자동 생성): `runtime/revision_queue.jsonl`(요청 큐), `runtime/results.json`(상태·최신경로) — `review_console/runtime/` 폴더에 위치.
 
-> **주의:** Higgsfield 이미지 모델(`nano_banana_2`/`gpt_image_2`)의 정확한 파라미터(resolution 라벨·medias role)는 호출 전 `models_explore(action='get', model_id=...)`로 확정한다. 영상은 `minimax_hailuo`(`--model minimax-2.3`, 백업 `seedance_2_0`). 동시 8 한도·폴링 위임은 GATE 12와 동일.
+> **주의:** Higgsfield 이미지 모델(`nano_banana_2`/`gpt_image_2`)의 정확한 파라미터(resolution 라벨·medias role)는 호출 전 `models_explore(action='get', model_id=...)`로 확정한다. 영상은 `seedance_2_0`("Mini", 백업1 `mode:'fast'` → 백업2·최종 `mode:'std'`). 동시 8 한도·폴링 위임은 GATE 12와 동일.

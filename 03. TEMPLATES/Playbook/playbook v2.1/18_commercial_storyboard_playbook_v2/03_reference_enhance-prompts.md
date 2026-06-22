@@ -98,50 +98,50 @@ Write a real moving-shot keyframe (mid-action + motion blur), and add a match-cu
 
 ---
 
-## 2b) VIDEO_PROMPT_FORMAT — 영상 프롬프트 표준 필드 순서 (Hailuo 2.3 기본·Seedance 2.0 백업 공통, 700자 이내)
+## 2b) VIDEO_PROMPT_FORMAT — 영상 프롬프트 표준 필드 순서 (Seedance 2.0 Mini 기본·Fast/standard 백업 공통, 700자 이내)
 
-> 모든 `[video prompt]`(scenario.md) / GATE 12 실제 호출 프롬프트는 규칙0[B](No-BGM 한 줄, 최상단 고정) 다음에 아래 7개 필드를 **이 순서 그대로** 채워 한 문단으로 합친다. **전체 길이는 공백 포함 700자를 넘지 않는다** — 넘으면 SHOT GROUP 세부 비트 묘사를 줄여서 맞춘다(규칙0[B]·RUNTIME·CAMERA는 줄이지 않음). CAMERA에 렌즈/아나모픽 비율을 한 줄로 합치고(LENS·LOOK 별도 줄 없음, 디테일은 `CAMERA_LOOK` 공통 블록 참조), SHOT은 6초 러닝타임 내부를 **BEGINS WITH → ACTION → TRANSITION → ENDS WITH** 타임스탬프 비트로 쪼개 미니 시퀀스로 적는다. (백업 Seedance 2.0으로 생성할 때는 RUNTIME/SHOT GROUP 합을 5초로 다시 맞춘다.)
+> 모든 `[video prompt]`(scenario.md) / GATE 12 실제 호출 프롬프트는 규칙0[B](No-BGM 한 줄, 최상단 고정) 다음에 아래 7개 필드를 **이 순서 그대로** 채워 한 문단으로 합친다. **전체 길이는 공백 포함 700자를 넘지 않는다** — 넘으면 SHOT GROUP 세부 비트 묘사를 줄여서 맞춘다(규칙0[B]·RUNTIME·CAMERA는 줄이지 않음). CAMERA에 렌즈/아나모픽 비율을 한 줄로 합치고(LENS·LOOK 별도 줄 없음, 디테일은 `CAMERA_LOOK` 공통 블록 참조), SHOT은 4초 러닝타임 내부를 **BEGINS WITH → ACTION → TRANSITION → ENDS WITH** 타임스탬프 비트로 쪼개 미니 시퀀스로 적는다. (백업1 Fast·백업2 standard 모두 동일 `seedance_2_0`이라 4초 SHOT GROUP 그대로 — `mode` 파라미터만 바뀐다.)
 
 ```text
 [규칙0[B] No-BGM/SFX-only 한 줄 — 항상 최상단, 고정]
-RUNTIME: 6 seconds.
+RUNTIME: 4 seconds.
 CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1.
 TIME: [장면 시간대 — 예: deep midnight 03:14 AM, dusk, overcast noon]
 
 CHARACTER: [이름 — 머리·눈·입술·의상 등 식별 키워드 한 줄, 오브제 컷이면 생략]
 
-SHOT GROUP — 6 SECOND SEQUENCE:
+SHOT GROUP — 4 SECOND SEQUENCE:
 BEGINS WITH (0:00-0:01): [시작 동작]
-ACTION (0:01-0:04): [핵심 동작]
-TRANSITION (0:04-0:05): [전환 동작]
-ENDS WITH (0:05-0:06): [마무리 동작/매치컷 아웃포인트]
+ACTION (0:01-0:02): [핵심 동작]
+TRANSITION (0:02-0:03): [전환 동작]
+ENDS WITH (0:03-0:04): [마무리 동작/매치컷 아웃포인트]
 
 LIGHT: [조명 한 줄 — 백라이트/네거티브 필 등]
 SFX: [디제틱 효과음 — 예: tar-paper footsteps, *KNOCK-KNOCK* signature]
 ```
 
-**예시 (약 620자, 700자 이내):**
+**예시 (약 550자, 700자 이내):**
 ```text
-RUNTIME: 6 seconds.
+RUNTIME: 4 seconds.
 CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1.
 TIME: deep midnight 03:14 AM.
 
 CHARACTER: JION — auburn medium wavy bob,
 blue-grey eyes, vivid red lips, black blazer.
 
-SHOT GROUP — 6 SECOND SEQUENCE:
+SHOT GROUP — 4 SECOND SEQUENCE:
 BEGINS WITH (0:00-0:01): JION steps onto rooftop.
-ACTION (0:01-0:04): She walks toward central skylight
+ACTION (0:01-0:02): She walks toward central skylight
 with tactical purpose. Boots on tar-paper roof.
-TRANSITION (0:04-0:05): She crouches at skylight edge.
-ENDS WITH (0:05-0:06): Macro on her finger as she
+TRANSITION (0:02-0:03): She crouches at skylight edge.
+ENDS WITH (0:03-0:04): Macro on her finger as she
 KNOCKS twice — *KNOCK-KNOCK*.
 
 LIGHT: deep midnight + red glow from skylight.
 SFX: tar-paper footsteps, *KNOCK-KNOCK* signature.
 ```
 
-> RUNTIME은 #40(2026-06-22부터 기본 6초 고정, Hailuo 2.3) 그대로 — 절대 다른 값으로 바꾸지 않는다. SHOT GROUP의 4비트(0:00-0:01 / 0:01-0:04 / 0:04-0:05 / 0:05-0:06) 합은 항상 6초여야 한다. 700자 카운트는 규칙0[B] 줄을 포함한 전체 합산. (백업 Seedance 2.0 사용 시에는 5초·구버전 4비트 분배로 되돌린다.)
+> RUNTIME은 2026-06-22부터 기본 4초 고정(Seedance 2.0 Mini) — 절대 다른 값으로 바꾸지 않는다. SHOT GROUP의 4비트(0:00-0:01 / 0:01-0:02 / 0:02-0:03 / 0:03-0:04) 합은 항상 4초여야 한다. 700자 카운트는 규칙0[B] 줄을 포함한 전체 합산. (백업1 Fast·백업2(최종) standard 모두 같은 `seedance_2_0`이라 4초 그대로 — Kling 3.0 Turbo는 백업 체인에서 제외.)
 
 > **`VID_ENHANCE`/`VID_ENHANCE_SFX`/`VID_ENHANCE_OBJECT`와의 관계(충돌 방지):** 이 세 상수는 그 자체로 400~700자 분량의 별도 텍스트 블록이라, 700자 캡과 함께 **문자 그대로 이어붙이면 즉시 캡을 초과**한다. 영상 프롬프트에서는 이 상수들을 **요구사항 체크리스트로만** 쓴다 — "다이내믹 무브먼트 필수·매치컷 연결·locked-off 금지(크로마키 예외)" 같은 지시는 위 SHOT GROUP의 각 비트(BEGINS WITH/ACTION/TRANSITION/ENDS WITH)에 직접 녹여 쓰고, "SFX-only" 지시는 규칙0[B](항상 최상단)로 이미 충족되므로 SFX 필드에는 실제 효과음 내용만 적는다. **세 상수의 텍스트 블록을 통째로 추가 결합하지 않는다.** (이미지 프롬프트의 `IMG_ENHANCE`/`IMG_ENHANCE_PERSON`/`IMG_ENHANCE_OBJECT`는 700자 캡이 없으므로 그대로 문자 그대로 결합 — 이 예외는 영상에만 적용.)
 
@@ -182,7 +182,7 @@ Frame as a keyframe primed for dynamic fast video motion with a built-in match-c
 
 ```text
 AUDIO (TOP PRIORITY): diegetic sound effects ONLY — absolutely NO background music, NO BGM, NO musical score, NO singing. Only real SFX (rain, footsteps, neon buzz, whoosh, impact, electric hum).
-MOTION: every clip carries deliberate DYNAMIC camera movement chosen per cut + a MATCH-CUT link to the adjacent cut. NO static locked-off shots. Relentless fast TV-CF tempo in the @cheonghhhhhhhhh reference grammar; CAMERA_LOOK 공통 블록(ARRI ALEXA Mini LF + ZEISS Master Prime, low-saturation filmic look) 유지, magenta/cyan neon practicals, motion blur, match-cut continuity carrying motion across cuts. NEGATIVE: NEVER Chinese-aesthetic, NEVER over-saturated, NEVER cartoonish, NEVER K-pop MV gloss.
+MOTION: every clip carries deliberate DYNAMIC camera movement chosen per cut + a MATCH-CUT link to the adjacent cut. NO static locked-off shots. Relentless fast TV-CF tempo; CAMERA_LOOK 공통 블록(ARRI ALEXA Mini LF + ZEISS Master Prime, low-saturation filmic look) 유지, magenta/cyan neon practicals, motion blur, match-cut continuity carrying motion across cuts. NEGATIVE: NEVER Chinese-aesthetic, NEVER over-saturated, NEVER cartoonish, NEVER K-pop MV gloss.
 ```
 
 ---
@@ -207,6 +207,7 @@ Keep the start image's CAMERA_LOOK 공통 블록(ARRI ALEXA Mini LF + ZEISS Mast
 > **언제 쓰나:** 주인공 얼굴 ref가 아직 없고, 사용자가 실사 사진 5~20장을 제공할 때. 이걸로 재사용 가능한 Soul Character(identity model, `soul_id`)를 학습해 이후 모든 개별 컷(`nano_banana_2`)의 identity-lock 기준 이미지를 뽑는 데 쓴다. **이제 기본값** — 사진이 5장 이상 있으면 아래 7b의 `gpt_image_2` 턴어라운드 시트보다 이쪽을 먼저 쓴다.
 > **모델 제약(중요):** 학습된 `soul_id`는 **`soul_2`(Soul V2)·`soul_cinema_studio`로만** 생성 가능하다. 개별 스토리보드 컷 생성은 여전히 `nano_banana_2`로 통일(부록 E #38 — soul_2 미사용 정책 그대로 유지). 즉 Soul 학습은 **1차 얼굴 레퍼런스 스틸(`ref_face.png`)을 만드는 용도로만** 쓰고, 그 결과 이미지를 이후 `nano_banana_2` 컷 생성에 medias로 첨부한다 — soul_id 자체를 컷 생성에 직접 쓰지 않는다.
 > **캐릭터 동결(재사용) 정책:** 같은 인물을 여러 프로젝트에서 쓸 때는 `soul_id`를 **한 번만 발급하고 재사용**한다 — 프로젝트마다 재학습하지 않는다. 외형(헤어·의상 등)이 달라져도 동일 인물이면 같은 `soul_id`를 그대로 쓰고 프롬프트로 외형만 바꾼다. 새 인물일 때만 새로 학습한다.
+> **규칙0[A]와의 관계:** 학습 결과로 뽑는 1차 레퍼런스 스틸(`ref_face_v1.png`)은 실제 광고 컷이 아니라 이후 컷들의 identity-lock 기준 이미지이므로, 정면·다양한 각도를 그대로 보여줘야 한다 — 규칙0[A]("정면·아이레벨 금지")는 **이 스틸 생성에는 적용하지 않는다**(7b `CHAR_TURNAROUND_SHEET`와 동일한 이유). 그 스틸을 기준으로 실제 광고 컷을 생성할 때는 규칙0[A]+IMG_ENHANCE_PERSON을 그대로 적용한다.
 
 ### 학습용 사진 체크리스트 (5장 이상, 진행 전 필수 확인)
 - **장수:** 최소 5장 (5~20장 범위 권장).

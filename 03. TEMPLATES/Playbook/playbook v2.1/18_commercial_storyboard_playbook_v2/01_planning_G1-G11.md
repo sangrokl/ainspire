@@ -211,17 +211,17 @@ BRIEF 승인 후 컷별 프롬프트는 아래 마크다운 구조로 한 컷씩
 [duration]: 1.0s
 [shot]: ECU eye reflection
 [first frame]: Extreme close-up on JUNE's eye, a tiny strawberry reflected in the iris, soft window light, shallow depth of field
-[video prompt]: RUNTIME: 6 seconds. / CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. / TIME: soft morning light. / CHARACTER: JUNE, same face as reference. / SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) eye in stillness / ACTION (0:01-0:04) blinks slowly, reflection shimmers / TRANSITION (0:04-0:05) pupil contracts / ENDS WITH (0:05-0:06) macro hold on strawberry reflection. / LIGHT: soft window backlight, gentle negative fill. / SFX: soft inhale, distant chime.
+[video prompt]: RUNTIME: 4 seconds. / CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. / TIME: soft morning light. / CHARACTER: JUNE, same face as reference. / SHOT GROUP — 4 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) eye in stillness / ACTION (0:01-0:02) blinks slowly, reflection shimmers / TRANSITION (0:02-0:03) pupil contracts / ENDS WITH (0:03-0:04) macro hold on strawberry reflection. / LIGHT: soft window backlight, gentle negative fill. / SFX: soft inhale, distant chime.
 [sound]: soft inhale, distant chime
 ```
 
 ### 필드 설명
 | 필드 | 내용 | 비고 |
 |---|---|---|
-| `[duration]` | **최종 편집상의 컷 길이**(초) — 컷마다 다르게 줄 수 있다(0.5~6s 등, 더 이상 전부 고정 아님) | **전체 합이 목표 광고 길이(보통 30s)와 맞는지 GATE 8에서 합계 검증.** ⚠️ 이는 GATE 16 최종 조립 시 트림 기준이며, Hailuo 2.3(기본) 실제 생성 길이와는 다르다 — **생성은 항상 6초 고정**(변경하지 않음), `[duration]`이 6초보다 짧으면 6초로 그대로 생성한 뒤 최종 조립에서 잘라낸다. |
+| `[duration]` | **최종 편집상의 컷 길이**(초) — 컷마다 다르게 줄 수 있다(0.5~5s 등, 더 이상 전부 고정 아님) | **전체 합이 목표 광고 길이(보통 30s)와 맞는지 GATE 8에서 합계 검증.** ⚠️ 이는 GATE 16 최종 조립 시 트림 기준이며, Seedance 2.0 Mini(기본) 실제 생성 길이와는 다르다 — **생성은 항상 4초 고정**(변경하지 않음), `[duration]`이 4초보다 짧으면 4초로 그대로 생성한 뒤 최종 조립에서 잘라낸다. |
 | `[shot]` | 샷 타입·앵글 한 줄 요약 (예: ECU eye reflection, OTS wide, dutch-angle macro) | GATE 6 비주얼 문법과 일치해야 함 |
 | `[first frame]` | 정지 첫 프레임(이미지) 생성 프롬프트의 장면 묘사 | G9a/G9b 호출 시 규칙0[A]+IMG_ENHANCE(또는 PERSON/OBJECT)가 자동으로 합쳐진다 — 여기엔 장면만 적는다 |
-| `[video prompt]` | 영상 생성 프롬프트(기본 Hailuo 2.3, 백업 Seedance 2.0) — `03_reference_enhance-prompts.md`의 `VIDEO_PROMPT_FORMAT` 필드 순서(RUNTIME→CAMERA→TIME→CHARACTER→SHOT GROUP[BEGINS WITH/ACTION/TRANSITION/ENDS WITH 타임스탬프 비트]→LIGHT→SFX)를 그대로 따른다 | GATE 12 호출 시 규칙0[B](No BGM·SFX only)가 맨 앞에 자동으로 합쳐진다. **전체 700자 이내**(공백 포함) — 넘으면 SHOT GROUP 비트 묘사부터 줄인다. SHOT GROUP 4비트 합은 항상 6초 |
+| `[video prompt]` | 영상 생성 프롬프트(기본 Seedance 2.0 Mini, 백업1 Seedance 2.0 Fast, 최종 백업 Seedance 2.0 standard) — `03_reference_enhance-prompts.md`의 `VIDEO_PROMPT_FORMAT` 필드 순서(RUNTIME→CAMERA→TIME→CHARACTER→SHOT GROUP[BEGINS WITH/ACTION/TRANSITION/ENDS WITH 타임스탬프 비트]→LIGHT→SFX)를 그대로 따른다 | GATE 12 호출 시 규칙0[B](No BGM·SFX only)가 맨 앞에 자동으로 합쳐진다. **전체 700자 이내**(공백 포함) — 넘으면 SHOT GROUP 비트 묘사부터 줄인다. SHOT GROUP 4비트 합은 항상 4초 |
 | `[sound]` | 효과음 디자인 | diegetic SFX만 — **BGM·내레이션 절대 금지**(규칙0[B], BGM은 GATE 13 별도) |
 
 ### 저장 위치·버전 규칙
@@ -232,7 +232,9 @@ BRIEF 승인 후 컷별 프롬프트는 아래 마크다운 구조로 한 컷씩
 
 ## GATE 8 — 생성 전 체크 (필수 4종 + 프리뷰)
 
-생성 호출 **직전** 반드시 표로 보여주고 OK 받는다:
+> **이 표는 개별 컷 생성(G9a-rev·G9b) 기본값이다.** G9a·G9a-final 프리뷰 시트는 별도 모델·해상도(`gpt_image_2`, 1K High → 2K High)를 쓴다 — 각 단계 표는 GATE 9의 해당 절을 따른다. 4단계 모두 호출 직전 그 단계의 표를 보여주고 승인받는다(절대 규칙 1).
+
+생성 호출 **직전** 반드시 표로 보여주고 OK 받는다 (개별 컷 생성 기준):
 
 | 항목 | 기본값 |
 |---|---|
@@ -269,7 +271,7 @@ BRIEF 승인 후 컷별 프롬프트는 아래 마크다운 구조로 한 컷씩
 |---|---|
 | 모델 | `gpt_image_2` |
 | 비율 | 16:9 (와이드) |
-| 해상도 | 1K · High quality |
+| 해상도 | 1K · `quality: "high"` 강제(기본값 low — 반드시 명시) |
 | 레이아웃 | 5행 × 6열 = 30프레임, 얇은 다크 보더 구분 |
 | 프레임 번호 | 각 프레임 좌상단 — 소형 검정 탭 + 흰 숫자 01~30 |
 
@@ -279,13 +281,14 @@ generate_image({
   model: "gpt_image_2",
   prompt: "Hollywood cinematic pre-visualisation storyboard sheet. Single page, 16:9 wide format. 5 rows × 6 columns = 30 sequential frames, each frame separated by a thin dark border. Each frame has a small solid-black tab at its top-left corner with a white two-digit frame number (01–30). High quality. The frames depict: [컷 01 장면 한 줄] … [컷 30 장면 한 줄]. " + 규칙0[A] + IMG_ENHANCE,
   resolution: "1k",
-  aspect_ratio: "16:9"
+  aspect_ratio: "16:9",
+  quality: "high"
 }) → preview/storyboard_sheet_v1.png
 
 # CLI 경로
 higgsfield generate create gpt_image_2 \
   --prompt "Hollywood cinematic pre-vis storyboard sheet. 16:9, 5×6 grid, 30 frames, black tab + white number 01–30 top-left each frame. [컷별 장면 요약] " \
-  --aspect_ratio 16:9 --resolution 1k --wait
+  --aspect_ratio 16:9 --resolution 1k --quality high --wait
 ```
 
 - 저장: `projects/{project}/{version}/preview/storyboard_sheet_v1.png`
@@ -339,7 +342,7 @@ higgsfield generate create nano_banana_2 \
 |---|---|
 | 모델 | `gpt_image_2` |
 | 비율 | 16:9 |
-| 해상도 | 2K · **High quality** |
+| 해상도 | 2K · `quality: "high"` 강제(기본값 low — 반드시 명시) |
 | 레이아웃 | 5행 × 6열, 번호 01~30 (G9a 동일 포맷) |
 
 ```
