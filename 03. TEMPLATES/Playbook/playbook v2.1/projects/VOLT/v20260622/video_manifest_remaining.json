@@ -1,0 +1,79 @@
+{
+  "model": "minimax_hailuo",
+  "model_variant": "minimax-2.3",
+  "duration": 6,
+  "resolution": "768",
+  "output_dir": "projects/VOLT/v20260622/videos/hailuo",
+  "cuts": [
+    {
+      "n": 17,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: late morning, warm amber. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) she pushes off the bench. ACTION (0:01-0:04) she rises to full height, shoulders rolling back. TRANSITION (0:04-0:05) her jaw sets with renewed focus. ENDS WITH (0:05-0:06) she takes a first powerful step, match-cut out. LIGHT: warm backlight haloing her rising silhouette, negative fill on her front. SFX: fabric rustle, deep breath.",
+      "image_path": "projects/VOLT/v20260622/images/cut_17.png"
+    },
+    {
+      "n": 18,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: late morning, amber turning gold. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) she launches into a sprint. ACTION (0:01-0:04) camera arcs around her driving stride. TRANSITION (0:04-0:05) the skyline brightens behind her. ENDS WITH (0:05-0:06) she pulls into a hard lean forward, match-cut out. LIGHT: warm-to-gold backlight wrap, negative fill on the trailing side. SFX: fast footfalls, rising city ambience.",
+      "image_path": "projects/VOLT/v20260622/images/cut_18.png"
+    },
+    {
+      "n": 19,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: race morning, bright warm gold. CHARACTER: RAE, race bib, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) static wide on the packed corral. ACTION (0:01-0:04) RAE crouches, tightening a lace amid the crowd. TRANSITION (0:04-0:05) she stands, scanning the course ahead. ENDS WITH (0:05-0:06) her eyes lock forward, match-cut out. LIGHT: hard golden backlight over the crowd, negative fill in the foreground. SFX: crowd murmur, distant air horn.",
+      "image_path": "projects/VOLT/v20260622/images/cut_19.png"
+    },
+    {
+      "n": 20,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: race morning, bright gold. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) crowd frozen at the line. ACTION (0:01-0:04) the surge breaks forward in unison. TRANSITION (0:04-0:05) crane-up rises above the moving mass. ENDS WITH (0:05-0:06) RAE's figure breaks free of the pack, match-cut out. LIGHT: hard golden top-light, negative fill in the runner shadows. SFX: thunder of footfalls, distant cheer.",
+      "image_path": "projects/VOLT/v20260622/images/cut_20.png"
+    },
+    {
+      "n": 21,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: midday, harsh gold. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) face tight with strain in dutch tilt. ACTION (0:01-0:04) telephoto push-in as her stride falters then steadies. TRANSITION (0:04-0:05) a sharp exhale through gritted teeth. ENDS WITH (0:05-0:06) her eyes flare with refusal to quit, match-cut out. LIGHT: hard gold rim-light, brutal negative fill on the shadow side. SFX: ragged gasp, pavement slap.",
+      "image_path": "projects/VOLT/v20260622/images/cut_21.png"
+    },
+    {
+      "n": 22,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: midday, harsh gold. CHARACTER: RAE, legs only, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) stride stutters on the incline. ACTION (0:01-0:04) blurred runners stream past on both sides. TRANSITION (0:04-0:05) her foot catches, nearly stumbling. ENDS WITH (0:05-0:06) she steadies and pushes on, match-cut out. LIGHT: hard gold backlight, deep negative fill under the incline. SFX: stumble scuff, passing footfalls.",
+      "image_path": "projects/VOLT/v20260622/images/cut_22.png"
+    },
+    {
+      "n": 23,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: midday, warm gold. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) a blurred hand extends the can into frame. ACTION (0:01-0:04) RAE's hand snatches it cleanly mid-stride. TRANSITION (0:04-0:05) she pulls it close without slowing. ENDS WITH (0:05-0:06) the can rises toward her mouth, match-cut out. LIGHT: hard gold rim on the exchange, negative fill between the hands. SFX: quick footfalls, can tap.",
+      "image_path": "projects/VOLT/v20260622/images/cut_23.png"
+    },
+    {
+      "n": 24,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: late afternoon, breaking gold light. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) can at her lips mid-stride. ACTION (0:01-0:04) she drinks, then her pace visibly quickens. TRANSITION (0:04-0:05) clouds part, gold light floods in. ENDS WITH (0:05-0:06) she surges forward with new strength, match-cut out. LIGHT: hard gold backlight breaking through, negative fill on the trailing edge. SFX: swallow, accelerating footfalls.",
+      "image_path": "projects/VOLT/v20260622/images/cut_24_v2.png"
+    },
+    {
+      "n": 25,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: late afternoon, golden hour. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) she draws level with another blurred runner. ACTION (0:01-0:04) she pushes ahead with a final burst. TRANSITION (0:04-0:05) the finish banner sharpens into focus ahead. ENDS WITH (0:05-0:06) she breaks clear, match-cut out. LIGHT: hard golden backlight, negative fill at her heels. SFX: hard exhale, crowd swelling.",
+      "image_path": "projects/VOLT/v20260622/images/cut_25.png"
+    },
+    {
+      "n": 26,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: golden hour. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) finish line banner looms ahead. ACTION (0:01-0:04) arc shot circles as she crosses, arms lifting. TRANSITION (0:04-0:05) golden flare blooms around her silhouette. ENDS WITH (0:05-0:06) she slows, arms still raised, match-cut out. LIGHT: massive golden backlight bloom, deep negative fill on her front. SFX: roaring crowd, finish-line bell.",
+      "image_path": "projects/VOLT/v20260622/images/cut_26_v2.png"
+    },
+    {
+      "n": 27,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: golden hour. CHARACTER: RAE, same identity as reference. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) face still catching breath. ACTION (0:01-0:04) a slow smile breaks through exhaustion. TRANSITION (0:04-0:05) her eyes well with emotion. ENDS WITH (0:05-0:06) she laughs softly, head tilting back, match-cut out. LIGHT: warm golden rim catching tears of joy, negative fill on the shadow side. SFX: breathless laugh, distant crowd.",
+      "image_path": "projects/VOLT/v20260622/images/cut_27.png"
+    },
+    {
+      "n": 28,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: golden hour. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) can rises into frame against the sky. ACTION (0:01-0:04) a slow orbit reveals the matte navy body and spark mark. TRANSITION (0:04-0:05) condensation droplets catch a flare of light. ENDS WITH (0:05-0:06) hold on the glinting can, match-cut out. LIGHT: massive golden backlight halation, negative fill on the can's near side. SFX: faint metallic resonance.",
+      "image_path": "projects/VOLT/v20260622/images/cut_28.png"
+    },
+    {
+      "n": 29,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: golden hour. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) mark sits in warm shadow. ACTION (0:01-0:04) light sweeps slowly across the embossed spark shape. TRANSITION (0:04-0:05) a sharp flare bursts off the edge. ENDS WITH (0:05-0:06) flare resolves to a clean still, match-cut out. LIGHT: hard golden rim flare, negative fill behind the mark. SFX: faint shimmer tone.",
+      "image_path": "projects/VOLT/v20260622/images/cut_29.png"
+    },
+    {
+      "n": 30,
+      "video_prompt": "No background music. NO BGM. NO score. SFX only. RUNTIME: 6 seconds. CAMERA: ARRI ALEXA Mini LF, ZEISS, anamorphic 2.39:1. TIME: studio dark, golden accent. SHOT GROUP — 6 SECOND SEQUENCE: BEGINS WITH (0:00-0:01) can fades up out of darkness. ACTION (0:01-0:04) slow push-in toward the centered can. TRANSITION (0:04-0:05) the spark mark glows brighter. ENDS WITH (0:05-0:06) hold clean on the can with open negative space, final out. LIGHT: single hard golden rim, deep negative fill, dark void background. SFX: low resonant hum fading to silence.",
+      "image_path": "projects/VOLT/v20260622/images/cut_30.png"
+    }
+  ]
+}
