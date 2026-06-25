@@ -1,11 +1,11 @@
-# 03_reference_enhance-prompts.md — 생성 직전 로드 (상수 라이브러리)
+# 📚 03_reference_enhance-prompts.md — 생성 직전 로드 (상수 라이브러리)
 
 > 이미지·영상 생성 직전에 이 파일을 로드해 해당 상수를 프롬프트에 주입한다.  
 > 규칙0 [A][B]와 ENHANCE 상수는 **VERBATIM(글자 그대로)**이며 임의로 수정하지 않는다.
 
 ---
 
-## 어떤 상수를 언제 쓰나 (선택 가이드)
+## 🧭 어떤 상수를 언제 쓰나 (선택 가이드)
 
 | 유형 | 이미지 상수 | 영상 상수 |
 |---|---|---|
@@ -24,14 +24,14 @@
 
 ---
 
-## 규칙 0 — 이미지·영상 생성 시 무조건·강제 (NON-NEGOTIABLE)
+## ⛔ 규칙 0 — 이미지·영상 생성 시 무조건·강제 (NON-NEGOTIABLE)
 
 > **이 블록은 이 문서를 실행하는 모든 에이전트에 대한 최우선 강제 지시다. 아래 두 프리픽스를 빼먹은 생성은 즉시 폐기·재생성한다. 프롬프트 프리뷰 테이블에 "MANDATORY 프리픽스 주입됨"을 반드시 표기한다.** (출처: Splitline 세션 — 사용자가 매 컷 반복 요청한 항목.)
 
 **[A] 이미지 — 모든 이미지 프롬프트에 아래를 반드시 합친다 (화각·구도·네거티브 필·역광 강제):**
 ```text
 MANDATORY IMAGE PREFIX (append to EVERY image prompt, no exceptions):
-— 화각/구도(FOV & COMPOSITION): ZERO front-facing, ZERO eye-level. The subject NEVER looks into the lens. Use ONLY low-angle, high-angle or dutch-angle framing; off-center rule-of-thirds; telephoto shallow-DOF (demai) with clear 3-layer FG/MG/BG depth separation. People = ONE dominant face in tight CU / OTS (the other person only a blurred wardrobe-colored back-sliver) — never a flat two-shot.
+— 화각/구도(FOV & COMPOSITION): ZERO front-facing, ZERO eye-level. The subject NEVER looks into the lens. Use ONLY DUTCH-ANGLE / HIGH-ANGLE / LOW-ANGLE framing — all three are equal first choice, pick per scene; off-center rule-of-thirds; telephoto shallow-DOF (demai) with clear 3-layer FG/MG/BG depth separation. People = ONE dominant face in tight CU / OTS (the other person only a blurred wardrobe-colored back-sliver) — never a flat two-shot.
 — 역광/림라이트(BACKLIGHT): hard warm BACKLIGHT / rim-light from behind that traces the subject's silhouette and separates it from the background. Motivated key from a window/blinds. NO flat frontal fill light.
 — 네거티브 필(NEGATIVE FILL): place black negative fill on the shadow side — let one side of the face/object fall into deep controlled shadow; sculpt the form, raise contrast, kill flat ambient. LOW-KEY only, NEVER high-key, no blown highlights.
 ```
@@ -46,16 +46,16 @@ No background music. NO BGM. NO score. SFX only — at most a few subtle diegeti
 
 ---
 
-## CAMERA_LOOK — 공통 카메라·렌즈·룩 레퍼런스 (이미지·영상 공통, VERBATIM)
+## 🎥 CAMERA_LOOK — 공통 카메라·렌즈·룩 레퍼런스 (이미지·영상 공통, VERBATIM)
 
 > 아래는 **모든 이미지/영상 프롬프트의 카메라·렌즈·색·그레인·레퍼런스 감독·금지 미감**의 단일 기준이다. `IMG_ENHANCE_OBJECT`·`IMG_ENHANCE_PERSON`·`VID_ENHANCE_SFX`·`VID_ENHANCE_OBJECT`의 "CAMERA/LENS FEEL" 줄은 이 블록을 가리키며, 컷 유형별 추가 디테일(역광 종류·바운스·아웃포인트 등)만 그 절에서 보충한다. 이전에 절마다 따로 적혀 있던 "ARRI Alexa 65" / "ARRI Alexa" 표기 불일치는 이 블록으로 통일한다.
 
 ```text
 CAMERA:    ARRI ALEXA Mini LF
-LENS:      ZEISS Master Prime (24mm-100mm)
+LENS:      ZEISS Master Prime (24-135mm) + bold telephoto (135-400mm, spatial compression)
 ASPECT:    anamorphic 2.39:1
 COLOR:     ARRI K1S1 LogC + custom Show LUT
-GRAIN:     Kodak Vision3 500T (medium-heavy)
+GRAIN:     Kodak Vision3 500T (heavy)
 REFERENCE: Denis Villeneuve × David Fincher × Park Chan-wook
 NEGATIVE:  NEVER Chinese-aesthetic, NEVER over-saturated,
            NEVER cartoonish, NEVER K-pop MV gloss
@@ -65,25 +65,25 @@ NEGATIVE:  NEVER Chinese-aesthetic, NEVER over-saturated,
 
 ---
 
-## 1) IMG_ENHANCE — 이미지 강화 (모든 이미지 컷 공통)
+## 1) 🖼️ IMG_ENHANCE — 이미지 강화 (모든 이미지 컷 공통)
 
-의도(한글): 더 시네마틱한 실사 + **얼굴 디테일 강화** / **정면·아이레벨 화각 전면 삭제**(렌즈 응시 금지) / 로우·하이·**더치 앵글** + 다이내믹 광각 + **데마이(얕은 심도) 클로즈업** 적극 / **하이키 금지, 로우키 고급** / 컷 간 **매치컷·트랜지션 개연성** / 영상화 시 다이내믹하게 살아나는 키프레임.
+의도(한글): 더 시네마틱한 실사 + **얼굴 디테일 강화** / **정면·아이레벨 화각 전면 삭제**(렌즈 응시 금지) / 로우·하이·**더치 앵글** + 다이내믹 광각 + **과감한 망원(135-400mm) 공간 압죽** + 데마이(얕은 심도) 클로즈업 / **시네마틱 역광 + 네거티브 필 + 크러시드 블랙 섀도** / **헤비 필름 그레인·ARRI+아나모픽 룩·사진처럼 쨍하지 않은 시네마 카메라 질감** / **하이키 금지, 로우키 고급** / 컷 간 **매치컷·트랜지션 개연성** / 영상화 시 다이내믹하게 살아나는 키프레임.
 
 ```text
 CINEMATIC PHOTOREAL — REQUIRED ENHANCEMENT (append to every image prompt):
 Heightened photoreal realism with ENHANCED FACIAL DETAIL (lifelike skin micro-texture, visible pores, subsurface scattering, sharp eye catchlights); a real frame from a premium TV commercial, never CGI / 3D-render / illustration.
 ABSOLUTELY NO front-facing and NO eye-level framing — the subject never looks straight into the lens; no honest flat eye-level full shots.
-Aggressively use TV-CF camera grammar (화각·구도): LOW-ANGLE, HIGH-ANGLE and DUTCH-ANGLE compositions; off-center rule-of-thirds; dynamic WIDE-ANGLE perspectives AND shallow-depth-of-field telephoto CLOSE-UPS (demai bokeh) with clear 3-layer FG/MG/BG depth.
+MANDATORY angle selection — USE ONLY: DUTCH-ANGLE (15-45° roll), HIGH-ANGLE (top-down, bird's-eye), or LOW-ANGLE (worm's-eye, upward foreshortening) — all three equal first choice, pick per scene. Eye-level and front-facing are FORBIDDEN. Off-center rule-of-thirds. Dynamic WIDE-ANGLE perspectives AND bold TELEPHOTO (135-400mm) for spatial compression — ultra-shallow demai depth of field, razor-thin plane of focus, creamy bokeh — clear 3-layer FG/MG/BG depth.
 BACKLIGHT MANDATORY (역광/림라이트): hard warm back-light / rim-light from behind tracing the subject's silhouette and separating it from the background; motivated key from window/blinds; NO flat frontal fill.
 NEGATIVE FILL MANDATORY (네거티브 필): black negative fill on the shadow side — one side falls into deep controlled shadow to sculpt the form and raise contrast; kill flat ambient.
-LOW-KEY luxurious grade (NEVER high-key): deep controlled shadows, restrained highlights, premium cinematic mood matching the reference.
+LOW-KEY luxurious grade (NEVER high-key): deep controlled shadows, restrained highlights, CRUSHED BLACKS in shadow regions — gorgeous luxurious shadow, premium cinematic mood. Heavy ARRI + anamorphic filmic grain — NOT clinical digital sharpness, NOT photo-sharp.
 Compose so each cut CONNECTS to its neighbours via match-cuts / natural transitions — strengthen narrative continuity and context across cuts.
 Frame it as a keyframe primed for dynamic video motion (built-in movement potential).
 ```
 
 ---
 
-## 2) VID_ENHANCE — 영상 강화 (모든 영상 컷 공통)
+## 2) 🎥 VID_ENHANCE — 영상 강화 (모든 영상 컷 공통)
 
 의도(한글): **① 오디오는 무조건 BGM 없이 효과음(SFX)만**(가장 강한 고정 규칙 — 규칙 0 [B] 참조, BGM·내레이션은 후반 합성) / ② 컷 상황에 맞게 핸드헬드·dolly in·arc·로봇암 등 **다이내믹 무브먼트를 반드시** 넣고 컷 간 매치컷/트랜지션으로 연결. (단, 크로마키 플레이트 영상은 키잉을 위해 **locked-off 고정 카메라** 예외 — 부록 E 참조.)
 
@@ -98,7 +98,7 @@ Write a real moving-shot keyframe (mid-action + motion blur), and add a match-cu
 
 ---
 
-## 2b) VIDEO_PROMPT_FORMAT — 영상 프롬프트 표준 필드 순서 (Seedance 2.0 Mini 기본·Fast/standard 백업 공통, 700자 이내)
+## 2b) 📐 VIDEO_PROMPT_FORMAT — 영상 프롬프트 표준 필드 순서 (Seedance 2.0 Mini 기본·Fast/standard 백업 공통, 700자 이내)
 
 > 모든 `[video prompt]`(scenario.md) / GATE 12 실제 호출 프롬프트는 규칙0[B](No-BGM 한 줄, 최상단 고정) 다음에 아래 7개 필드를 **이 순서 그대로** 채워 한 문단으로 합친다. **전체 길이는 공백 포함 700자를 넘지 않는다** — 넘으면 SHOT GROUP 세부 비트 묘사를 줄여서 맞춘다(규칙0[B]·RUNTIME·CAMERA는 줄이지 않음). CAMERA에 렌즈/아나모픽 비율을 한 줄로 합치고(LENS·LOOK 별도 줄 없음, 디테일은 `CAMERA_LOOK` 공통 블록 참조), SHOT은 4초 러닝타임 내부를 **BEGINS WITH → ACTION → TRANSITION → ENDS WITH** 타임스탬프 비트로 쪼개 미니 시퀀스로 적는다. (백업1 Fast·백업2 standard 모두 동일 `seedance_2_0`이라 4초 SHOT GROUP 그대로 — `mode` 파라미터만 바뀐다.)
 
@@ -147,36 +147,36 @@ SFX: tar-paper footsteps, *KNOCK-KNOCK* signature.
 
 ---
 
-## 3) IMG_ENHANCE_OBJECT — 제품/오브제·무인물 컷 (부록 F-7)
+## 3) 📦 IMG_ENHANCE_OBJECT — 제품/오브제·무인물 컷 (부록 F-7)
 
 ```text
 CINEMATIC PHOTOREAL OBJECT — REQUIRED ENHANCEMENT (append to every object/macro image prompt):
 A real frame from a premium luxury TV commercial — never CGI / 3D-render / illustration. Material realism, no people, no faces.
-ABSOLUTELY NO front-facing, NO eye-level framing. Use ONLY extreme LOW-ANGLE (camera on the floor looking steeply UP, subject looms overhead, upward foreshortening, converging verticals), extreme HIGH-ANGLE top-down, or DUTCH-ANGLE (20-40° roll). Off-center, artistic composition with negative space — never honest centered framing.
+ABSOLUTELY NO front-facing, NO eye-level framing. Use ONLY: DUTCH-ANGLE (15-45° roll, tilted world), extreme HIGH-ANGLE (top-down, bird's-eye, steep overhead), or extreme LOW-ANGLE (worm's-eye looking steeply UP, subject looms overhead, upward foreshortening, converging verticals) — all three equal first choice, pick per scene. Off-center, artistic composition with negative space — never honest centered framing.
 LENS LOGIC: if wide-angle → push visible BARREL DISTORTION (verticals bow, edges stretch); if telephoto → ULTRA-shallow depth of field, razor-thin plane of focus, telephoto background compression, creamy bokeh (only a sliver sharp).
 LIGHTING: single hard sculpted BACKLIGHT / rim-light; black NEGATIVE FILL on the shadow side (one side into deep controlled shadow); gorgeous dramatic light with strong color contrast and balance; LOW-KEY only, never high-key, no blown highlights.
-CAMERA/LENS FEEL (CAMERA_LOOK 공통 블록 적용): ARRI ALEXA Mini LF + ZEISS Master Prime (24-100mm), anamorphic 2.39:1, ARRI K1S1 LogC + custom Show LUT, Kodak Vision3 500T grain (medium-heavy, +1 stop on this object/macro cut); gentle filmic SOFTNESS — NOT clinical digital sharpness; Black Pro-Mist halation bloom on highlights; anamorphic oval bokeh + horizontal lens flare; crushed blacks, high-contrast chiaroscuro. NEGATIVE: NEVER Chinese-aesthetic, NEVER over-saturated, NEVER cartoonish, NEVER K-pop MV gloss.
+CAMERA/LENS FEEL (CAMERA_LOOK 공통 블록 적용): ARRI ALEXA Mini LF + ZEISS Master Prime (24-135mm) + bold telephoto (135-400mm), anamorphic 2.39:1, ARRI K1S1 LogC + custom Show LUT, Kodak Vision3 500T grain (heavy, +1 stop on this object/macro cut); gentle filmic SOFTNESS — NOT clinical digital sharpness, NOT photo-sharp; Black Pro-Mist halation bloom on highlights; anamorphic oval bokeh + horizontal lens flare; crushed blacks, high-contrast chiaroscuro. NEGATIVE: NEVER Chinese-aesthetic, NEVER over-saturated, NEVER cartoonish, NEVER K-pop MV gloss.
 Compose as a keyframe primed for dynamic fast video motion (match-cut out-point built in).
 ```
 
 ---
 
-## 4) IMG_ENHANCE_PERSON — 인물 컷 공통 (부록 G-5)
+## 4) 🧑 IMG_ENHANCE_PERSON — 인물 컷 공통 (부록 G-5)
 
 ```text
 CINEMATIC PHOTOREAL PERSON — REQUIRED ENHANCEMENT (append to every hero/person image prompt):
 A real frame from a premium TV commercial — never CGI / 3D-render / video-game / AI render. Flawless photoreal skin micro-texture; a sophisticated, refined, good-looking subject.
 IDENTITY LOCK: exactly the SAME man as the reference (same face, age, hairstyle) — do NOT alter the face.
-ABSOLUTELY NO front-facing, NO honest eye-level framing; the subject never stares into the lens. Use ONLY extreme LOW-ANGLE (worm's-eye looking up), extreme HIGH-ANGLE top-down, or DUTCH-ANGLE; off-center stylish composition with negative space.
+ABSOLUTELY NO front-facing, NO honest eye-level framing; the subject never stares into the lens. Use ONLY: DUTCH-ANGLE (15-45° roll), extreme HIGH-ANGLE (top-down, bird's-eye), or extreme LOW-ANGLE (worm's-eye looking up) — all three equal first choice, pick per scene; off-center stylish composition with negative space.
 LENS LOGIC: wide-angle → visible BARREL distortion (subject can loom close to the lens); telephoto → ULTRA-shallow demai depth of field + background compression + creamy bokeh (only a sliver sharp).
 LIGHTING: single hard sculpted BACKLIGHT / rim-light with black NEGATIVE FILL on the shadow side; low-key chiaroscuro; magenta/cyan motivated practicals; never high-key, no blown highlights.
-CAMERA/LENS FEEL (CAMERA_LOOK 공통 블록 적용): ARRI ALEXA Mini LF + ZEISS Master Prime (24-100mm), anamorphic 2.39:1, ARRI K1S1 LogC + custom Show LUT, Kodak Vision3 500T grain (medium-heavy); gentle filmic SOFTNESS — NOT clinical digital sharpness; Black Pro-Mist halation bloom; anamorphic oval bokeh + horizontal flare; crushed blacks, low saturation. NEGATIVE: NEVER Chinese-aesthetic, NEVER over-saturated, NEVER cartoonish, NEVER K-pop MV gloss.
+CAMERA/LENS FEEL (CAMERA_LOOK 공통 블록 적용): ARRI ALEXA Mini LF + ZEISS Master Prime (24-135mm) + bold telephoto (135-400mm), anamorphic 2.39:1, ARRI K1S1 LogC + custom Show LUT, Kodak Vision3 500T grain (heavy); gentle filmic SOFTNESS — NOT clinical digital sharpness, NOT photo-sharp; Black Pro-Mist halation bloom; anamorphic oval bokeh + horizontal flare; crushed blacks, low saturation. NEGATIVE: NEVER Chinese-aesthetic, NEVER over-saturated, NEVER cartoonish, NEVER K-pop MV gloss.
 Frame as a keyframe primed for dynamic fast video motion with a built-in match-cut out-point.
 ```
 
 ---
 
-## 5) VID_ENHANCE_SFX — 인물 영상 요구사항 체크리스트 (부록 H-6)
+## 5) 🔊 VID_ENHANCE_SFX — 인물 영상 요구사항 체크리스트 (부록 H-6)
 
 > **영상 프롬프트(700자 캡)에는 아래 텍스트를 통째로 붙이지 않는다** — 2b `VIDEO_PROMPT_FORMAT`의 SHOT GROUP/LIGHT/SFX 필드에 요구사항만 녹여 쓴다. 아래 텍스트는 다른 영상 엔진/용도(예: 풀텍스트 프롬프트가 허용되는 경우)를 위한 레퍼런스 원문이다.
 
@@ -187,7 +187,7 @@ MOTION: every clip carries deliberate DYNAMIC camera movement chosen per cut + a
 
 ---
 
-## 6) VID_ENHANCE_OBJECT — 제품/오브제·매크로 영상 요구사항 체크리스트 (부록 I-5)
+## 6) 📦 VID_ENHANCE_OBJECT — 제품/오브제·매크로 영상 요구사항 체크리스트 (부록 I-5)
 
 > **영상 프롬프트(700자 캡)에는 아래 텍스트를 통째로 붙이지 않는다** — 2b `VIDEO_PROMPT_FORMAT`의 SHOT GROUP/LIGHT/SFX 필드에 요구사항만 녹여 쓴다. 아래 텍스트는 레퍼런스 원문이다.
 
@@ -202,14 +202,14 @@ Keep the start image's CAMERA_LOOK 공통 블록(ARRI ALEXA Mini LF + ZEISS Mast
 
 ---
 
-## 7) SOUL_CHARACTER_TRAINING — 캐릭터 1차 레퍼런스 학습 (Higgsfield Soul, 기본값, 부록 E #39)
+## 7) 🧬 SOUL_CHARACTER_TRAINING — 캐릭터 1차 레퍼런스 학습 (Higgsfield Soul, 기본값, 부록 E #39)
 
 > **언제 쓰나:** 주인공 얼굴 ref가 아직 없고, 사용자가 실사 사진 5~20장을 제공할 때. 이걸로 재사용 가능한 Soul Character(identity model, `soul_id`)를 학습해 이후 모든 개별 컷(`nano_banana_2`)의 identity-lock 기준 이미지를 뽑는 데 쓴다. **이제 기본값** — 사진이 5장 이상 있으면 아래 7b의 `gpt_image_2` 턴어라운드 시트보다 이쪽을 먼저 쓴다.
 > **모델 제약(중요):** 학습된 `soul_id`는 **`soul_2`(Soul V2)·`soul_cinema_studio`로만** 생성 가능하다. 개별 스토리보드 컷 생성은 여전히 `nano_banana_2`로 통일(부록 E #38 — soul_2 미사용 정책 그대로 유지). 즉 Soul 학습은 **1차 얼굴 레퍼런스 스틸(`ref_face.png`)을 만드는 용도로만** 쓰고, 그 결과 이미지를 이후 `nano_banana_2` 컷 생성에 medias로 첨부한다 — soul_id 자체를 컷 생성에 직접 쓰지 않는다.
 > **캐릭터 동결(재사용) 정책:** 같은 인물을 여러 프로젝트에서 쓸 때는 `soul_id`를 **한 번만 발급하고 재사용**한다 — 프로젝트마다 재학습하지 않는다. 외형(헤어·의상 등)이 달라져도 동일 인물이면 같은 `soul_id`를 그대로 쓰고 프롬프트로 외형만 바꾼다. 새 인물일 때만 새로 학습한다.
 > **규칙0[A]와의 관계:** 학습 결과로 뽑는 1차 레퍼런스 스틸(`ref_face_v1.png`)은 실제 광고 컷이 아니라 이후 컷들의 identity-lock 기준 이미지이므로, 정면·다양한 각도를 그대로 보여줘야 한다 — 규칙0[A]("정면·아이레벨 금지")는 **이 스틸 생성에는 적용하지 않는다**(7b `CHAR_TURNAROUND_SHEET`와 동일한 이유). 그 스틸을 기준으로 실제 광고 컷을 생성할 때는 규칙0[A]+IMG_ENHANCE_PERSON을 그대로 적용한다.
 
-### 학습용 사진 체크리스트 (5장 이상, 진행 전 필수 확인)
+### ☑️ 학습용 사진 체크리스트 (5장 이상, 진행 전 필수 확인)
 - **장수:** 최소 5장 (5~20장 범위 권장).
 - **각도:** 정면 + 측면 + 3/4 등 **다양한 각도**를 섞는다 — **전부 같은 각도 금지**.
 - **표정:** 미소 + 응시(무표정) 등 **다양한 표정**을 섞는다.
@@ -219,7 +219,7 @@ Keep the start image's CAMERA_LOOK 공통 블록(ARRI ALEXA Mini LF + ZEISS Mast
 - **선명도:** 흐릿하거나 초점이 안 맞은 사진은 쓰지 않는다.
 - 위 기준 중 하나라도 불충족(특히 5장 미만·다른 인물 혼재·흐릿함)이면 학습을 진행하지 말고 사용자에게 재촬영/재선별을 요청한다.
 
-### 저장 위치 — 전역 레지스트리 + 프로젝트별 포인터
+### 📁 저장 위치 — 전역 레지스트리 + 프로젝트별 포인터
 - **전역 레지스트리(1회 학습, 모든 프로젝트 공유):** `assets/character_refs/{name}/`
   - `assets/character_refs/{name}/*.jpg` — 학습용 원본 사진 5~20장
   - `assets/character_refs/{name}/character.json` — `{ name, soul_id, type: "soul_2", trained_at, source_images: [...] }`
@@ -228,7 +228,7 @@ Keep the start image's CAMERA_LOOK 공통 블록(ARRI ALEXA Mini LF + ZEISS Mast
   - `projects/{project}/{version}/ref/ref_face_v1.png` — 그 `soul_id`로 이 프로젝트용으로 뽑은 1차 얼굴 레퍼런스 스틸(이후 `nano_banana_2` 컷의 identity-lock 기준)
   - (구 변형 위치 `images/ref/`, `keyvisual/`는 신규 프로젝트에 쓰지 않음 — `ref/`로 통일.)
 
-### 진행 순서
+### 🔢 진행 순서
 1. 사용자가 `assets/character_refs/{name}/`에 위 **학습용 사진 체크리스트**를 만족하는 사진 5~20장을 넣는다. **이미 같은 인물의 `character.json`이 있으면 학습을 건너뛰고 그 `soul_id`를 재사용**한다.
 2. 받은 사진이 체크리스트를 만족하는지 확인한다(장수·각도 다양성·표정 다양성·조명 일관성·해상도·동일 인물·선명도) — 불충족 항목이 있으면 1로 돌아가 사용자에게 재요청.
 3. 각 사진을 `media_upload`로 presigned URL 발급 → 바이트 PUT → `media_confirm`으로 `media_id` 확보.
@@ -247,7 +247,7 @@ generate_image({ model: "soul_2", params: { soul_id, prompt: "..." } })
 
 ---
 
-## 7b) CHAR_TURNAROUND_SHEET — 캐릭터 턴어라운드 레퍼런스 시트 (gpt_image_2 전용, 레거시 — 부록 E #37 재사용 템플릿)
+## 7b) 🧑‍🤝‍🧑 CHAR_TURNAROUND_SHEET — 캐릭터 턴어라운드 레퍼런스 시트 (gpt_image_2 전용, 레거시 — 부록 E #37 재사용 템플릿)
 
 > **언제 쓰나:** 학습용 사진이 5장 미만이라 위 7번 Soul 학습을 쓸 수 없을 때의 대체 경로. 1차 키비주얼로 멀티패널 턴어라운드 시트를 만들어 이후 모든 개별 컷(`nano_banana_2`)의 identity-lock 기준으로 삼는다.
 > **모델 고정:** `gpt_image_2`만 쓴다 — `soul_2`는 `enhance_prompt` 강제로 멀티패널 구도 지시를 단일컷으로 재작성해버려 패널 구조가 무시된다(#37).

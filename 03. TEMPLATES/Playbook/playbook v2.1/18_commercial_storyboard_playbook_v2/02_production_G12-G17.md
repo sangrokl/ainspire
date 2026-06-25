@@ -1,4 +1,4 @@
-# 02_production_G12-G17.md — 제작 단계 (GATE 12~17)
+# 🎬 02_production_G12-G17.md — 제작 단계 (GATE 12~17)
 
 > 여기부터는 **베스트컷이 확정된 뒤**에 진행한다. 각 GATE는 독립적이라 필요한 것만 골라 써도 된다. 모든 외부 호출 전 GATE 8과 같은 **4종/설정 프리뷰 + 승인**을 지킨다.
 
@@ -6,11 +6,11 @@
 
 ---
 
-## GATE 12 — 영상화 (Seedance 2.0 "Mini", 기본 · Higgsfield CLI/MCP · Magnific — 백업1: Seedance 2.0 Fast · 최종 백업: Seedance 2.0 standard)
+## 🚪 GATE 12 — 영상화 (Seedance 2.0 "Mini", 기본 · Higgsfield CLI/MCP · Magnific — 백업1: Seedance 2.0 Fast · 최종 백업: Seedance 2.0 standard)
 
 **왜:** 정지 스토리보드를 컷당 4초 움직이는 클립으로. "모든 영상에 다이내믹 무브먼트"가 들어가야 영상다워진다.
 
-### Q12-1. 설정 (4종 + 승인)
+### ❓ Q12-1. 설정 (4종 + 승인)
 | 항목 | 기본 |
 |---|---|
 | MODEL | CLI/Higgsfield MCP `seedance_2_0`("Seedance 2.0 Mini" 프리셋, 기본) 또는 Magnific `video_generate`(`video_models_list`로 모델 확인) — Mini가 카탈로그에 없으면 백업1: `seedance_2_0` + `mode:'fast'`("Seedance 2.0 Fast") → 그래도 안 되면 백업2(최종): `seedance_2_0` + `mode:'std'`("Seedance 2.0 standard"). Kling 3.0 Turbo는 백업에서 제외 |
@@ -21,14 +21,14 @@
 
 - **비용 미리보기**: `generate_video(get_cost:true)` — 모델·해상도·길이 조합에 따라 단가가 다르므로 **반드시 `get_cost:true`로 실제 견적 확인 후** `balance`로 잔액 확인 후 승인(추정치로 단정하지 않는다). 정확한 파라미터는 호출 전 `models_explore(action='get', model_id='seedance_2_0')` 또는 CLI `higgsfield model get seedance_2_0 --json`으로 확정(2026-06-22 확인). ⚠️ "Seedance 2.0 Mini"는 Higgsfield 웹 UI에 같은 날 신규(EXCLUSIVE) 노출된 모델로, CLI/MCP 카탈로그에는 아직 별도 model_id로 안 잡힌다 — 호출 전 `models_explore(action='search', query='seedance 2.0 mini')`로 재확인하고, 없으면 위 `seedance_2_0` 파라미터로 호출한다.
 
-### Q12-2. 컷별 카메라 무브먼트 (상황에 맞게 배정 — TV CF 문법)
+### ❓ Q12-2. 컷별 카메라 무브먼트 (상황에 맞게 배정 — TV CF 문법)
 컷마다 **하나**를 명시: 핸드헬드 / 달리인·푸시인 / 아크·오빗 / 크레인업·풀업 / **로봇암 다이내믹 스윕** / 크래시줌 / 틸트업 / 오버숄더 망원. 정지 컷이 아니라 **"움직이는 샷의 키프레임"**으로 프롬프트를 쓴다(중간동작·모션블러). 앞 컷→뒤 컷 매치컷/트랜지션 연결고리도 프롬프트에 한 줄.
 
 > **필수:** 모든 영상 프롬프트는 `03_reference_enhance-prompts.md`의 `VIDEO_PROMPT_FORMAT` 필드 순서(RUNTIME→CAMERA→TIME→CHARACTER→SHOT GROUP[BEGINS WITH/ACTION/TRANSITION/ENDS WITH 타임스탬프 비트]→LIGHT→SFX, 700자 이내)로 작성한다. **`VID_ENHANCE`(및 인물/오브제용 `VID_ENHANCE_SFX`/`VID_ENHANCE_OBJECT`)의 텍스트 블록은 통째로 이어붙이지 않는다** — 700자 캡을 즉시 넘기기 때문. 그 요구사항(컷 상황에 맞는 다이내믹 무브먼트, 매치컷/트랜지션 연결, 정지 locked-off 금지)만 SHOT GROUP의 각 비트 안에 직접 녹여서 쓴다. 컷별 추천 무브는 `video_prompts.json`(GATE 17 영상전환 자동입력)에 미리 매핑.
 
 > **규칙 0 [B] 강제:** 모든 영상 프롬프트 맨 앞에 `No background music. NO BGM. NO score. SFX only.` — 이 규칙은 어떤 상황에서도 약화되지 않는다.
 
-### 실행 절차 (검증된 순서)
+### ✅ 실행 절차 (검증된 순서)
 1. **업로드**: `media_upload(files[])`로 30컷 presigned URL 발급 → 각 PNG를 `urllib PUT`(또는 curl) → `media_confirm(media_ids[])`. (이미지 ≤1792×1008·4MB 확인. magnific 2K 업스케일본은 1080p jpg q92로 다운스케일 후 업로드.)
 2. **생성**: 컷마다 `generate_video({model:'seedance_2_0', params:{resolution:'720p', generate_audio:false}, duration:4, aspect_ratio:'16:9', prompt(VIDEO_PROMPT_FORMAT 7필드, 700자 이내), medias:[{role:"start_image", value:<media_id>}]})` → `job_id` 수집. (정확한 파라미터 중첩 구조는 호출 전 `models_explore(action='get', model_id='seedance_2_0')`로 확정 — 위 형태는 CLI 플래그를 그대로 옮긴 추정이다.)
 3. **폴링·다운로드는 메인에서 하지 말고 백그라운드 에이전트에 위임** — 8-동시 한도를 지키며 완료분을 받는 대로 `videos/seedance/{cut}.mp4`로 저장.
@@ -37,7 +37,7 @@
 
 > **백업 체인 (전부 `seedance_2_0`, `mode`만 다름):** "Seedance 2.0 Mini"가 카탈로그에 안 잡히거나 결과가 만족스럽지 않으면 → **백업1** 동일 구조에 `mode:'fast'`("Seedance 2.0 Fast", CLI `--mode fast`)를 추가해 재호출 → 그래도 안 되면 → **백업2(최종)** `mode:'std'`("Seedance 2.0 standard", CLI `--mode std`, 모델 기본 모드와 동일)로 재호출. 해상도·길이·`generate_audio:false`는 세 단계 모두 동일(720p·4초·무음). Kling 3.0 Turbo는 더 이상 이 백업 체인에 포함하지 않는다.
 
-### 에러 핸들링 (실제로 겪음)
+### ⚠️ 에러 핸들링 (실제로 겪음)
 > **시행착오 #14 — 동시 8개 한도:** 플랜상 **max 8 concurrent jobs**. 9번째는 `Rate limit reached`. → 8개씩 큐로 돌리며 완료될 때마다 다음 제출. 이 반복은 백그라운드 에이전트가 관리.
 > **시행착오 #15 — 프리셋 추천 안내:** 어두운 프롬프트는 `preset_recommendation`("IN THE DARK" 등) 안내를 띄우며 **제출이 안 된다**. → 같은 params에 `declined_preset_id`(추천된 preset id)를 넣어 **리터럴 생성 강제**.
 > **시행착오 #16 — 콘텐츠 필터 오탐:** "rushes into his arms / hug / embrace" 같은 선의의 포옹 표현이 NSFW 오탐으로 막힌다. → 포옹 단어를 빼고 "two people standing close in a tender reunion, heavy winter clothing"처럼 우회.
@@ -50,11 +50,11 @@
 
 ---
 
-## GATE 13 — BGM (Suno 프롬프트 제안 → 사용자가 직접 생성)
+## 🚪 GATE 13 — BGM (Suno 프롬프트 제안 → 사용자가 직접 생성)
 
 **왜:** 30초 광고 음악. **API 자동생성은 하지 않는다**(CometAPI 등 키가 없을 수 있음). 대신 에이전트가 **Suno에 그대로 붙여넣을 프롬프트**를 만들어주고, 사용자가 [suno.com](https://suno.com)에서 직접 생성해 받는다. (영상 클립 자체는 규칙0[B]대로 SFX only — BGM은 후반 조립에서만 얹는다.)
 
-### Q13-1. 음악 방향 (객관식)
+### ❓ Q13-1. 음악 방향 (객관식)
 | 선택 | 결 |
 |---|---|
 | A. 프리미엄·미니멀·세련 | 절제된 고급, 큰 드롭 없이 |
@@ -62,16 +62,16 @@
 | C. 트렌디·힙 | 글로벌 광고풍 |
 | D. 웅장·시네마틱 | 영화 예고편 |
 
-### Q13-2. 전개 구조 (객관식)
+### ❓ Q13-2. 전개 구조 (객관식)
 - A. 조용히→폭발(기승전결 또렷, 추천) / B. 처음부터 강하게 / C. 일정한 그루브
 
-### 산출물 — Suno 붙여넣기용 프롬프트 (영어)
+### 📦 산출물 — Suno 붙여넣기용 프롬프트 (영어)
 답을 받으면 아래를 반드시 갖춘 **영어 Suno 프롬프트**를 만들어 사용자에게 그대로 준다:
 - **구체적 장르 + 레퍼런스 아티스트 + BPM** (제너릭 'EDM/house'는 금지 — 시행착오 #18)
 - 악기·무드·구조(인트로→빌드→드롭/해소), 길이(30~60초 타깃), `instrumental` 여부
 - 예) `Energetic premium drum & bass — live drums + analog bass + cinematic strings & brass, jazzy keys, 172 BPM, in the style of Netsky / Camo & Krooked; quiet intro building to one powerful impact drop; instrumental, polished commercial sound.`
 
-### 사용자 안내 (그대로 전달)
+### 📣 사용자 안내 (그대로 전달)
 1. 위 프롬프트 복사 → [suno.com](https://suno.com)에 붙여넣고 **Instrumental** 켜고 생성.
 2. 나온 트랙에서 **베스트 30초 구간**을 골라 트림.
 3. 그 mp3를 **최종 조립(GATE 16 / 부록 C-4)에서 A1(BGM) 트랙**으로 얹는다.
@@ -82,11 +82,11 @@
 
 ---
 
-## GATE 14 — 내레이션 VO (ElevenLabs MCP 기본, Higgsfield TTS·ElevenLabs 직접 API 백업)
+## 🚪 GATE 14 — 내레이션 VO (ElevenLabs MCP 기본, Higgsfield TTS·ElevenLabs 직접 API 백업)
 
 **왜:** 영문 보이스오버. 스토리보드 비트에 맞춘 카피 + 톤에 맞는 성우.
 
-### 준비: 엔진 선택
+### 🔌 준비: 엔진 선택
 **기본 = ElevenLabs MCP(`text_to_speech`).** 이 환경에 연결되어 있으면 OK, 별도 키·`.env` 불필요 — MCP `text_to_speech`로 바로 생성. 보이스 탐색은 MCP `search_voices`/`search_voice_library`.
 
 **백업1: Higgsfield TTS(`inworld_text_to_speech`).** Higgsfield 연결(STEP 0)만 있으면 OK, 별도 키·`.env` 불필요 — CLI `higgsfield generate create inworld_text_to_speech --prompt "..."` 또는 MCP `generate_audio`로 생성.
@@ -99,18 +99,18 @@
 
 `GET /v1/voices`로 동작 확인 + 보이스 목록 확보(직접 API 경로일 때만).
 
-### Q14-1. 톤·성우 (객관식, 카테고리에 맞게)
+### ❓ Q14-1. 톤·성우 (객관식, 카테고리에 맞게)
 | 톤 | 추천 보이스(예) |
 |---|---|
 | 터프·중저음(에너지) | Adam(Dominant), Brian(Deep), Callum(Husky) |
 | 차분·다큐(안심) | Brian(Comforting), Eric(Smooth), Roger(Laid-Back) |
 - `voice_settings`로 톤 미세조정: 차분/다큐 = **stability↑(0.6)·style↓(0.25)**, 강렬 = stability↓(0.4)·style↑(0.4).
 
-### 카피 작성 원칙
+### ✍️ 카피 작성 원칙
 - **스토리보드 막 구조에 맞춰** 6줄 내외(30초 = 천천히 ~45~60단어). 각 줄을 **막의 시작 컷**에 매핑(타임코드).
 - 3안을 **서로 다른 톤/성우**로 제안해 비교하게 한다.
 
-### 실행 — 기본: MCP `text_to_speech` 직접 호출 / 백업2: `system_v2/_gen_*_vo.py`
+### ▶️ 실행 — 기본: MCP `text_to_speech` 직접 호출 / 백업2: `system_v2/_gen_*_vo.py`
 ```python
 # 백업2(직접 API)만 해당: POST https://api.elevenlabs.io/v1/text-to-speech/{voice_id}
 # headers: xi-api-key, Accept: audio/mpeg
@@ -122,11 +122,11 @@
 
 ---
 
-## GATE 15 — 로고 (투명 PNG)
+## 🚪 GATE 15 — 로고 (투명 PNG)
 
 **왜:** 엔딩·자막 합성용 깔끔한 로고.
 
-### 절차 (루마키 우회)
+### 🔄 절차 (루마키 우회)
 1. **퓨어 블랙 배경**으로 생성: Higgsfield MCP (`nano_banana_2` 또는 `gpt_image_2`), "정확한 워드마크 철자 'A E T H E R', 미니멀·프리미엄, 순흑 배경, 제품/잡요소 없음". 변형 3~4종.
    - 생성 플로우: `generate_image({model:"nano_banana_2", prompt:..., resolution:"2k"})` — medias ref 없이 순수 텍스트 생성.
 2. **루마키 투명화**(Pillow): 밝기(max(r,g,b))를 알파로 → 검정은 투명, 글로우 가장자리는 자연 페이드. 그 후 **non-transparent 바운딩박스로 오토크롭**. (대안: Magnific `images_remove_background`로 알파 누끼 — 단 글로우 페이드가 필요하면 루마키가 더 자연스럽다.)
@@ -138,11 +138,11 @@
 
 ---
 
-## GATE 16 — 최종 완성 스토리보드 조립
+## 🚪 GATE 16 — 최종 완성 스토리보드 조립
 
 **왜:** 클라이언트/팀에 보여줄 **완성형 한 장 HTML**. 기획안 + 내레이션 + 컷이 한 문서에.
 
-### 포함 요소 (`system_v2/_build_final_storyboards.py` — **번들 포함**, HALO 예시 템플릿이라 새 프로젝트는 경로·컷 교체 필요)
+### 📦 포함 요소 (`system_v2/_build_final_storyboards.py` — **번들 포함**, HALO 예시 템플릿이라 새 프로젝트는 경로·컷 교체 필요)
 1. **헤더**: 프로젝트·컨셉 태그라인.
 2. **기획안 개요 패널**: 컨셉·레퍼런스·타깃/톤·막 구조·컬러 서사·촬영 문법·일관성·제품 역할·기술 스펙(카드 그리드).
 3. **내레이션(영문 VO·30초)**: 타임코드별 대사 + 3안/성우 안내.
@@ -155,20 +155,20 @@
 
 ---
 
-## GATE 17 — 인터랙티브 리뷰·수정 콘솔 (자동 팝업 + 인라인 수정) ★신규
+## 🚪 GATE 17 — 인터랙티브 리뷰·수정 콘솔 (자동 팝업 + 인라인 수정) ★신규
 
 **왜:** 컷을 채팅으로 "9번 다시" 일일이 말하지 말고, **결과 HTML에서 직접 [컷 선택 → 수정요청 입력 → Enter]** 하면 그 자리에서 재생성되게 한다.
 
 > **상태: 선택·고급 기능 — 콘솔 패키지가 `review_console/`(키트 루트)에 포함되어 있다.** 핵심 파이프라인(G1~G16)은 콘솔 없이도 작동한다. 콘솔을 쓰려면 `review_console/`에서 `python start.py --media-dir <프로젝트 이미지/영상 폴더> --mode image|video --backend agent` (원클릭: 빌드+서버+워처+브라우저). 사용법은 `review_console/START_HERE.md`, 내부 구조는 아래 스펙 참조.
 
-### 17-0. 동작 요약 (사용자 입장)
+### 🔁 17-0. 동작 요약 (사용자 입장)
 1. 이미지를 다 뽑으면 **리뷰 콘솔 HTML이 자동으로 팝업**(브라우저)된다.
 2. 맘에 안 드는 컷을 **클릭해 선택** → 그 컷 번호 칸에 **수정 요청을 한글로 입력** → **Enter**.
 3. 입력 즉시 **생성 엔진(Higgsfield CLI/MCP 또는 Magnific)이 그 컷만 재생성**(이미지=nano_banana_2/gpt_image_2 또는 Magnific `images_generate`, 영상=seedance_2_0 "Mini"(백업1 `mode:'fast'`→백업2·최종 `mode:'std'`) 또는 Magnific `video_generate`). 카드는 '처리중 → 완료(새 썸네일)'로 자동 갱신.
 4. **모델·화질**(이미지) / **초수·화질**(영상)을 **매 수정마다 카드에서 선택**.
 5. 콘솔 상단의 **"전체 영상으로 돌리기"** 버튼으로 확정 스토리보드를 **한 번에 영상화** → 끝나면 **영상 미리보기 콘솔**이 같은 디자인으로 팝업.
 
-### 17-1. 구조 — 왜 '브리지'가 필요한가
+### 🌉 17-1. 구조 — 왜 '브리지'가 필요한가
 브라우저로 연 `file://` HTML은 보안 샌드박스라 **직접 MCP를 못 부르고 파일도 못 쓴다.** → **로컬 서버 + 큐 파일 + 에이전트 워처** 3단 브리지로 잇는다.
 
 > 아래 다이어그램·코드 스케치는 **개념 설명**이다. 실제 구현은 `review_console/` 패키지에 들어 있고(`start.py`·`build_console.py`·`review_server.py`·`worker.py`) — 본문의 `system_v2/...` 경로 표기는 설계 당시 것이니, 실행은 17-2의 `start.py` 한 줄로 하면 된다.
@@ -189,7 +189,7 @@
 [HTML] (5) results.json 을 4초마다 폴링 → 해당 카드 썸네일·상태칩 자동 교체
 ```
 
-### 17-2. 자동 팝업 (에이전트가 생성 직후 실행)
+### 🚀 17-2. 자동 팝업 (에이전트가 생성 직후 실행)
 ```
 # review_console/ 패키지가 전부 자동 처리 — 한 줄이면 된다:
 python review_console/start.py --media-dir <프로젝트 이미지/영상 폴더> --mode image|video --backend agent --title "리뷰"
@@ -199,7 +199,7 @@ python review_console/start.py --media-dir <프로젝트 이미지/영상 폴더
 # 사용자가 "리뷰 큐 처리해줘" 하면 에이전트가 runtime/revision_queue.jsonl 을 읽어 처리.
 ```
 
-### 17-3. A. 이미지 리뷰 콘솔 (UI 설계)
+### 🖼️ 17-3. A. 이미지 리뷰 콘솔 (UI 설계)
 - **레이아웃**: 헤더+카드 그리드, `#0b0d12` 다크, 16:9 썸네일.
 - **카드 구성**:
   - 썸네일 + 컷번호 배지(C09) + 막(Act) 배지
@@ -213,7 +213,7 @@ python review_console/start.py --media-dir <프로젝트 이미지/영상 폴더
     | 상태칩 | 대기 → 처리중 → 완료 |
 - **상단바**: 기본 모델·화질 셀렉트, **[선택 컷 일괄 수정]**, **[전체 영상으로 돌리기]** 버튼.
 
-### 17-4. B. 영상 리뷰 콘솔 (UI 설계)
+### 🎥 17-4. B. 영상 리뷰 콘솔 (UI 설계)
 - 이미지 콘솔과 **동일 디자인**, 카드만 `<video autoplay muted loop playsinline>` 미리보기.
 - **수정 패널**:
   | 컨트롤 | 옵션 |
@@ -224,7 +224,7 @@ python review_console/start.py --media-dir <프로젝트 이미지/영상 폴더
   | 상태칩 | 대기 → 처리중 → 완료 |
 - **상단바**: **[전체 스토리보드 → 영상 일괄 생성]**(배치, 동시 8 큐), 기본 초수·화질.
 
-### 17-5. 핵심 코드 스케치
+### 💻 17-5. 핵심 코드 스케치
 
 **(1) 로컬 서버 `system_v2/review_server.py`**
 ```python
@@ -268,10 +268,10 @@ revision_queue.jsonl 의 새 줄을 읽어 항목별로:
 처리 실패(fetch failed/preset/NSFW)는 GATE 12의 핸들링 그대로 재시도.
 ```
 
-### 17-6. 수정 = 새 버전 (절대 규칙 유지)
+### 🚫 17-6. 수정 = 새 버전 (절대 규칙 유지)
 모든 재생성은 **새 버전 폴더**(`v..._v{n+1}`)에 저장하고 원본 보존(GATE 11). `results.json`이 "현재 보여줄 최신 버전"을 가리키게 해 콘솔이 항상 최신을 띄운다.
 
-### 17-7. 패키지 구성 (`review_console/` — 번들에 포함)
+### 📦 17-7. 패키지 구성 (`review_console/` — 번들에 포함)
 - `start.py` — 원클릭(빌드+서버+워처+브라우저). **실행 진입점.**
 - `build_console.py` — `--mode image|video`로 리뷰 콘솔 HTML 빌드.
 - `review_server.py` — 로컬 서버(`/revise` 큐 인입, `/` 정적 서빙).

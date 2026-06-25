@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>00_core.md</title>
+<style>
+body { font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+       max-width: 880px; margin: 0 auto; padding: 32px 24px 80px; line-height: 1.65; color: #1a1a1a; }
+h1 { border-bottom: 3px solid #333; padding-bottom: 10px; }
+h2 { border-bottom: 1px solid #ddd; padding-bottom: 6px; margin-top: 40px; }
+h3 { margin-top: 28px; color: #333; }
+table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.95em; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #f2f2f2; }
+code { background: #f5f5f5; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+pre { background: #1e1e1e; color: #d4d4d4; padding: 14px; border-radius: 6px; overflow-x: auto; }
+pre code { background: none; color: inherit; padding: 0; }
+blockquote { border-left: 4px solid #4a90d9; margin: 16px 0; padding: 4px 16px; background: #f7faff; color: #333; }
+hr { border: none; border-top: 1px solid #ddd; margin: 32px 0; }
+a { color: #1a73e8; }
+.nav { background: #fafafa; border: 1px solid #ddd; padding: 10px 16px; border-radius: 6px; margin-bottom: 24px; font-size: 0.9em; }
+.nav a { margin-right: 14px; }
+</style></head>
+<body>
+<div class="nav"><a href="CLAUDE.html">CLAUDE.md</a> | <a href="README.html">README.md</a> | <a href="00_core.html">00_core.md</a> | <a href="01_planning_G1-G11.html">01_planning_G1-G11.md</a> | <a href="02_production_G12-G17.html">02_production_G12-G17.md</a> | <a href="03_reference_enhance-prompts.html">03_reference_enhance-prompts.md</a> | <a href="04_reference_lessons-appendix.html">04_reference_lessons-appendix.md</a></div>
+<h1>🎬 00_core.md — 광고 스토리보드 플레이북 v2 (진입점·라우터 + 필수 규칙)</h1>
+<blockquote>
+<p><strong>이미지·영상 생성은 Higgsfield(MCP 또는 CLI) · Magnific MCP. 내레이션은 ElevenLabs MCP(기본) · Higgsfield TTS(백업1) · ElevenLabs 직접 API(백업2). BGM은 Suno 프롬프트 제안(GATE 13) → 사용자 직접 생성.</strong></p>
+</blockquote>
+<hr />
+<h2>🎯 이 문서의 목적</h2>
+<p>광고 영상 한 편을 <strong>기획 → 스토리보드(이미지) → 영상화 → 내레이션(VO) → 로고 → 최종 완성본 조립</strong>까지, 기초 지식이 전혀 없는 사람도 객관식 질문에 답하기만 하면 끝까지 만들 수 있게 만든 단계별 진행 대본이다.<br />
+AETHER(에너지드링크)·HALO(스마트워치) 광고를 컨셉 v1→v10까지 수없이 갈아엎고, 영상·내레이션·로고까지 실제로 뽑아내며 얻은 시행착오를 그대로 녹였다.</p>
+<blockquote>
+<p>🚨 <strong>이 문서를 쓰는 에이전트에게(IMPORTANT):</strong><br />
+1. 🚪 각 <strong>GATE(관문)</strong>에 도착하면, 그 GATE의 질문을 <code>AskUserQuestion</code> 도구로 <strong>객관식</strong>으로 물어라. 사용자가 전문용어를 몰라도 고를 수 있게 옵션마다 쉬운 설명을 붙여라.<br />
+2. ⛔ 사용자가 답하기 전에는 다음 GATE로 넘어가지 마라. 비싼 이미지 생성(돈·시간)이 걸린 분기는 특히 먼저 묻는다.<br />
+3. ✅ 모든 답을 모으면 <code>기획안(PROJECT_BRIEF)</code>을 먼저 텍스트로 정리해 보여주고 승인받은 뒤, 생성으로 넘어간다.<br />
+4. 💬 용어가 처음 나오면 한 줄로 풀어 설명한다. (04_reference_lessons-appendix.md 맨 끝 [용어 사전] 참고)<br />
+5. ⚠️ <strong><code>AskUserQuestion</code> 호출 규칙 (자주 나는 실수 방지):</strong> 설명 문장만 써 놓고 도구를 빈 채로 부르지 마라. <strong>한 번의 호출에 <code>questions</code> 배열을 반드시 채워서</strong> 보낸다 — 질문마다 <code>question</code>(질문문)·<code>header</code>(짧은 라벨)·<code>options</code>(2~4개, 각 <code>label</code>+<code>description</code>) 가 전부 있어야 한다. 안내·설명은 별도 문장이 아니라 <strong>질문/옵션 텍스트 안에</strong> 녹여라. (<code>questions</code> 누락 시 <code>InputValidationError: questions is missing</code>로 호출이 실패하고 GATE가 멈춘다.) 한 번에 최대 4개 질문까지.<br />
+6. 🈂️ <strong>한글 깨짐 방지 — <code>header</code>·<code>label</code> 필드 규칙:</strong> <code>header</code>는 chip UI에서 한글이 깨질 수 있으므로 <strong>반드시 영어 1~2단어</strong>로 쓴다 (예: <code>"Brand Tone"</code>, <code>"Ad Style"</code>, <code>"Protagonist"</code>, <code>"Structure"</code>). <code>label</code>(선택지 이름)은 한글 가능하나 <strong>4어절 이내</strong>로 짧게 쓴다. <code>question</code>과 <code>description</code>은 한글로 자유롭게 작성해도 무방하다.</p>
+</blockquote>
+<hr />
+<h2>🧭 ★ 로딩 가이드 — 이 플레이북 어떻게 읽나</h2>
+<p>에이전트는 항상 이 파일(<code>00_core.md</code>)을 <strong>먼저</strong> 읽는다(필수 규칙 = 규칙 0·절대 규칙·강화 프롬프트가 여기 풀텍스트로 들어 있다). 그 다음은 단계·유형에 따라 온디맨드로 로드한다.</p>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>읽을 파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시작 직후 (1회 필수)</strong></td>
+<td><code>04_reference_lessons-appendix.md</code>의 <strong>부록 E 섹션만</strong> — v3 표준 확정 정답(모델 선택·단독 얼굴 CU·시트 재조명·한글 QA·루마키/크로마·병렬 운영). 규칙 6과 동일.</td>
+</tr>
+<tr>
+<td><strong>기획 단계(G1~G11)</strong></td>
+<td><code>01_planning_G1-G11.md</code></td>
+</tr>
+<tr>
+<td><strong>제작 단계(G12~G17)</strong></td>
+<td><code>02_production_G12-G17.md</code></td>
+</tr>
+<tr>
+<td><strong>이미지·영상 생성 직전</strong></td>
+<td>공통 필수(규칙0·<code>IMG_ENHANCE</code>·<code>VID_ENHANCE</code>)는 <strong>이 파일 아래</strong>. 유형별 확장 상수(PERSON/OBJECT/SFX)는 <code>03_reference_enhance-prompts.md</code></td>
+</tr>
+<tr>
+<td><strong>그 외 에러·세션 노하우·부록 F~I·용어</strong></td>
+<td><code>04_reference_lessons-appendix.md</code> (필요 시 온디맨드)</td>
+</tr>
+</tbody>
+</table>
+<h3>🧩 프로젝트 유형별 상수 선택 (생성 직전)</h3>
+<table>
+<thead>
+<tr>
+<th>유형</th>
+<th>이미지</th>
+<th>영상</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>인물 광고</strong> (주인공 얼굴 등장)</td>
+<td><code>IMG_ENHANCE</code> + <code>IMG_ENHANCE_PERSON</code>(03)</td>
+<td><code>VID_ENHANCE</code> + <code>VID_ENHANCE_SFX</code>(03)</td>
+</tr>
+<tr>
+<td><strong>제품·오브제 광고</strong> (인물 얼굴 없음)</td>
+<td><code>IMG_ENHANCE</code> + <code>IMG_ENHANCE_OBJECT</code>(03)</td>
+<td><code>VID_ENHANCE</code> + <code>VID_ENHANCE_OBJECT</code>(03)</td>
+</tr>
+<tr>
+<td><strong>공통 기본</strong> (모든 컷 공통)</td>
+<td><code>IMG_ENHANCE</code> (아래)</td>
+<td><code>VID_ENHANCE</code> (아래)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>이 가이드가 "필수 규칙 항상 읽기 + 단계·유형별 온디맨드 로딩"의 핵심이다.</p>
+</blockquote>
+<hr />
+<h2>🏁 우리가 만드는 것 (최종 산출물 체인)</h2>
+<ol>
+<li>🖼️ <strong>스토리보드</strong>: 30컷 내외 정지 이미지 + 한눈에 보는 HTML. <em>(생성 2단계: ① gpt_image_2로 30컷 일괄 프리뷰 → 승인 → ② 컷마다 최종 1장 생성)</em></li>
+<li>🎥 <strong>영상</strong>: 각 컷을 image-to-video로 움직이는 4초 클립으로 (컷당 1개).</li>
+<li>🎵 <strong>BGM</strong>: 30초 광고 음악 — 에이전트가 Suno 프롬프트를 제안, 사용자가 <a href="https://suno.com">suno.com</a>에서 직접 생성.</li>
+<li>🎙️ <strong>내레이션(VO)</strong>: 영문 보이스오버 (ElevenLabs MCP <code>text_to_speech</code> — 기본, 이 환경에 연결되어 있으면 별도 키 불필요. 백업: Higgsfield TTS <code>inworld_text_to_speech</code> / ElevenLabs 직접 API).</li>
+<li>🏷️ <strong>로고</strong>: 투명 PNG (엔딩 합성용).</li>
+<li>📦 <strong>최종 완성 스토리보드</strong>: 기획안 + 타임코드별 내레이션 + 컷별 영상 키프레임을 합친 보기 좋은 HTML 한 파일.</li>
+</ol>
+<blockquote>
+<p>⚠️ <strong>BGM은 API로 자동생성하지 않는다</strong> — GATE 13에서 Suno 프롬프트만 제안하고, 사용자가 직접 Suno에서 생성해 후반 조립(GATE 16/부록 C-4)에서 얹는다.</p>
+</blockquote>
+<hr />
+<h2>🧰 쓰는 도구 (v2 기준)</h2>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>도구</th>
+<th>실행 경로</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>이미지 생성</strong></td>
+<td><strong>Higgsfield CLI / MCP(<code>nano_banana_2</code>, 기본) · Magnific MCP</strong></td>
+<td>CLI <code>higgsfield generate create nano_banana_2 …</code> · MCP <code>generate_image</code> · Magnific <code>images_generate</code> (백업 모델: <code>gpt_image_2</code>, 아래 [생성 엔진] 참조)</td>
+</tr>
+<tr>
+<td>스토리보드 HTML</td>
+<td>Python + Pillow (base64 embed)</td>
+<td><code>system_v2/_build_*_embed.py</code></td>
+</tr>
+<tr>
+<td><strong>영상화</strong></td>
+<td><strong>Higgsfield CLI / MCP(<code>seedance_2_0</code> "Seedance 2.0 Mini", 기본) · Magnific MCP</strong></td>
+<td>CLI <code>higgsfield generate create seedance_2_0 … --image --duration 4 --resolution 720p --generate_audio false</code> · MCP <code>generate_video</code> · Magnific <code>video_generate</code> (Mini 미확인/실패 시 백업1: <code>--mode fast</code>("Seedance 2.0 Fast") → 그래도 안 되면 백업2·최종: <code>--mode std</code>("Seedance 2.0 standard"))</td>
+</tr>
+<tr>
+<td><strong>업스케일·누끼</strong></td>
+<td><strong>Magnific MCP</strong></td>
+<td><code>images_upscale</code> / <code>images_remove_background</code></td>
+</tr>
+<tr>
+<td><strong>내레이션 TTS</strong></td>
+<td><strong>ElevenLabs MCP(<code>text_to_speech</code>)</strong></td>
+<td>MCP <code>text_to_speech</code> (이 환경에 연결되어 있으면 별도 키 불필요) · 백업1 Higgsfield TTS — CLI <code>higgsfield generate create inworld_text_to_speech</code> · MCP <code>generate_audio</code> · 백업2 ElevenLabs 직접 API <code>system_v2/_gen_*_vo.py</code>(ELEVENLABS_API_KEY 필요)</td>
+</tr>
+<tr>
+<td><strong>로고 투명화</strong></td>
+<td>Pillow 루마키 / Magnific <code>images_remove_background</code></td>
+<td><code>system_v2/_logo_transparent.py</code> 패턴</td>
+</tr>
+<tr>
+<td>폴링·다운로드(영상)</td>
+<td><strong>CLI <code>--wait</code> 또는 백그라운드 에이전트</strong></td>
+<td>CLI는 <code>--wait</code>가 폴링 처리(토큰 0) · MCP는 <code>Agent(run_in_background)</code></td>
+</tr>
+</tbody>
+</table>
+<h3>🔌 STEP 0 — 생성 엔진 연결 확인 (제일 먼저, 생성 전 필수)</h3>
+<p>이미지·영상은 생성 엔진(Higgsfield CLI/MCP 또는 Magnific MCP)으로 만든다. <strong>작업을 시작하면 가장 먼저 연결을 확인하고, 안 되어 있으면 연결부터 끝낸 뒤 진행한다. 셋 중 최소 하나면 된다.</strong><br />
+1. ✅ <strong>확인:</strong> Higgsfield CLI <code>higgsfield account status</code>(로그인·잔액) / Higgsfield MCP <code>balance</code> / Magnific <code>account_balance</code> — 정상 응답이면 연결됨.<br />
+2. 🔑 <strong>인증만 안 됨(설치/서버는 있음):</strong> CLI <code>higgsfield auth login</code>(브라우저 OAuth) / Higgsfield MCP <code>authenticate</code>→로그인→<code>complete_authentication</code> / Magnific 첫 호출 시 브라우저 OAuth.<br />
+3. 📦 <strong>설치/서버 자체가 없음:</strong> Higgsfield MCP 서버 없으면 데스크톱 앱 로그인 후 클라이언트 연결 / Magnific은 클라이언트 MCP 설정에 <code>https://mcp.magnific.com</code>(streamable HTTP) 추가 → OAuth(이 둘은 사용자에게 요청). <strong>Higgsfield CLI는 선택</strong> — 쓰려는데 미설치면 아래 [생성 엔진]의 [CLI 설치 안내] 3단계를 사용자에게 전달.<br />
+4. 🤖 <strong>기본 모델(2026-06-22부터):</strong> Higgsfield 연결 시 <strong>개별 컷 이미지 = <code>nano_banana_2</code>(Pro) · 2K · Unlimited ON</strong>, <strong>영상 = <code>seedance_2_0</code>("Seedance 2.0 Mini" 프리셋) · 720p · 4초</strong>를 기본값으로 쓴다. <code>seedance_2_0</code>는 <code>medias</code>에 <code>image</code>/<code>start_image</code>/<code>end_image</code>/<code>video</code>/<code>audio</code> role을 받고, <code>resolution</code>은 <code>480p</code>/<code>720p</code>/<code>1080p</code> 중 선택(기본·이 플레이북 모두 720p), <code>duration</code>은 4~15초 범위(기본 5, 이 플레이북은 4로 고정)이며 <code>generate_audio</code>가 <strong>기본 true</strong>라 규칙0<a href="No-BGM">B</a>를 지키려면 호출마다 반드시 <code>generate_audio:false</code>로 명시한다(<code>higgsfield model get seedance_2_0 --json</code> 기준, 2026-06-22 확인). ⚠️ "Seedance 2.0 Mini"는 2026-06-22 Higgsfield 웹 UI에 신규(EXCLUSIVE) 노출된 모델로, 이 시점 CLI/MCP <code>models_explore</code> 카탈로그에는 별도 model_id로 아직 안 잡힌다(<code>seedance_2_0</code> 하나만 조회됨) — 생성 직전 <code>models_explore(action='search', query='seedance 2.0 mini')</code> 또는 CLI <code>higgsfield model list --video</code>로 별도 model_id 등장 여부를 재확인한다.<br />
+<strong>3단 백업 체인(전부 <code>seedance_2_0</code>, <code>mode</code> 파라미터만 다름 — Kling 3.0 Turbo는 백업에서 제외):</strong> ① <strong>Mini</strong>(별도 model_id가 카탈로그에서 확인된 경우에만 그 model_id로 720p·4초·<code>generate_audio:false</code> 호출) → ② <strong>Mini가 카탈로그에 안 잡히면 바로 백업1</strong> <code>seedance_2_0</code> + <code>mode:'fast'</code>("Seedance 2.0 Fast", 동일 720p·4초·<code>generate_audio:false</code>. <code>fast</code> 모드는 1080p 미지원이나 이 플레이북은 720p라 무관) → ③ Fast도 안 될 때만 백업2(최종) <code>seedance_2_0</code> + <code>mode:'std'</code>("Seedance 2.0 standard", 모델 기본 모드와 동일 파라미터). Mini 미확인을 std로 대신 채우지 않는다 — 미확인이면 곧장 ②로 간다.<br />
+5. 🟢 <strong>MCP 하나라도 연결되면 생성 단계로 갈 수 있다(CLI 없이도 OK).</strong> 여러 개면 병렬·역할 분담(단발=MCP, 일괄=CLI가 편함). <strong>내레이션 = ElevenLabs MCP(<code>text_to_speech</code>)가 기본</strong> — 이 환경에 연결되어 있으면 OK, 별도 키·<code>.env</code> 불필요. <em>(백업1: Higgsfield TTS(<code>inworld_text_to_speech</code>) — Higgsfield 연결만 있으면 OK. 백업2: ElevenLabs 직접 API 쓰려면 <code>system_v2/.env</code>의 <code>ELEVENLABS_API_KEY</code>도 확인 — <code>node system_v2/check_api_connections.mjs</code>.)</em> ⛔ <strong>연결 전까지 생성 단계로 가지 마라.</strong></p>
+<hr />
+<h2>🔌 생성 엔진 (Higgsfield CLI · Higgsfield MCP · Magnific MCP)</h2>
+<blockquote>
+<p>이미지·영상 생성 경로는 <strong>3가지</strong>(전부 OAuth, 키 관리 없음 — 내레이션은 ElevenLabs MCP 기본(키 불필요), ElevenLabs 직접 API 백업 경로만 키 필요). <strong>우열·강제 없다. 연결된 걸 쓰면 된다.</strong> 같은 컷을 여러 경로로 뽑아 베스트를 고르는 병렬도 가능.</p>
+<p><strong>특성 참고 (어느 것도 필수가 아님):</strong><br />
+- <strong>Higgsfield MCP</strong> — 기본 경로. 도구 호출이라 세션 안에서 결과가 바로 뜬다. 단발·인터랙티브 확인에 편하고, <strong>이것만으로 전 과정이 가능</strong>하다.<br />
+- <strong>Higgsfield CLI</strong> <em>(선택 — 깔려 있으면 써도 된다)</em> — 일괄·무인 배치에 편하다(<code>--wait</code>가 폴링 처리 → 토큰 절약, <code>--json</code> 배치). 결과는 URL 반환 → 저장은 다운로드 한 단계. <strong>미설치면 아래 [CLI 설치 안내]를 사용자에게 전달</strong>(설치는 선택).<br />
+- <strong>Magnific MCP</strong> <em>(선택)</em> — 업스케일·누끼·캐릭터 학습(Soul)·TTS 전용 툴 보유.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Higgsfield CLI</th>
+<th>Higgsfield MCP</th>
+<th>Magnific MCP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인증</td>
+<td><code>higgsfield auth login</code> (OAuth)</td>
+<td>데스크톱 앱 OAuth</td>
+<td><code>https://mcp.magnific.com</code> OAuth</td>
+</tr>
+<tr>
+<td>호출</td>
+<td>셸 <code>higgsfield generate create &lt;model&gt; …</code></td>
+<td>도구 <code>generate_image</code>/<code>generate_video</code></td>
+<td>도구 <code>images_generate</code>/<code>video_generate</code></td>
+</tr>
+<tr>
+<td>이미지 모델</td>
+<td><code>gpt_image_2</code>·<code>nano_banana_2</code>·<code>seedream_v4_5</code> … (<code>model list --image</code>)</td>
+<td><code>nano_banana_2</code>/<code>gpt_image_2</code></td>
+<td><code>imagen-nano-banana-2</code>(NB Pro)·<code>seedream-4</code> (<code>images_models_list</code>)</td>
+</tr>
+<tr>
+<td>영상 모델</td>
+<td><code>seedance_2_0</code>(기본, "Mini" 프리셋)·<code>kling3_0_turbo</code>·<code>kling3_0</code>·<code>veo3_1</code> … (<code>model list --video</code>)</td>
+<td><code>seedance_2_0</code>(기본)·<code>kling3_0_turbo</code></td>
+<td>(<code>video_models_list</code>)</td>
+</tr>
+<tr>
+<td>레퍼런스</td>
+<td><code>--image</code>/<code>--start-image</code>/<code>--end-image</code>/<code>--audio</code> = 로컬경로(자동 업로드) <strong>또는 이전 job ID</strong></td>
+<td><code>media_upload</code>→<code>media_confirm</code> → <code>medias:[{role,value}]</code></td>
+<td><code>creations_*_upload</code> 또는 reference 입력</td>
+</tr>
+<tr>
+<td>폴링/대기</td>
+<td><code>--wait</code>(토큰 0, <code>--wait-timeout 20m</code>)</td>
+<td>job_id 폴링(토큰 소모)</td>
+<td><code>creation_status</code>/<code>creations_wait</code></td>
+</tr>
+<tr>
+<td>캐릭터 일관성</td>
+<td><code>soul-id create</code> → <code>--soul-id</code>, 또는 job-ID ref 재사용</td>
+<td><code>media_upload</code>+generation_id 재사용</td>
+<td><code>custom_references_create</code>(Soul)</td>
+</tr>
+<tr>
+<td>비용 견적</td>
+<td><code>generate cost &lt;model&gt; …</code> (생성 전)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>크레딧</td>
+<td><code>account status</code></td>
+<td><code>balance</code></td>
+<td><code>account_balance</code></td>
+</tr>
+<tr>
+<td>보너스</td>
+<td><code>--json</code> 배치·크로스 에이전트</td>
+<td>계정당 8-동시 한도</td>
+<td>업스케일·누끼·TTS·Soul 학습</td>
+</tr>
+</tbody>
+</table>
+<h3>💻 CLI 핵심 명령 (생성 단계 — 전부 4종+프리뷰 승인 후 호출)</h3>
+<pre><code class="language-bash"># 이미지 1컷 (기본 모델 = nano_banana_2)
+higgsfield generate create nano_banana_2 --prompt &quot;&lt;규칙0[A] + IMG_ENHANCE + 장면&gt;&quot; --aspect_ratio 16:9 --resolution 2k --wait
+# 인물 일관성: 개별 컷은 nano_banana_2로 통일, 얼굴·제품 레퍼런스 이미지를 매 호출에 첨부 (부록 E #38 — soul_2 미사용)
+higgsfield generate create nano_banana_2 --prompt &quot;&lt;규칙0[A] + IMG_ENHANCE_PERSON + 장면&gt;&quot; --image ref_face.png --image ref_product.png --aspect_ratio 16:9 --resolution 2k --wait
+# 영상화: 확정 이미지(job ID 또는 경로)를 첫 프레임으로 (기본 모델 = seedance_2_0 &quot;Mini&quot;, 720p·4초·무음)
+higgsfield generate create seedance_2_0 --prompt &quot;&lt;규칙0[B] No-BGM + VIDEO_PROMPT_FORMAT 7필드(700자 이내)&gt;&quot; --image &lt;이미지_jobID_또는_경로&gt; --duration 4 --resolution 720p --generate_audio false --wait
+# 백업1 (Mini 카탈로그에 안 잡힐 때) — 동일 명령에 --mode fast 추가
+# 백업2 (Fast도 실패할 때, 최종) — 동일 명령에 --mode std 추가(모델 기본값과 동일)
+# [1단계] 30컷 일괄 프리뷰 (nano_banana_2 — 구성 확인용, 승인 전)
+# 셸 루프로 컷별 create --wait, 또는 --json 으로 job ID만 받고 나중에 generate wait
+# [2단계] 승인 후 — 컷마다 최종 1장 생성 (모델·해상도는 G8 승인 사양 그대로)
+</code></pre>
+<blockquote>
+<p><strong>결과 저장(CLI):</strong> CLI는 결과 <strong>URL을 반환</strong>한다 → <code>projects/{project}/{version}/images|videos/…</code>에 쌓으려면 URL 다운로드(PowerShell <code>Invoke-WebRequest -OutFile</code>, mac/linux <code>curl -o</code>) 한 단계를 붙인다. (MCP 경로는 도구가 경로/URL을 함께 반환.)<br />
+<strong>엔진 선택 디테일:</strong> 인물 일관성·시리즈 = nano_banana_2 계열(셋 다 보유). 한글 텍스트·포토리얼 = Magnific NB Pro/seedream. 업스케일·누끼·캐릭터학습·TTS = Magnific 전용. 세부 속도·동시한도 맵은 <code>04_reference_lessons-appendix.md</code> 부록 E.<br />
+<strong><code>gpt_image_2</code> 프롬프트 작성:</strong> <code>--prompt</code> 본문은 <code>gpt-image-prompt</code> 스킬(Scene/Subject/Important details/Use Case &amp; Constraints 4단 구조 + 안티슬롭 규칙 — "stunning" 대신 구체적 시각 정보, 텍스트는 따옴표+폰트 명시)을 적용해 작성한다. 단, 규칙 0[A]·<code>IMG_ENHANCE</code>(아래)가 더 상위 — 충돌 시 규칙 0이 이긴다. (인물/얼굴 ref 컷에는 여전히 쓰지 않음 — 부록 E #21.)<br />
+<strong>공통 규칙(경로 무관 동일):</strong> 규칙0 프리픽스 + ENHANCE 상수 주입(<code>03</code>), 상표는 디자인 언어로, 결과는 새 버전 폴더 저장(덮어쓰기 금지).</p>
+</blockquote>
+<h3>📥 CLI 설치 안내 (선택 — CLI를 쓰려는데 미설치일 때 사용자에게 그대로 전달)</h3>
+<blockquote>
+<p>CLI는 <strong>필수가 아니다</strong> — MCP만으로 전 과정이 된다. 사용자가 CLI를 쓰고 싶은데 안 깔려 있으면 아래 3단계를 그대로 안내한다. 인증·업로드·폴링을 CLI가 알아서 처리한다.<br />
+1. <strong>설치</strong> — <code>npm install -g @higgsfield/cli</code> <em>(한 줄. auth·업로드·폴링 자동)</em><br />
+2. <strong>로그인</strong> — <code>higgsfield auth login</code> <em>(브라우저가 열리고 5초, OAuth)</em><br />
+3. <strong>(선택) 에이전트에 스킬 연결</strong> — <code>npx skills add higgsfield-ai/skills</code> <em>(Claude Code·Cursor·Codex 등 12+ 에이전트 지원 → 이후 "Higgsfield로 이미지 만들어줘" 한마디로 호출)</em></p>
+</blockquote>
+<hr />
+<h2>⛔ 규칙 0 — 이미지·영상 생성 시 무조건·강제 (NON-NEGOTIABLE, 어떤 컷도 예외 없음)</h2>
+<blockquote>
+<p><strong>이 블록은 이 문서를 실행하는 모든 에이전트에 대한 최우선 강제 지시다. 아래 두 프리픽스를 빼먹은 생성은 즉시 폐기·재생성한다. 프롬프트 프리뷰 테이블에 "MANDATORY 프리픽스 주입됨"을 반드시 표기한다.</strong> (출처: Splitline 세션 — 사용자가 매 컷 반복 요청한 항목.)</p>
+</blockquote>
+<p><strong>[A] 이미지 — 모든 이미지 프롬프트에 아래를 반드시 합친다 (화각·구도·네거티브 필·역광 강제):</strong></p>
+<pre><code class="language-text">MANDATORY IMAGE PREFIX (append to EVERY image prompt, no exceptions):
+— 화각/구도(FOV &amp; COMPOSITION): ZERO front-facing, ZERO eye-level. The subject NEVER looks into the lens. Use ONLY low-angle, high-angle or dutch-angle framing; off-center rule-of-thirds; telephoto shallow-DOF (demai) with clear 3-layer FG/MG/BG depth separation. People = ONE dominant face in tight CU / OTS (the other person only a blurred wardrobe-colored back-sliver) — never a flat two-shot.
+— 역광/림라이트(BACKLIGHT): hard warm BACKLIGHT / rim-light from behind that traces the subject's silhouette and separates it from the background. Motivated key from a window/blinds. NO flat frontal fill light.
+— 네거티브 필(NEGATIVE FILL): place black negative fill on the shadow side — let one side of the face/object fall into deep controlled shadow; sculpt the form, raise contrast, kill flat ambient. LOW-KEY only, NEVER high-key, no blown highlights.
+</code></pre>
+<p><strong>[B] 영상 — 모든 영상 프롬프트의 맨 앞에 아래를 반드시 둔다 (BGM 절대 금지 · 효과음만):</strong></p>
+<pre><code class="language-text">MANDATORY VIDEO PREFIX (must be the FIRST line of EVERY video prompt, no exceptions):
+No background music. NO BGM. NO score. SFX only — at most a few subtle diegetic sound effects (footsteps, taps, cloth, clicks). The track carries NO musical bed whatsoever. (BGM/내레이션은 전부 후반 합성으로만 올린다.)
+</code></pre>
+<blockquote>
+<p>위 [A][B]는 아래 <code>IMG_ENHANCE</code>·<code>VID_ENHANCE</code>(규칙 5)보다 <strong>상위</strong>다. 충돌 시 규칙 0이 이긴다.</p>
+</blockquote>
+<h3>🚫 절대 규칙 5가지 (어기면 처음부터 다시 함)</h3>
+<ol>
+<li>✅ <strong>생성 직전 4종 확인 + 프리뷰 승인</strong> — 모델·해상도·오디오·비율을 표로 보여주고 사용자 OK를 받은 뒤에만 호출. (CLAUDE.md 규칙 5)</li>
+<li>🚫 <strong>덮어쓰기 금지</strong> — 수정할 때마다 새 버전 폴더(<code>v{날짜}_v2</code>, <code>_v3</code>…)와 새 HTML로 누적. HTML도 그 버전 폴더 <strong>안에</strong> 저장. (메모리: feedback-version-never-overwrite)</li>
+<li>👁️‍🗨️ <strong>생성 이미지를 Read 도구로 열지 않는다</strong> — 경로만 안내하고 사용자가 직접 확인. (컨텍스트 절약 + 20MB 제한)</li>
+<li>™️ <strong>상표·실존 브랜드명 금지</strong> — "애플워치"가 아니라 "티타늄 케이스에 오렌지 액션 버튼" 식으로 <strong>디자인 언어</strong>로 묘사. (필터 회피 + 법적 안전)</li>
+<li>💉 <strong>강화 프롬프트 기본 주입(v2 표준)</strong> — 모든 이미지 생성에 <code>IMG_ENHANCE</code>, 모든 영상 생성에 <code>VID_ENHANCE</code>를 항상 합쳐서 호출한다. (아래 [★ 필수 강화 프롬프트] 섹션. 시네마틱 실사·로우키·정면/아이레벨 배제·로우/하이/더치·데마이·매치컷 개연성 / 영상 다이내믹 무브먼트 강제.)</li>
+<li>📘 <strong>★v3 표준(Splitline 세션 반영) — 시작 전 [부록 E]를 먼저 읽는다.</strong> 모델 선택(인물=nano_banana_2, gpt-image 금지)·단독 얼굴 CU 문법·시트 재조명·한글 타이포 QA·루마키/크로마 파이프라인·병렬 운영의 확정 정답이 정리돼 있다. 시행착오 #21~#36. (→ <code>04_reference_lessons-appendix.md</code> 부록 E)</li>
+</ol>
+<hr />
+<h2>💉 ★ 필수 강화 프롬프트 (이미지·영상 기본 주입) — v2 표준</h2>
+<blockquote>
+<p>이번 AETHER 세션에서 확정된 품질 기준. <strong>모든 컷 생성 시 아래 두 상수를 프롬프트에 기본 주입</strong>한다(프로젝트 무관 재사용). 이미지 생성 호출의 공통 프롬프트(COMMON)에 <code>IMG_ENHANCE</code>를, 영상 프롬프트 빌더에 <code>VID_ENHANCE</code>를 항상 합친다. 이미지/영상 프롬프트는 모델 입력용이라 영어로 적는다(humanizer 미적용).</p>
+</blockquote>
+<h3>1) 🖼️ IMG_ENHANCE — 이미지 강화 (모든 이미지 컷 공통)</h3>
+<p>의도(한글): 더 시네마틱한 실사 + <strong>얼굴 디테일 강화</strong> / <strong>정면·아이레벨 화각 전면 삭제</strong>(렌즈 응시 금지) / 로우·하이·<strong>더치 앵글</strong> + 다이내믹 광각 + <strong>데마이(얕은 심도) 클로즈업</strong> 적극 / <strong>하이키 금지, 로우키 고급</strong> / 컷 간 <strong>매치컷·트랜지션 개연성</strong> / 영상화 시 다이내믹하게 살아나는 키프레임.</p>
+<pre><code class="language-text">CINEMATIC PHOTOREAL — REQUIRED ENHANCEMENT (append to every image prompt):
+Heightened photoreal realism with ENHANCED FACIAL DETAIL (lifelike skin micro-texture, visible pores, subsurface scattering, sharp eye catchlights); a real frame from a premium TV commercial, never CGI / 3D-render / illustration.
+ABSOLUTELY NO front-facing and NO eye-level framing — the subject never looks straight into the lens; no honest flat eye-level full shots.
+Aggressively use TV-CF camera grammar (화각·구도): LOW-ANGLE, HIGH-ANGLE and DUTCH-ANGLE compositions; off-center rule-of-thirds; dynamic WIDE-ANGLE perspectives AND shallow-depth-of-field telephoto CLOSE-UPS (demai bokeh) with clear 3-layer FG/MG/BG depth.
+BACKLIGHT MANDATORY (역광/림라이트): hard warm back-light / rim-light from behind tracing the subject's silhouette and separating it from the background; motivated key from window/blinds; NO flat frontal fill.
+NEGATIVE FILL MANDATORY (네거티브 필): black negative fill on the shadow side — one side falls into deep controlled shadow to sculpt the form and raise contrast; kill flat ambient.
+LOW-KEY luxurious grade (NEVER high-key): deep controlled shadows, restrained highlights, premium cinematic mood matching the reference.
+Compose so each cut CONNECTS to its neighbours via match-cuts / natural transitions — strengthen narrative continuity and context across cuts.
+Frame it as a keyframe primed for dynamic video motion (built-in movement potential).
+</code></pre>
+<h3>2) 🎥 VID_ENHANCE — 영상 강화 (모든 영상 컷 공통)</h3>
+<p>의도(한글): <strong>① 오디오는 무조건 BGM 없이 효과음(SFX)만</strong>(가장 강한 고정 규칙 — 규칙 0 [B] 참조, BGM·내레이션은 후반 합성) / ② 컷 상황에 맞게 핸드헬드·dolly in·arc·로봇암 등 <strong>다이내믹 무브먼트를 반드시</strong> 넣고 컷 간 매치컷/트랜지션으로 연결. (단, 크로마키 플레이트 영상은 키잉을 위해 <strong>locked-off 고정 카메라</strong> 예외 — 부록 E 참조.)</p>
+<pre><code class="language-text">DYNAMIC MOTION — REQUIRED ENHANCEMENT (the audio line MUST be first on every video prompt):
+No background music. NO BGM. NO score. SFX only — at most a few subtle diegetic sound effects; no musical bed whatsoever.
+Every clip MUST carry deliberate dynamic camera movement chosen to fit the cut — handheld energy, dolly / push-in, arc / orbit, crane-up / pull-up, ROBOT-ARM dynamic sweep, crash-zoom, tilt-up, over-the-shoulder telephoto. (EXCEPTION: chroma-green plate clips stay LOCKED-OFF static for clean keying — only the subject moves.)
+Write a real moving-shot keyframe (mid-action + motion blur), and add a match-cut / transition link to the adjacent cut.
+</code></pre>
+<blockquote>
+<p><strong>적용 위치:</strong> GATE 6 체크리스트에 LOW-KEY·NO-eye-level·더치/로우/하이·데마이·<strong>역광 림라이트·네거티브 필</strong>을 기본 ON / GATE 8 프리뷰에 <strong>"규칙 0 MANDATORY 프리픽스 + 강화 상수 주입됨"</strong> 표기 / GATE 9 이미지 <code>COMMON += 규칙0[A] + IMG_ENHANCE</code> / GATE 12 영상 프롬프트 = <strong><code>규칙0[B](No BGM·SFX only)</code> 를 맨 앞에 두고</strong>, <code>03_reference_enhance-prompts.md</code>의 <code>VIDEO_PROMPT_FORMAT</code>(2b) 7필드 구조로 채우며 <code>VID_ENHANCE</code>의 요구사항(다이내믹 무브먼트·매치컷 연결)은 SHOT GROUP 비트 안에 녹여 쓴다(700자 캡 — 텍스트 블록 통째 결합 금지). 컷별 추천 영상 프롬프트(GATE 17 자동입력용 <code>video_prompts.json</code>)에도 <strong>맨 앞 줄에 No-BGM/SFX-only</strong>를 박고 컷 상황에 맞는 카메라 무브를 미리 넣어둔다.<br />
+<strong>유형별 확장 상수</strong>(<code>IMG_ENHANCE_PERSON</code>/<code>IMG_ENHANCE_OBJECT</code>, <code>VID_ENHANCE_SFX</code>/<code>VID_ENHANCE_OBJECT</code>)의 풀텍스트와 영상 공통 <code>CAMERA_LOOK</code>/<code>VIDEO_PROMPT_FORMAT</code>은 <code>03_reference_enhance-prompts.md</code> 참조.</p>
+</blockquote>
+<hr />
+<h2>🗺️ 전체 흐름</h2>
+<pre><code>[시작 전]
+G0 생성 엔진 연결 확인 (Higgsfield CLI/MCP · Magnific — 최소 하나, 안 되어 있으면 연결 먼저) → 
+
+[기획·스토리보드]
+G1 제품 정의 → G2 광고 접근방식 ★ → G3 감정 서사 컨셉 ★ → G4 주인공·관계·공간
+→ G5 3막 구조 &amp; 제품의 역할 → G6 비주얼 문법 → G7 일관성 전략
+→ [기획안 정리·승인] → G8 생성 전 체크
+→ G9a gpt_image_2 · 16:9 · 1K High — 30컷 프리뷰 시트 1장 생성 → [구성 확인]
+→ G9a-rev nano_banana Pro · 16:9 · 2K · 1/4 · Unlimited ON — 수정 컷 개별 생성 (반복)
+→ G9a-final gpt_image_2 · 16:9 · 2K · High quality — 최종 확인 시트 재생성 → [승인]
+→ G9b nano_banana Pro · 16:9 · 2K · 1/4 · Unlimited ON — 30개 개별 이미지 일괄 생성(+에러)
+→ G10 HTML 빌드·검수 → G11 수정=새 버전
+
+[제작 — 스토리보드 확정 후]
+→ G12 영상화(Seedance 2.0 Mini, 기본) → G13 BGM(Suno 프롬프트→사용자 생성) → G14 내레이션 VO(ElevenLabs MCP 기본, 백업 Higgsfield TTS)
+→ G15 로고(투명 PNG) → G16 최종 완성 스토리보드 조립(기획안+VO 포함)
+
+[리뷰·수정 — 생성물마다]
+→ G17 인터랙티브 리뷰·수정 콘솔 (자동 팝업 HTML에서 컷 선택→수정요청 Enter→즉시 재생성)
+</code></pre>
+<p>★ = 가장 많이 갈아엎은, 제일 중요한 분기. (G1~G11은 한 번에, G12~G17은 스토리보드 확정 뒤 순서대로/선택적으로.)</p>
+<blockquote>
+<p><strong>BGM은 API로 자동생성하지 않는다.</strong> GATE 13에서 Suno 프롬프트를 제안하고, 사용자가 직접 Suno에서 생성해 후반 편집(최종 조립 / 부록 C-4 프리미어)에서 얹는다.</p>
+</blockquote>
+<hr />
+<h2>🆘 막혔을 때의 황금 규칙</h2>
+<p>사용자가 제안을 계속 "별로"라고 하면 같은 걸 또 던지지 말고 — ① <strong>피하고 싶은 점 한 줄</strong>을 물어 키워드를 받거나, ② <strong>실존 레퍼런스 광고를 웹에서 분석</strong>해 그 문법으로 다시 제안한다(GATE 2 참고). 무한 재생성은 토큰·시간 낭비.</p>
+</body></html>
