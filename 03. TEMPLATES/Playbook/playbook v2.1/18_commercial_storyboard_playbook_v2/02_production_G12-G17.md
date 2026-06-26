@@ -44,7 +44,72 @@
 > **시행착오 #17 — `fetch failed`:** 노드 fetch 일시 실패(네트워크/게이트웨이). 특정 컷에서 1~3회 날 수 있음 → 재시도.
 > **media_id TTL:** 업로드 후 약 15분 내 제출. 만료 시 잡이 조용히 실패 → 재업로드 후 재제출.
 
-**산출물:** `videos/seedance/halo_cNN.mp4` 30개 + 한 페이지 영상 리뷰 HTML(`<video autoplay muted loop>`).
+**산출물 1:** `videos/seedance/{name}_cNN.mp4` 30개.
+
+---
+
+### 📽️ 영상 스토리보드 HTML 빌드 (`system_v2/_build_{name}_video_storyboard.py`)
+
+**왜:** 영상 생성 직후, 이미지 스토리보드(GATE 10)와 같은 카드 그리드 구조로 — 이미지 대신 `<video autoplay muted loop playsinline>` 클립을 박은 HTML 한 파일을 만든다. 클라이언트·팀에 "움직이는 스토리보드"로 공유하는 핵심 산출물이다.
+
+#### 빌드 스펙
+
+| 항목 | 내용 |
+|---|---|
+| 입력 | `videos/seedance/{name}_cNN.mp4` (GATE 12 생성물) · `scenario.md`(컷 메타: 막·타임코드·장면·VO) |
+| 출력 | `projects/{name}/v{날짜}/storyboard_{NAME}_video_v{날짜}.html` (새 버전 폴더 안, 덮어쓰기 금지) |
+| 임베드 방식 | `<video>` `src`는 **상대경로**(`../../videos/seedance/cNN.mp4`) — 동영상은 base64 임베드 금지(파일 사이즈 폭증). HTML은 버전 폴더 안에, mp4는 `videos/seedance/`에 그대로 유지 |
+| 카드 구성 | 이미지 스토리보드(GATE 10)와 동일 레이아웃 + `<video autoplay muted loop playsinline style="width:100%">` · 컷번호 배지 · 막(Act) 배지 · 타임코드 · 앵글/샷 · 한글 장면 · VO 라인 |
+| 스타일 | 다크 `#0b0d12`, 카드 그리드, GATE 10과 동일 시각 언어 |
+
+```python
+# system_v2/_build_{name}_video_storyboard.py 패턴
+import os, json
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 절대경로 하드코딩 금지
+VIDEO_DIR  = os.path.join(ROOT, "videos", "seedance")
+OUT_DIR    = os.path.join(ROOT, "projects", PROJECT, VERSION)
+SCENARIO   = os.path.join(ROOT, "scenario.md")  # 또는 JSON 파싱본
+OUT_HTML   = os.path.join(OUT_DIR, f"storyboard_{PROJECT}_video_{VERSION}.html")
+
+cards = ""
+for cut in cuts:  # scenario.md 파싱 — 컷번호·막·타임코드·장면·VO
+    rel_path = os.path.relpath(os.path.join(VIDEO_DIR, f"{cut['id']}.mp4"), OUT_DIR)
+    cards += f"""
+    <div class="card">
+      <video autoplay muted loop playsinline src="{rel_path}"></video>
+      <div class="badge-cut">{cut['id']}</div>
+      <div class="badge-act">{cut['act']}</div>
+      <div class="meta">{cut['timecode']} · {cut['angle']} · {cut['scene']}</div>
+      <div class="vo">{cut['vo']}</div>
+    </div>"""
+
+html = f"""<!DOCTYPE html><html lang="ko"><head>
+<meta charset="UTF-8"><title>Video Storyboard — {PROJECT}</title>
+<style>
+  body{{background:#0b0d12;color:#e8e8e8;font-family:sans-serif;margin:0;padding:20px}}
+  .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}}
+  .card{{background:#16191f;border-radius:8px;overflow:hidden;padding-bottom:12px}}
+  video{{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}}
+  .meta,.vo{{padding:4px 12px;font-size:12px;color:#aaa}}
+  .badge-cut,.badge-act{{display:inline-block;margin:6px 4px 0 12px;
+    padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}}
+  .badge-cut{{background:#1e3a5f;color:#7ec8f7}}
+  .badge-act{{background:#2a1a3e;color:#c4a0f7}}
+</style></head><body>
+<h1 style="color:#fff;margin-bottom:20px">🎬 {PROJECT} — Video Storyboard</h1>
+<div class="grid">{cards}</div>
+</body></html>"""
+
+os.makedirs(OUT_DIR, exist_ok=True)
+with open(OUT_HTML, "w", encoding="utf-8") as f: f.write(html)
+print(f"✅ Video storyboard → {OUT_HTML}")
+```
+
+> **GATE 10과 차이점:** 이미지 스토리보드는 PNG를 base64로 박아 자체완결. 영상 스토리보드는 mp4를 상대경로로 참조 — HTML과 mp4가 정해진 상대 위치에 있어야 재생된다. 공유 시 **폴더째(버전 폴더 + `videos/seedance/` 포함)** 압축해서 보낸다.
+> **검수:** GATE 10과 동일 — 에이전트는 경로만 안내, 사람이 브라우저에서 직접 확인(규칙 3).
+> **수정:** GATE 11 원칙 그대로 — 재생성 컷이 생기면 새 버전 폴더에 mp4 저장 후 스크립트 재실행.
+
+**산출물 2:** `storyboard_{NAME}_video_v{날짜}.html` (버전 폴더 안, 브라우저에서 바로 재생).
 
 > **→ 일괄 영상화 + 리뷰:** 확정 스토리보드를 **"전체 영상으로 돌리기"** 한 방으로 배치 생성하고, 끝나면 **GATE 17 영상 리뷰 콘솔**을 자동 팝업해 컷별로 초수·화질을 고르고 수정요청을 Enter로 보내 Seedance 2.0(Mini→백업1 Fast→백업2 standard) 재생성을 건다.
 

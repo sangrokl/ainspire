@@ -201,7 +201,7 @@ G0 생성 엔진 연결 확인 (Higgsfield CLI/MCP · Magnific — 최소 하나
 [기획·스토리보드]
 G1 제품 정의 → G2 광고 접근방식 ★ → G3 감정 서사 컨셉 ★ → G4 주인공·관계·공간
 → G5 3막 구조 & 제품의 역할 → G6 비주얼 문법 → G7 일관성 전략
-→ [기획안 정리·승인] → G8 생성 전 체크
+→ [기획안 정리·승인] → G7.5 30컷 스토리 작성·승인 ★ → G8 생성 전 체크
 → G9a gpt_image_2 · 16:9 · 1K High — 30컷 프리뷰 시트 1장 생성 → [구성 확인]
 → G9a-rev nano_banana Pro · 16:9 · 2K · 1/4 · Unlimited ON — 수정 컷 개별 생성 (반복)
 → G9a-final gpt_image_2 · 16:9 · 2K · High quality — 최종 확인 시트 재생성 → [승인]
@@ -209,7 +209,7 @@ G1 제품 정의 → G2 광고 접근방식 ★ → G3 감정 서사 컨셉 ★ 
 → G10 HTML 빌드·검수 → G11 수정=새 버전
 
 [제작 — 스토리보드 확정 후]
-→ G12 영상화(Seedance 2.0 Mini, 기본) → G13 BGM(Suno 프롬프트→사용자 생성) → G14 내레이션 VO(ElevenLabs MCP 기본, 백업 Higgsfield TTS)
+→ G12 영상화(Seedance 2.0 Mini, 기본) → G12.5 영상 스토리보드 HTML 빌드(_build_*_video_storyboard.py · video 상대경로 · 버전 폴더 저장) → G13 BGM(Suno 프롬프트→사용자 생성) → G14 내레이션 VO(ElevenLabs MCP 기본, 백업 Higgsfield TTS)
 → G15 로고(투명 PNG) → G16 최종 완성 스토리보드 조립(기획안+VO 포함)
 
 [리뷰·수정 — 생성물마다]
