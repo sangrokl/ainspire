@@ -6,20 +6,20 @@
 
 ---
 
-## 🚪 GATE 12 — 영상화 (Seedance 2.0 "Mini", 기본 · Higgsfield CLI/MCP · Magnific — 백업1: Seedance 2.0 Fast · 최종 백업: Seedance 2.0 standard)
+## 🚪 GATE 12 — 영상화 (Kling 3.0 Turbo, 기본 · Higgsfield CLI/MCP · Magnific — 백업: Seedance 2.0)
 
 **왜:** 정지 스토리보드를 컷당 4초 움직이는 클립으로. "모든 영상에 다이내믹 무브먼트"가 들어가야 영상다워진다.
 
 ### ❓ Q12-1. 설정 (4종 + 승인)
 | 항목 | 기본 |
 |---|---|
-| MODEL | CLI/Higgsfield MCP `seedance_2_0`("Seedance 2.0 Mini" 프리셋, 기본) 또는 Magnific `video_generate`(`video_models_list`로 모델 확인) — Mini가 카탈로그에 없으면 백업1: `seedance_2_0` + `mode:'fast'`("Seedance 2.0 Fast") → 그래도 안 되면 백업2(최종): `seedance_2_0` + `mode:'std'`("Seedance 2.0 standard"). Kling 3.0 Turbo는 백업에서 제외 |
-| 해상도 | `720p`(`--resolution` 옵션은 `480p`/`720p`/`1080p` 허용, 모델 기본값도 720p — 이 플레이북은 720p로 고정) |
+| MODEL | CLI/Higgsfield MCP `kling3_0_turbo`("Kling 3.0 Turbo", 기본) 또는 Magnific `video_generate`(`video_models_list`로 모델 확인) — 실패 시 백업: `seedance_2_0`("Seedance 2.0", 1080p·4초·무음) → 그래도 안 되면 `mode:'fast'`("Seedance 2.0 Fast") → 최종: `mode:'std'`("Seedance 2.0 standard") |
+| 해상도 | `1080p`(`--resolution` 옵션은 `480p`/`720p`/`1080p` 허용 — 이 플레이북은 1080p로 고정) |
 | 비율 | `--aspect_ratio`로 `16:9`/`9:16`/`1:1`/`4:3`/`3:4`/`21:9`/`auto` 중 선택(기본 16:9). `medias` role은 `image`/`start_image`/`end_image`/`video`/`audio` |
 | 길이 | **4초 고정**(`--duration`은 4~15초 범위 허용, 모델 기본값 5 — 이 플레이북은 항상 4) — `scenario.md`의 컷별 `[duration]`이 더 짧으면 4초로 그대로 생성한 뒤 GATE 16 최종 조립에서 트림 |
 | 오디오 | `generate_audio`가 **기본 true** → 규칙0[B](No-BGM) 위반을 막기 위해 매 호출 `generate_audio:false`로 명시(디제틱 SFX는 영상 프롬프트 SFX 필드 지시로만) |
 
-- **비용 미리보기**: `generate_video(get_cost:true)` — 모델·해상도·길이 조합에 따라 단가가 다르므로 **반드시 `get_cost:true`로 실제 견적 확인 후** `balance`로 잔액 확인 후 승인(추정치로 단정하지 않는다). 정확한 파라미터는 호출 전 `models_explore(action='get', model_id='seedance_2_0')` 또는 CLI `higgsfield model get seedance_2_0 --json`으로 확정(2026-06-22 확인). ⚠️ "Seedance 2.0 Mini"는 Higgsfield 웹 UI에 같은 날 신규(EXCLUSIVE) 노출된 모델로, CLI/MCP 카탈로그에는 아직 별도 model_id로 안 잡힌다 — 호출 전 `models_explore(action='search', query='seedance 2.0 mini')`로 재확인하고, 없으면 위 `seedance_2_0` 파라미터로 호출한다.
+- **비용 미리보기**: `generate_video(get_cost:true)` — 모델·해상도·길이 조합에 따라 단가가 다르므로 **반드시 `get_cost:true`로 실제 견적 확인 후** `balance`로 잔액 확인 후 승인(추정치로 단정하지 않는다). 정확한 파라미터는 호출 전 `models_explore(action='get', model_id='kling3_0_turbo')` 또는 CLI `higgsfield model get kling3_0_turbo --json`으로 확정한다.
 
 ### ❓ Q12-2. 컷별 카메라 무브먼트 (상황에 맞게 배정 — TV CF 문법)
 컷마다 **하나**를 명시: 핸드헬드 / 달리인·푸시인 / 아크·오빗 / 크레인업·풀업 / **로봇암 다이내믹 스윕** / 크래시줌 / 틸트업 / 오버숄더 망원. 정지 컷이 아니라 **"움직이는 샷의 키프레임"**으로 프롬프트를 쓴다(중간동작·모션블러). 앞 컷→뒤 컷 매치컷/트랜지션 연결고리도 프롬프트에 한 줄.
@@ -30,12 +30,12 @@
 
 ### ✅ 실행 절차 (검증된 순서)
 1. **업로드**: `media_upload(files[])`로 30컷 presigned URL 발급 → 각 PNG를 `urllib PUT`(또는 curl) → `media_confirm(media_ids[])`. (이미지 ≤1792×1008·4MB 확인. magnific 2K 업스케일본은 1080p jpg q92로 다운스케일 후 업로드.)
-2. **생성**: 컷마다 `generate_video({model:'seedance_2_0', params:{resolution:'720p', generate_audio:false}, duration:4, aspect_ratio:'16:9', prompt(VIDEO_PROMPT_FORMAT 7필드, 700자 이내), medias:[{role:"start_image", value:<media_id>}]})` → `job_id` 수집. (정확한 파라미터 중첩 구조는 호출 전 `models_explore(action='get', model_id='seedance_2_0')`로 확정 — 위 형태는 CLI 플래그를 그대로 옮긴 추정이다.)
-3. **폴링·다운로드는 메인에서 하지 말고 백그라운드 에이전트에 위임** — 8-동시 한도를 지키며 완료분을 받는 대로 `videos/seedance/{cut}.mp4`로 저장.
+2. **생성**: 컷마다 `generate_video({model:'kling3_0_turbo', params:{resolution:'1080p', generate_audio:false}, duration:4, aspect_ratio:'16:9', prompt(VIDEO_PROMPT_FORMAT 7필드, 700자 이내), medias:[{role:"start_image", value:<media_id>}]})` → `job_id` 수집. (정확한 파라미터 중첩 구조는 호출 전 `models_explore(action='get', model_id='kling3_0_turbo')`로 확정 — 위 형태는 CLI 플래그를 그대로 옮긴 추정이다.)
+3. **폴링·다운로드는 메인에서 하지 말고 백그라운드 에이전트에 위임** — 8-동시 한도를 지키며 완료분을 받는 대로 `videos/kling/{cut}.mp4`로 저장.
 
-> **Higgsfield CLI로 영상화할 때 (업로드·폴링 자동):** 컷마다 `higgsfield generate create seedance_2_0 --prompt "<규칙0[B] No-BGM + VIDEO_PROMPT_FORMAT 7필드(700자 이내)>" --image <컷이미지_경로_또는_jobID> --duration 4 --resolution 720p --generate_audio false --wait`. `--image`가 업로드를 자동 처리(media TTL 신경 안 씀), `--wait`가 폴링까지 흡수해 Claude 토큰 0. 8-동시 한도는 셸에서 동시 실행 수로 조절. 비용 견적은 `higgsfield generate cost seedance_2_0 …`. 결과 URL은 `videos/seedance/{cut}.mp4`로 다운로드.
+> **Higgsfield CLI로 영상화할 때 (업로드·폴링 자동):** 컷마다 `higgsfield generate create kling3_0_turbo --prompt "<규칙0[B] No-BGM + VIDEO_PROMPT_FORMAT 7필드(700자 이내)>" --image <컷이미지_경로_또는_jobID> --duration 4 --resolution 1080p --generate_audio false --wait`. `--image`가 업로드를 자동 처리(media TTL 신경 안 씀), `--wait`가 폴링까지 흡수해 Claude 토큰 0. 8-동시 한도는 셸에서 동시 실행 수로 조절. 비용 견적은 `higgsfield generate cost kling3_0_turbo …`. 결과 URL은 `videos/kling/{cut}.mp4`로 다운로드.
 
-> **백업 체인 (전부 `seedance_2_0`, `mode`만 다름):** "Seedance 2.0 Mini"가 카탈로그에 안 잡히거나 결과가 만족스럽지 않으면 → **백업1** 동일 구조에 `mode:'fast'`("Seedance 2.0 Fast", CLI `--mode fast`)를 추가해 재호출 → 그래도 안 되면 → **백업2(최종)** `mode:'std'`("Seedance 2.0 standard", CLI `--mode std`, 모델 기본 모드와 동일)로 재호출. 해상도·길이·`generate_audio:false`는 세 단계 모두 동일(720p·4초·무음). Kling 3.0 Turbo는 더 이상 이 백업 체인에 포함하지 않는다.
+> **백업 체인:** Kling 3.0 Turbo 실패 또는 결과 불만족 시 → **백업** `seedance_2_0`("Seedance 2.0", CLI `higgsfield generate create seedance_2_0 … --resolution 1080p …`)으로 재호출 → 그래도 안 되면 `--mode fast`("Seedance 2.0 Fast") → 최종 `--mode std`("Seedance 2.0 standard"). 해상도·길이·`generate_audio:false`는 전 단계 동일(1080p·4초·무음).
 
 ### ⚠️ 에러 핸들링 (실제로 겪음)
 > **시행착오 #14 — 동시 8개 한도:** 플랜상 **max 8 concurrent jobs**. 9번째는 `Rate limit reached`. → 8개씩 큐로 돌리며 완료될 때마다 다음 제출. 이 반복은 백그라운드 에이전트가 관리.
@@ -44,7 +44,7 @@
 > **시행착오 #17 — `fetch failed`:** 노드 fetch 일시 실패(네트워크/게이트웨이). 특정 컷에서 1~3회 날 수 있음 → 재시도.
 > **media_id TTL:** 업로드 후 약 15분 내 제출. 만료 시 잡이 조용히 실패 → 재업로드 후 재제출.
 
-**산출물 1:** `videos/seedance/{name}_cNN.mp4` 30개.
+**산출물 1:** `videos/kling/{name}_cNN.mp4` 30개.
 
 ---
 
@@ -56,9 +56,9 @@
 
 | 항목 | 내용 |
 |---|---|
-| 입력 | `videos/seedance/{name}_cNN.mp4` (GATE 12 생성물) · `scenario.md`(컷 메타: 막·타임코드·장면·VO) |
+| 입력 | `videos/kling/{name}_cNN.mp4` (GATE 12 생성물) · `scenario.md`(컷 메타: 막·타임코드·장면·VO) |
 | 출력 | `projects/{name}/v{날짜}/storyboard_{NAME}_video_v{날짜}.html` (새 버전 폴더 안, 덮어쓰기 금지) |
-| 임베드 방식 | `<video>` `src`는 **상대경로**(`../../videos/seedance/cNN.mp4`) — 동영상은 base64 임베드 금지(파일 사이즈 폭증). HTML은 버전 폴더 안에, mp4는 `videos/seedance/`에 그대로 유지 |
+| 임베드 방식 | `<video>` `src`는 **상대경로**(`../../videos/kling/cNN.mp4`) — 동영상은 base64 임베드 금지(파일 사이즈 폭증). HTML은 버전 폴더 안에, mp4는 `videos/kling/`에 그대로 유지 |
 | 카드 구성 | 이미지 스토리보드(GATE 10)와 동일 레이아웃 + `<video autoplay muted loop playsinline style="width:100%">` · 컷번호 배지 · 막(Act) 배지 · 타임코드 · 앵글/샷 · 한글 장면 · VO 라인 |
 | 스타일 | 다크 `#0b0d12`, 카드 그리드, GATE 10과 동일 시각 언어 |
 
@@ -66,7 +66,7 @@
 # system_v2/_build_{name}_video_storyboard.py 패턴
 import os, json
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 절대경로 하드코딩 금지
-VIDEO_DIR  = os.path.join(ROOT, "videos", "seedance")
+VIDEO_DIR  = os.path.join(ROOT, "videos", "kling")
 OUT_DIR    = os.path.join(ROOT, "projects", PROJECT, VERSION)
 SCENARIO   = os.path.join(ROOT, "scenario.md")  # 또는 JSON 파싱본
 OUT_HTML   = os.path.join(OUT_DIR, f"storyboard_{PROJECT}_video_{VERSION}.html")
@@ -105,13 +105,13 @@ with open(OUT_HTML, "w", encoding="utf-8") as f: f.write(html)
 print(f"✅ Video storyboard → {OUT_HTML}")
 ```
 
-> **GATE 10과 차이점:** 이미지 스토리보드는 PNG를 base64로 박아 자체완결. 영상 스토리보드는 mp4를 상대경로로 참조 — HTML과 mp4가 정해진 상대 위치에 있어야 재생된다. 공유 시 **폴더째(버전 폴더 + `videos/seedance/` 포함)** 압축해서 보낸다.
+> **GATE 10과 차이점:** 이미지 스토리보드는 PNG를 base64로 박아 자체완결. 영상 스토리보드는 mp4를 상대경로로 참조 — HTML과 mp4가 정해진 상대 위치에 있어야 재생된다. 공유 시 **폴더째(버전 폴더 + `videos/kling/` 포함)** 압축해서 보낸다.
 > **검수:** GATE 10과 동일 — 에이전트는 경로만 안내, 사람이 브라우저에서 직접 확인(규칙 3).
 > **수정:** GATE 11 원칙 그대로 — 재생성 컷이 생기면 새 버전 폴더에 mp4 저장 후 스크립트 재실행.
 
 **산출물 2:** `storyboard_{NAME}_video_v{날짜}.html` (버전 폴더 안, 브라우저에서 바로 재생).
 
-> **→ 일괄 영상화 + 리뷰:** 확정 스토리보드를 **"전체 영상으로 돌리기"** 한 방으로 배치 생성하고, 끝나면 **GATE 17 영상 리뷰 콘솔**을 자동 팝업해 컷별로 초수·화질을 고르고 수정요청을 Enter로 보내 Seedance 2.0(Mini→백업1 Fast→백업2 standard) 재생성을 건다.
+> **→ 일괄 영상화 + 리뷰:** 확정 스토리보드를 **"전체 영상으로 돌리기"** 한 방으로 배치 생성하고, 끝나면 **GATE 17 영상 리뷰 콘솔**을 자동 팝업해 컷별로 초수·화질을 고르고 수정요청을 Enter로 보내 Kling 3.0 Turbo(백업: Seedance 2.0) 재생성을 건다.
 
 ---
 
@@ -224,7 +224,57 @@ print(f"✅ Video storyboard → {OUT_HTML}")
 
 **왜:** 컷을 채팅으로 "9번 다시" 일일이 말하지 말고, **결과 HTML에서 직접 [컷 선택 → 수정요청 입력 → Enter]** 하면 그 자리에서 재생성되게 한다.
 
-> **상태: 선택·고급 기능 — 콘솔 패키지가 `review_console/`(키트 루트)에 포함되어 있다.** 핵심 파이프라인(G1~G16)은 콘솔 없이도 작동한다. 콘솔을 쓰려면 `review_console/`에서 `python start.py --media-dir <프로젝트 이미지/영상 폴더> --mode image|video --backend agent` (원클릭: 빌드+서버+워처+브라우저). 사용법은 `review_console/START_HERE.md`, 내부 구조는 아래 스펙 참조.
+---
+
+### ✅ 17-0. v2 내장형 (현재 권장) — `_build_*_embed.py` + `_review_server.py`
+
+> **G10 HTML 빌드 시점에 리뷰 패널이 이미 내장되어 있다.** 별도 콘솔 패키지 불필요. 이미지·영상 모두 이 방식을 기본으로 사용한다.
+
+#### 실행 흐름
+```bash
+# 1. HTML 빌드 (G10)
+python3 system_v2/_build_{name}_embed.py
+
+# 2. 리뷰 서버 실행 → 브라우저 자동 오픈 (http://localhost:7800)
+python3 system_v2/_review_server.py [--project PROJECT] [--version v20260626] [--port 7800]
+
+# ⚠️ open preview/storyboard.html 로 직접 열지 말 것 — Chrome이 localhost fetch 차단
+```
+
+#### 패널 UI (카드 클릭 시 우측 슬라이드인)
+| 컨트롤 | 이미지 | 영상 |
+|---|---|---|
+| 모드 | 🖼 이미지 | ▶ 영상 |
+| 모델 드롭다운 | nano_banana_2(기본), flux_2, seedream_v4_5, gpt_image_2, flux_kontext | kling3_0_turbo(기본), kling3_0, seedance_2_0, seedance_2_0_mini, veo3, veo3_1 |
+| 해상도 | 1k / **2k** / 4k | — |
+| 길이 | — | 3 / 4 / **5** / 8초 |
+| 화질 | — | 720p / **1080p** |
+| 수정 요청 | Enter=생성, Shift+Enter=줄바꿈 | 동일 |
+
+#### 서버 구조
+- `POST /api/regenerate` → `higgsfield generate create <model> --wait --json` CLI 직접 실행
+- 이미지 완료 → base64 응답 → 카드 `<img>` src 인라인 교체
+- 영상 완료 → `/api/videos/cut_XX.mp4` URL → 카드에 `<video>` 요소 삽입
+- CORS: `Access-Control-Allow-Origin: *` + `Access-Control-Allow-Private-Network: true` (Chrome PNA 대응)
+- 헤더 뱃지: 서버 연결됨(녹색) / 오프라인(빨간색) — 8초마다 ping
+
+#### 빌드 스크립트 패턴 (신규 프로젝트)
+```python
+# system_v2/_build_{NAME}_embed.py 상단 상수만 교체
+ROOT        = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+VERSION_DIR = os.path.join(ROOT, "projects", "{NAME}", "v{날짜}")
+RAW_DIR     = os.path.join(VERSION_DIR, "assets", "images")
+PREVIEW_DIR = os.path.join(VERSION_DIR, "preview")
+OUTFILE     = "storyboard_{NAME}_30cut_v{날짜}.html"
+CUTS = [{"n": 1, "act": "1막", "scene": "...", "role": ""}, ...]
+# JS, HTML 구조, 서버 코드는 VELVET_NOIR 버전에서 복사·재사용
+```
+
+---
+
+> **하위 호환:** 기존 `review_console/` 패키지(v1)도 계속 동작한다. 복잡한 멀티 프로젝트·워처 큐가 필요하면 17-2 이하 v1 스펙을 참조.
+
+---
 
 ### 🔁 17-0. 동작 요약 (사용자 입장)
 1. 이미지를 다 뽑으면 **리뷰 콘솔 HTML이 자동으로 팝업**(브라우저)된다.
@@ -283,9 +333,9 @@ python review_console/start.py --media-dir <프로젝트 이미지/영상 폴더
 - **수정 패널**:
   | 컨트롤 | 옵션 |
   |---|---|
-  | 초수 (드롭다운) | **4**(Seedance 2.0 Mini) / 8 / 12s |
-  | 화질 (드롭다운) | **720p**(Seedance 2.0 Mini) / 1080p |
-  | 수정 요청 (입력창) | 한글 자유 입력, **Enter=제출** → Seedance 2.0 Mini 재생성(백업1 Fast, 최종 백업 standard) |
+  | 초수 (드롭다운) | **4**(Kling 3.0 Turbo) / 8 / 12s |
+  | 화질 (드롭다운) | **1080p**(Kling 3.0 Turbo) / 720p |
+  | 수정 요청 (입력창) | 한글 자유 입력, **Enter=제출** → Kling 3.0 Turbo 재생성(백업: Seedance 2.0) |
   | 상태칩 | 대기 → 처리중 → 완료 |
 - **상단바**: **[전체 스토리보드 → 영상 일괄 생성]**(배치, 동시 8 큐), 기본 초수·화질.
 
@@ -327,7 +377,7 @@ input.addEventListener('keydown', e => {
 revision_queue.jsonl 의 새 줄을 읽어 항목별로:
   이미지 → media_upload(원본 PNG) → generate_image({model, prompt:request, resolution:quality,
             medias:[{role:'image', value:media_id}]}) → 새 버전 폴더 저장
-  영상   → media_upload(원본 컷) → generate_video({model:'seedance_2_0', prompt:request,
+  영상   → media_upload(원본 컷) → generate_video({model:'kling3_0_turbo', prompt:request,
             duration, resolution:quality, generate_audio:false, medias:[{role:'start_image', value:media_id}]}) → 저장
   결과 경로를 results.json[cut] 에 기록(HTML이 폴링해 갱신).
 처리 실패(fetch failed/preset/NSFW)는 GATE 12의 핸들링 그대로 재시도.
@@ -343,4 +393,4 @@ revision_queue.jsonl 의 새 줄을 읽어 항목별로:
 - `worker.py` — 큐 워처 / `webroot/` — 콘솔 UI / `requirements.txt` — Pillow 등.
 - 런타임 파일(자동 생성): `runtime/revision_queue.jsonl`(요청 큐), `runtime/results.json`(상태·최신경로) — `review_console/runtime/` 폴더에 위치.
 
-> **주의:** Higgsfield 이미지 모델(`nano_banana_2`/`gpt_image_2`)의 정확한 파라미터(resolution 라벨·medias role)는 호출 전 `models_explore(action='get', model_id=...)`로 확정한다. 영상은 `seedance_2_0`("Mini", 백업1 `mode:'fast'` → 백업2·최종 `mode:'std'`). 동시 8 한도·폴링 위임은 GATE 12와 동일.
+> **주의:** Higgsfield 이미지 모델(`nano_banana_2`/`gpt_image_2`)의 정확한 파라미터(resolution 라벨·medias role)는 호출 전 `models_explore(action='get', model_id=...)`로 확정한다. 영상은 `kling3_0_turbo`(기본, 백업: `seedance_2_0` → `mode:'fast'` → 최종 `mode:'std'`). 동시 8 한도·폴링 위임은 GATE 12와 동일.
