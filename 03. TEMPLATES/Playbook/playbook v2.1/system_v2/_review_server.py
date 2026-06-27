@@ -13,7 +13,7 @@ Auto-injection per request:
 """
 import argparse, base64, json, mimetypes, os, re, subprocess
 import threading, urllib.request, webbrowser
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -254,8 +254,11 @@ class ReviewHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", len(body))
         for k, v in CORS.items():
             self.send_header(k, v)
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.end_headers()
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def _send_file(self, path):
         path = Path(path)
@@ -264,15 +267,20 @@ class ReviewHandler(BaseHTTPRequestHandler):
             self.end_headers()
             return
         mime = mimetypes.guess_type(str(path))[0] or "application/octet-stream"
-        data = path.read_bytes()
+        size = path.stat().st_size
         self.send_response(200)
         self.send_header("Content-Type", mime)
-        self.send_header("Content-Length", len(data))
+        self.send_header("Content-Length", size)
         self.send_header("Cache-Control", "no-cache")
         for k, v in CORS.items():
             self.send_header(k, v)
         self.end_headers()
-        self.wfile.write(data)
+        try:
+            with open(path, "rb") as f:
+                while chunk := f.read(65536):
+                    self.wfile.write(chunk)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def do_OPTIONS(self):
         self.send_response(204)
@@ -421,7 +429,7 @@ def main():
     print(f"  URL      : http://localhost:{args.port}")
     print(f"  Stop     : Ctrl+C\n")
 
-    server = HTTPServer(("localhost", args.port), ReviewHandler)
+    server = ThreadingHTTPServer(("localhost", args.port), ReviewHandler)
     threading.Timer(0.8, lambda: webbrowser.open(f"http://localhost:{args.port}")).start()
     try:
         server.serve_forever()
