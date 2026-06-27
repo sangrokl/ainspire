@@ -85,3 +85,33 @@ kill $(lsof -ti :7801)
 |---------|------|
 | VELVET_NOIR | 7800 |
 | COFFEE_WAIT | 7801 |
+
+---
+
+## 📁 버전 폴더 표준 구조 (모든 프로젝트 공통)
+
+> 새 프로젝트를 시작할 때, 그리고 파일을 저장할 때마다 아래 구조를 반드시 따른다.
+
+```
+projects/{PROJECT}/
+└── {VERSION}/                  ← 버전 폴더 (예: v20260626)
+    ├── assets/                 ← 모든 생성 소재 — 탑레벨 노출
+    │   ├── audio/              ← TTS · VO · SFX · BGM
+    │   │   ├── bgm/
+    │   │   └── vo/
+    │   ├── images/             ← 생성 이미지 컷 (cut_NN.png, cut_NN_vX.png)
+    │   ├── videos/             ← 생성 영상 컷 (cut_NN.mp4, cut_NN_vX.mp4)
+    │   ├── md/                 ← 문서 (scenario.md, workflow.md, manifest.json 등)
+    │   └── ref/                ← 참조 원본 — 수정 금지
+    │       ├── logo/
+    │       ├── product/
+    │       └── main_character/
+    ├── output/                 ← 최종 조립 영상 · 내보내기
+    └── preview/                ← 스토리보드 HTML · 영상 리뷰 HTML
+```
+
+**규칙:**
+- 탑레벨(`{VERSION}/` 바로 아래)에는 `assets/` · `output/` · `preview/` **3개 폴더만** 노출
+- 낱개 파일(.html, .md, .json 등)을 탑레벨에 두지 않는다
+- `workflow.md`는 반드시 `{VERSION}/assets/md/workflow.md`에 저장
+- 이미지·영상 수정본은 `cut_NN_v1.png`, `_v2.png` 형식으로 신규 저장 (원본 덮어쓰기 금지)
