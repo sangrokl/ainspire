@@ -83,3 +83,22 @@ kill $(lsof -ti :7800)
 - 이미지: `v20260626/assets/images/cut_NN_v1.png`, `_v2.png`, …
 - 영상: `v20260626/assets/videos/cut_NN_v1.mp4`, `_v2.mp4`, …
 - 원본(`cut_NN.png` / `cut_NN.mp4`)은 덮어쓰지 않음
+
+---
+
+## 스토리보드 HTML 갱신 (수정본 반영)
+
+수정본(`cut_NN_vX.png` / `cut_NN_vX.mp4`)이 생긴 뒤 HTML에 반영하려면 빌드 스크립트를 재실행한다.
+
+```bash
+cd "/Volumes/LEARN (4TB)/ Claude/02. Learn/03. TEMPLATES/Playbook/playbook v2.1"
+python3 system_v2/_build_VELVET_NOIR_embed.py
+```
+
+**동작 방식:**
+- 빌드 스크립트는 각 컷마다 `cut_NN_vX` 중 가장 높은 버전을 자동 선택
+- 이미지: 최신 버전을 base64로 HTML에 임베드
+- 영상: `data-src="/api/videos/cut_NN_vX.mp4"` 로 최신 버전 참조
+- 버전이 없으면 원본(`cut_NN.png` / `cut_NN.mp4`)으로 폴백
+
+**버전 선택 우선순위:** `cut_NN_v3` > `cut_NN_v2` > `cut_NN_v1` > `cut_NN` (원본)

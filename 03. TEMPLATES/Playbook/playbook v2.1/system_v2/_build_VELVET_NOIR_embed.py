@@ -5,6 +5,7 @@ from PIL import Image
 ROOT        = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VERSION_DIR = os.path.join(ROOT, "projects", "VELVET_NOIR", "v20260626")
 RAW_DIR     = os.path.join(VERSION_DIR, "assets", "images")
+VID_DIR     = os.path.join(VERSION_DIR, "assets", "videos")
 PREVIEW_DIR = os.path.join(VERSION_DIR, "preview")
 OUTFILE     = "storyboard_VELVET_NOIR_30cut_v20260626.html"
 ACCENT      = "#c9a227"
@@ -69,12 +70,36 @@ VID_MODELS = [
 ]
 
 
-def find_raw(n):
-    for ext in ("png", "jpeg", "jpg"):
-        p = os.path.join(RAW_DIR, f"cut_{n:02d}.{ext}")
+def find_latest(folder, stem, exts):
+    """Return highest-versioned file (cut_NN_vX.ext) or fall back to cut_NN.ext."""
+    best_v, best_path = -1, None
+    for ext in exts:
+        v = 0
+        p = os.path.join(folder, f"{stem}.{ext}")
         if os.path.exists(p):
-            return p
+            best_v, best_path = 0, p
+        k = 1
+        while True:
+            vp = os.path.join(folder, f"{stem}_v{k}.{ext}")
+            if not os.path.exists(vp):
+                break
+            if k > best_v:
+                best_v, best_path = k, vp
+            k += 1
+    return best_path
+
+
+def find_raw(n):
+    p = find_latest(RAW_DIR, f"cut_{n:02d}", ("png", "jpeg", "jpg"))
+    if p:
+        return p
     raise FileNotFoundError(f"cut_{n:02d} not found in {RAW_DIR}")
+
+
+def find_latest_video(n):
+    """Return latest video filename (basename only) for data-src attribute."""
+    p = find_latest(VID_DIR, f"cut_{n:02d}", ("mp4",))
+    return os.path.basename(p) if p else f"cut_{n:02d}.mp4"
 
 
 def datauri(path, width=760, quality=82):
@@ -422,7 +447,7 @@ def main():
       <div class="card" data-n="{c['n']}" style="{border}" onclick="selectCard({c['n']})">
         <div class="card-thumb">
           <img  class="card-media-img" src="{uri}" alt="C{c['n']:02d}"/>
-          <video class="card-media-vid" data-src="/api/videos/cut_{c['n']:02d}.mp4"
+          <video class="card-media-vid" data-src="/api/videos/{find_latest_video(c['n'])}"
                  autoplay loop muted playsinline></video>
         </div>
         <div class="meta">
