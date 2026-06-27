@@ -5,13 +5,13 @@
 
 ## 🔌 STEP 0 — 생성 엔진 연결 확인 (다른 무엇보다 먼저)
 이미지·영상 생성은 생성 엔진(Higgsfield CLI/MCP 또는 Magnific MCP)으로 한다. **작업을 시작하면 제일 먼저 연결을 확인하고, 안 되어 있으면 연결부터 끝낸 뒤 진행한다. 셋 중 최소 하나면 된다.**
-1. ✅ **확인:** Higgsfield CLI `higgsfield account status` / Higgsfield MCP `balance` / Magnific `account_balance` → 정상 응답이면 연결됨.
+1. ✅ **확인:** Higgsfield CLI `higgsfield account status` → 정상이면 CLI 기본 사용. CLI 없으면 Higgsfield MCP `balance` / Magnific `account_balance` 순으로 확인.
 2. 🔑 **인증만 안 됨:** CLI `higgsfield auth login`(브라우저 OAuth) / Higgsfield MCP `authenticate`→로그인→`complete_authentication` / Magnific 첫 호출 시 브라우저 OAuth.
 3. 📦 **설치/서버 자체가 없음:**
-   - Higgsfield MCP: 데스크톱 앱 로그인 후 클라이언트에 연결 (사용자 요청).
+   - **Higgsfield CLI (기본):** 미설치면 사용자에게 안내 — `npm install -g @higgsfield/cli` → `higgsfield auth login` → (선택) `npx skills add higgsfield-ai/skills`.
+   - Higgsfield MCP (백업): 데스크톱 앱 로그인 후 클라이언트에 연결 (사용자 요청).
    - Magnific MCP: 클라이언트 MCP 설정에 `https://mcp.magnific.com`(streamable HTTP) 추가 → OAuth (사용자 요청).
-   - **Higgsfield CLI (선택):** 쓰려는데 미설치면 사용자에게 안내 — `npm install -g @higgsfield/cli` → `higgsfield auth login` → (선택) `npx skills add higgsfield-ai/skills`.
-4. 🟢 **MCP 하나라도 연결되면 생성(G8 이후)으로 간다 — CLI 없이도 OK.** 여러 개면 역할 분담(단발=MCP, 일괄=CLI가 편함, 업스케일/누끼=Magnific). **내레이션(TTS) = ElevenLabs MCP(`text_to_speech`)**(이 환경에 연결되어 있으면 별도 키 불필요) — 기본. *(백업1: Higgsfield TTS(`inworld_text_to_speech`) — CLI `higgsfield generate create inworld_text_to_speech` 또는 MCP `generate_audio`, Higgsfield 연결만 있으면 됨. 백업2: ElevenLabs 직접 API — `system_v2/.env`의 `ELEVENLABS_API_KEY`, `node system_v2/check_api_connections.mjs`로 확인.)*
+4. 🟢 **CLI가 연결되면 CLI로 진행(G8 이후) — CLI 없을 때만 MCP로 대체.** 역할 분담: 일괄·무인=CLI, 단발 즉석=MCP, 업스케일/누끼=Magnific. **내레이션(TTS) = ElevenLabs MCP(`text_to_speech`)**(이 환경에 연결되어 있으면 별도 키 불필요) — 기본. *(백업1: Higgsfield TTS(`inworld_text_to_speech`) — CLI `higgsfield generate create inworld_text_to_speech` 또는 MCP `generate_audio`, Higgsfield 연결만 있으면 됨. 백업2: ElevenLabs 직접 API — `system_v2/.env`의 `ELEVENLABS_API_KEY`, `node system_v2/check_api_connections.mjs`로 확인.)*
 
 ## ⭐ 시작 규칙 (반드시 지켜라)
 0. ✅ **위 [STEP 0]에서 생성 엔진 연결을 먼저 확인·완료한다.** (안 되어 있으면 생성 단계로 가지 말 것)
@@ -46,9 +46,9 @@
 **탑레벨에 보이는 폴더: `assets/` · `output/` · `preview/` 3개만.** 낱개 파일·기타 폴더를 탑레벨에 두지 않는다.
 
 ## 🛠️ 생성 스택
-- 🖼️ **이미지·영상 = Higgsfield(MCP 또는 CLI) / Magnific MCP** (전부 OAuth, API 키 불필요 — 우열·강제 없음). 경로·특성은 `00_core.md`의 [생성 엔진] 표 참조.
-  - **Higgsfield MCP** *(기본)*: 데스크톱 앱 OAuth. 세션 내 즉석 단발에 편함. **이것만으로 전 과정 가능.**
-  - **Higgsfield CLI** *(선택)*: 깔려 있으면 대량 일괄·무인에 편함(`--wait` 폴링 처리, `--json` 배치, 결과 URL→다운로드). **미설치 시 사용자에게 안내:** `npm install -g @higgsfield/cli` → `higgsfield auth login` → (선택) `npx skills add higgsfield-ai/skills`. (상세 = `00_core.md` [CLI 설치 안내])
+- 🖼️ **이미지·영상 = Higgsfield CLI(기본) / Higgsfield MCP(백업) / Magnific MCP(업스케일 전용)** (전부 OAuth, API 키 불필요). 경로·특성은 `00_core.md`의 [생성 엔진] 표 참조.
+  - **Higgsfield CLI** *(기본)*: 대량 일괄·무인에 최적(`--wait` 폴링, `--json` 배치, 결과 URL→다운로드). **이것만으로 전 과정 가능.** **미설치 시 사용자에게 안내:** `npm install -g @higgsfield/cli` → `higgsfield auth login` → (선택) `npx skills add higgsfield-ai/skills`. (상세 = `00_core.md` [CLI 설치 안내])
+  - **Higgsfield MCP** *(백업)*: CLI 없을 때 사용. 데스크톱 앱 OAuth. 세션 내 즉석 단발에 편함.
   - **Magnific MCP** *(선택)*: 클라이언트 MCP 설정에 `https://mcp.magnific.com` 추가 후 OAuth. 업스케일·누끼·Soul 학습 전용.
 - 🎙️ **내레이션(VO) = ElevenLabs MCP(`text_to_speech`)** — 이 환경에 연결되어 있으면 바로 사용, 별도 키 불필요. *(백업1: Higgsfield TTS(`inworld_text_to_speech`) — CLI `higgsfield generate create inworld_text_to_speech --prompt "..."` 또는 MCP `generate_audio`, Higgsfield 연결만 있으면 OK. 백업2: ElevenLabs 직접 API — `system_v2/.env`에 `ELEVENLABS_API_KEY`)*
 - 🎵 **BGM = Suno 프롬프트 제안(GATE 13) → 사용자가 직접 생성** — 에이전트는 Suno 프롬프트만 제안, 실제 생성은 사용자(별도 키 불필요). 후처리(HTML·로고·조립)는 `system_v2`의 Python/ffmpeg.
