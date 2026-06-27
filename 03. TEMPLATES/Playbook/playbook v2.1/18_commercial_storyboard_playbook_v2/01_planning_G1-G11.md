@@ -472,7 +472,7 @@ generate_image({
 
 ```bash
 # HTML 빌드 후 반드시 이 방식으로 접속
-python3 system_v2/_review_server.py
+python3 system_v2/_review_server.py --project {PROJECT} --version {VERSION} [--port 7800]
 # → 브라우저가 http://localhost:7800 자동 오픈
 # → 서버가 HTML을 서브하므로 fetch('/api/regenerate') 정상 동작
 ```
@@ -501,7 +501,7 @@ python3 system_v2/_review_server.py
 
 - **포트**: 7800 (충돌 시 `--port` 인자로 변경)
 - **엔드포인트**: `POST /api/regenerate` → CLI 실행 → 이미지는 base64, 영상은 `/api/videos/` URL로 응답
-- **저장 경로**: 이미지 → `assets/images/cut_XX.png` 덮어쓰기, 영상 → `assets/videos/cut_XX.mp4`
+- **저장 경로**: 이미지 → `assets/images/cut_XX_v1.png`, `_v2.png` … (버전 누적, 덮어쓰기 금지), 영상 → `assets/videos/cut_XX_v1.mp4`, `_v2.mp4` … (원본 `cut_XX.png`/`cut_XX.mp4` 보존)
 - **CLI 커맨드 형식** (파라미터명은 언더스코어):
   ```bash
   # 이미지

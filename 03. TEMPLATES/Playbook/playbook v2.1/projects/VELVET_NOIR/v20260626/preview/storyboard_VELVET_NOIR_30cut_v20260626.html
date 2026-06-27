@@ -773,12 +773,6 @@ function closePanel() {
   selectedCut = null;
 }
 
-function closePanel() {
-  document.getElementById('review-panel').classList.remove('open');
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-  selectedCut = null;
-}
-
 // ── mode toggle ───────────────────────────────────────────────────────────────
 // sceneData: loaded by selectCard, keyed by cut_n
 const sceneCache = {};

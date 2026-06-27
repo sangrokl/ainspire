@@ -245,7 +245,7 @@ python3 system_v2/_review_server.py [--project PROJECT] [--version v20260626] [-
 | 컨트롤 | 이미지 | 영상 |
 |---|---|---|
 | 모드 | 🖼 이미지 | ▶ 영상 |
-| 모델 드롭다운 | nano_banana_2(기본), flux_2, seedream_v4_5, gpt_image_2, flux_kontext | kling3_0_turbo(기본), kling3_0, seedance_2_0, seedance_2_0_mini, veo3, veo3_1 |
+| 모델 드롭다운 | nano_banana_2(기본), flux_2, seedream_v4_5, gpt_image_2, flux_kontext | kling3_0_turbo(기본), kling3_0, seedance_2_0, seedance_2_0_mini, cinematic_studio_3_0, veo3, veo3_1 |
 | 해상도 | 1k / **2k** / 4k | — |
 | 길이 | — | 3 / 4 / **5** / 8초 |
 | 화질 | — | 720p / **1080p** |
@@ -279,7 +279,7 @@ CUTS = [{"n": 1, "act": "1막", "scene": "...", "role": ""}, ...]
 ### 🔁 17-0. 동작 요약 (사용자 입장)
 1. 이미지를 다 뽑으면 **리뷰 콘솔 HTML이 자동으로 팝업**(브라우저)된다.
 2. 맘에 안 드는 컷을 **클릭해 선택** → 그 컷 번호 칸에 **수정 요청을 한글로 입력** → **Enter**.
-3. 입력 즉시 **생성 엔진(Higgsfield CLI/MCP 또는 Magnific)이 그 컷만 재생성**(이미지=nano_banana_2/gpt_image_2 또는 Magnific `images_generate`, 영상=seedance_2_0 "Mini"(백업1 `mode:'fast'`→백업2·최종 `mode:'std'`) 또는 Magnific `video_generate`). 카드는 '처리중 → 완료(새 썸네일)'로 자동 갱신.
+3. 입력 즉시 **생성 엔진(Higgsfield CLI/MCP 또는 Magnific)이 그 컷만 재생성**(이미지=nano_banana_2/gpt_image_2 또는 Magnific `images_generate`, 영상=kling3_0_turbo "Kling 3.0 Turbo"(백업: seedance_2_0 → `mode:'fast'` → `mode:'std'`) 또는 Magnific `video_generate`). 카드는 '처리중 → 완료(새 썸네일)'로 자동 갱신.
 4. **모델·화질**(이미지) / **초수·화질**(영상)을 **매 수정마다 카드에서 선택**.
 5. 콘솔 상단의 **"전체 영상으로 돌리기"** 버튼으로 확정 스토리보드를 **한 번에 영상화** → 끝나면 **영상 미리보기 콘솔**이 같은 디자인으로 팝업.
 
@@ -333,7 +333,7 @@ python review_console/start.py --media-dir <프로젝트 이미지/영상 폴더
 - **수정 패널**:
   | 컨트롤 | 옵션 |
   |---|---|
-  | 초수 (드롭다운) | **4**(Kling 3.0 Turbo) / 8 / 12s |
+  | 초수 (드롭다운) | 3 / 4 / **5**(기본) / 8초 |
   | 화질 (드롭다운) | **1080p**(Kling 3.0 Turbo) / 720p |
   | 수정 요청 (입력창) | 한글 자유 입력, **Enter=제출** → Kling 3.0 Turbo 재생성(백업: Seedance 2.0) |
   | 상태칩 | 대기 → 처리중 → 완료 |

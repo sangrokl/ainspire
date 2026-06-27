@@ -98,7 +98,7 @@ Write a real moving-shot keyframe (mid-action + motion blur), and add a match-cu
 
 ---
 
-## 2b) 📐 VIDEO_PROMPT_FORMAT — 영상 프롬프트 표준 필드 순서 (Seedance 2.0 Mini 기본·Fast/standard 백업 공통, 700자 이내)
+## 2b) 📐 VIDEO_PROMPT_FORMAT — 영상 프롬프트 표준 필드 순서 (Kling 3.0 Turbo 기본·Seedance 2.0 백업 공통, 700자 이내)
 
 > 모든 `[video prompt]`(scenario.md) / GATE 12 실제 호출 프롬프트는 규칙0[B](No-BGM 한 줄, 최상단 고정) 다음에 아래 7개 필드를 **이 순서 그대로** 채워 한 문단으로 합친다. **전체 길이는 공백 포함 700자를 넘지 않는다** — 넘으면 SHOT GROUP 세부 비트 묘사를 줄여서 맞춘다(규칙0[B]·RUNTIME·CAMERA는 줄이지 않음). CAMERA에 렌즈/아나모픽 비율을 한 줄로 합치고(LENS·LOOK 별도 줄 없음, 디테일은 `CAMERA_LOOK` 공통 블록 참조), SHOT은 4초 러닝타임 내부를 **BEGINS WITH → ACTION → TRANSITION → ENDS WITH** 타임스탬프 비트로 쪼개 미니 시퀀스로 적는다. (백업1 Fast·백업2 standard 모두 동일 `seedance_2_0`이라 4초 SHOT GROUP 그대로 — `mode` 파라미터만 바뀐다.)
 
@@ -141,7 +141,7 @@ LIGHT: deep midnight + red glow from skylight.
 SFX: tar-paper footsteps, *KNOCK-KNOCK* signature.
 ```
 
-> RUNTIME은 2026-06-22부터 기본 4초 고정(Seedance 2.0 Mini) — 절대 다른 값으로 바꾸지 않는다. SHOT GROUP의 4비트(0:00-0:01 / 0:01-0:02 / 0:02-0:03 / 0:03-0:04) 합은 항상 4초여야 한다. 700자 카운트는 규칙0[B] 줄을 포함한 전체 합산. (백업1 Fast·백업2(최종) standard 모두 같은 `seedance_2_0`이라 4초 그대로 — Kling 3.0 Turbo는 백업 체인에서 제외.)
+> RUNTIME은 4초 고정(Kling 3.0 Turbo 기본) — 절대 다른 값으로 바꾸지 않는다. SHOT GROUP의 4비트(0:00-0:01 / 0:01-0:02 / 0:02-0:03 / 0:03-0:04) 합은 항상 4초여야 한다. 700자 카운트는 규칙0[B] 줄을 포함한 전체 합산. (백업 체인: `seedance_2_0` → `mode:'fast'` → `mode:'std'` — 모두 같은 `seedance_2_0` 모델이라 4초 그대로, `mode` 파라미터만 바뀐다.)
 
 > **`VID_ENHANCE`/`VID_ENHANCE_SFX`/`VID_ENHANCE_OBJECT`와의 관계(충돌 방지):** 이 세 상수는 그 자체로 400~700자 분량의 별도 텍스트 블록이라, 700자 캡과 함께 **문자 그대로 이어붙이면 즉시 캡을 초과**한다. 영상 프롬프트에서는 이 상수들을 **요구사항 체크리스트로만** 쓴다 — "다이내믹 무브먼트 필수·매치컷 연결·locked-off 금지(크로마키 예외)" 같은 지시는 위 SHOT GROUP의 각 비트(BEGINS WITH/ACTION/TRANSITION/ENDS WITH)에 직접 녹여 쓰고, "SFX-only" 지시는 규칙0[B](항상 최상단)로 이미 충족되므로 SFX 필드에는 실제 효과음 내용만 적는다. **세 상수의 텍스트 블록을 통째로 추가 결합하지 않는다.** (이미지 프롬프트의 `IMG_ENHANCE`/`IMG_ENHANCE_PERSON`/`IMG_ENHANCE_OBJECT`는 700자 캡이 없으므로 그대로 문자 그대로 결합 — 이 예외는 영상에만 적용.)
 

@@ -362,7 +362,7 @@ class ReviewHandler(BaseHTTPRequestHandler):
                                  use_product=use_product, use_logo=use_logo)
 
         # Log what's being injected
-        inj = ["규칙0[A]", "IMG_ENHANCE"]
+        inj = ["규칙0[A]", "IMG_ENHANCE" if mode == "image" else "VIDEO_AUDIO"]
         if cut_n not in LOGO_CUTS and cut_n not in BOTTLE_CUTS:
             inj.append("NOIR_DESC")
         inj.append("씬컨텍스트")
