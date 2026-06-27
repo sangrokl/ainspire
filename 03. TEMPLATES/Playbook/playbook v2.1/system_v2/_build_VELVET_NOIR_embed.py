@@ -147,10 +147,60 @@ async function updateServerBadge() {
 setInterval(updateServerBadge, 8000);
 updateServerBadge();
 
+// ── global media mode toggle ──────────────────────────────────────────────────
+let currentMediaMode = 'img';
+
+function setMediaMode(mode) {
+  currentMediaMode = mode;
+  const grid = document.querySelector('.grid');
+  document.getElementById('mtgl-img').classList.toggle('active', mode === 'img');
+  document.getElementById('mtgl-vid').classList.toggle('active', mode === 'vid');
+
+  if (mode === 'vid') {
+    // Lazy-load all video srcs before switching
+    document.querySelectorAll('.card.has-video .card-media-vid').forEach(vid => {
+      if (vid.dataset.src && !vid.src) vid.src = SERVER + vid.dataset.src;
+    });
+    grid.classList.add('vid-mode');
+  } else {
+    grid.classList.remove('vid-mode');
+  }
+}
+
+// Mark cards that have a video available on the server
+let videoCount = 0;
+async function checkVideos() {
+  if (!(await pingServer())) return;
+  const checks = cuts.map(async cut => {
+    try {
+      const r = await fetch(SERVER + `/api/videos/cut_${String(cut.n).padStart(2,'0')}.mp4`,
+                            {method:'HEAD', mode:'cors'});
+      if (r.ok) {
+        const card = document.querySelector(`.card[data-n="${cut.n}"]`);
+        if (card) { card.classList.add('has-video'); videoCount++; }
+      }
+    } catch {}
+  });
+  await Promise.all(checks);
+  const el = document.getElementById('vid-count');
+  if (el) el.textContent = `영상 ${videoCount}/${cuts.length}`;
+}
+checkVideos();
+
+// ── cut type helpers ──────────────────────────────────────────────────────────
+const BOTTLE_CUTS = new Set([8, 25, 26, 27, 28]);
+const LOGO_CUTS   = new Set([29, 30]);
+
+function refLabel(n) {
+  if (LOGO_CUTS.has(n))   return n === 30 ? '로고 + 병' : '로고 ref';
+  if (BOTTLE_CUTS.has(n)) return '병 ref';
+  return '주인공 ref';
+}
+
 // ── panel state ───────────────────────────────────────────────────────────────
 let selectedCut = null;
 
-function selectCard(n) {
+async function selectCard(n) {
   document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
   const card = document.querySelector(`.card[data-n="${n}"]`);
   if (!card) return;
@@ -158,12 +208,27 @@ function selectCard(n) {
   selectedCut = n;
 
   const cut = cuts.find(c => c.n === n);
-  document.getElementById('panel-cut-n').textContent  = `CUT ${String(n).padStart(2,'0')}`;
-  document.getElementById('panel-cut-act').textContent = cut ? cut.act : '';
+  document.getElementById('panel-cut-n').textContent   = `CUT ${String(n).padStart(2,'0')}`;
+  document.getElementById('panel-cut-act').textContent  = cut ? cut.act : '';
   document.getElementById('panel-cut-scene').textContent = cut ? cut.scene : '';
   document.getElementById('prompt-input').value = '';
-  document.getElementById('prompt-input').placeholder = '수정 요청사항을 입력하세요…';
+  document.getElementById('prompt-input').placeholder = '수정 요청사항만 입력 (씬 컨텍스트·규칙은 자동주입)';
   clearStatus();
+
+  // Update ref badge label
+  document.getElementById('ref-label').textContent = refLabel(n);
+
+  // Load scene data from server (cache per cut)
+  const ctxEl = document.getElementById('scene-context-text');
+  ctxEl.textContent = '로드 중…';
+  try {
+    if (!sceneCache[n]) {
+      const r = await fetch(SERVER + `/api/scene?n=${n}`, { mode: 'cors' });
+      if (r.ok) sceneCache[n] = await r.json();
+    }
+    const curMode = document.getElementById('mode-image').classList.contains('active') ? 'image' : 'video';
+    updateSceneCtx(curMode);
+  } catch { ctxEl.textContent = '(서버 오프라인 — 씬 컨텍스트는 서버에서 자동주입)'; }
 
   const panel = document.getElementById('review-panel');
   panel.classList.add('open');
@@ -176,7 +241,27 @@ function closePanel() {
   selectedCut = null;
 }
 
+function closePanel() {
+  document.getElementById('review-panel').classList.remove('open');
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  selectedCut = null;
+}
+
 // ── mode toggle ───────────────────────────────────────────────────────────────
+// sceneData: loaded by selectCard, keyed by cut_n
+const sceneCache = {};
+
+function updateSceneCtx(mode) {
+  const n   = selectedCut;
+  const sc  = n ? sceneCache[n] : null;
+  const el  = document.getElementById('scene-context-text');
+  if (!el) return;
+  if (!sc) return;
+  el.textContent = (mode === 'video')
+    ? (sc.video_prompt || sc.first_frame || '(영상 프롬프트 없음)')
+    : (sc.first_frame  || '(씬 데이터 없음)');
+}
+
 function setMode(mode) {
   document.getElementById('mode-image').classList.toggle('active', mode === 'image');
   document.getElementById('mode-video').classList.toggle('active', mode === 'video');
@@ -184,6 +269,7 @@ function setMode(mode) {
   document.getElementById('img-res-row').style.display = mode === 'image' ? 'flex' : 'none';
   document.getElementById('img-model-wrap').style.display = mode === 'image' ? 'block' : 'none';
   document.getElementById('vid-model-wrap').style.display = mode === 'video' ? 'block' : 'none';
+  updateSceneCtx(mode);
 }
 setMode('image');
 
@@ -235,20 +321,28 @@ async function submitRegen() {
   const model = mode === 'image'
     ? document.getElementById('img-model-sel').value
     : document.getElementById('vid-model-sel').value;
-  const duration   = parseInt(document.querySelector('.pill-dur.active')?.dataset.val || '5');
+  const duration   = parseInt(document.querySelector('.pill-dur.active')?.dataset.val || '3');
   const vidQuality = document.querySelector('.pill-vq.active')?.dataset.val || '1080p';
   const imgQuality = document.querySelector('.pill-iq.active')?.dataset.val || '2k';
   const resolution = mode === 'image' ? imgQuality : vidQuality;
 
+  // ref toggles
+  const use_face    = document.getElementById('tog-face')?.checked    ?? true;
+  const use_product = document.getElementById('tog-product')?.checked ?? true;
+  const use_logo    = document.getElementById('tog-logo')?.checked    ?? true;
+
   const btn = document.getElementById('gen-btn');
   btn.disabled = true;
-  setStatus('⏳ 생성 중… (수 분 소요)', 'loading');
+  setStatus('⏳ 규칙0+씬컨텍스트+ref 주입 후 생성 중…', 'loading');
 
   try {
     const res = await fetch(SERVER + '/api/regenerate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cut_n: selectedCut, prompt, mode, model, duration, resolution }),
+      body: JSON.stringify({
+        cut_n: selectedCut, prompt, mode, model, duration, resolution,
+        use_face, use_product, use_logo,
+      }),
       mode: 'cors',
     });
     const data = await res.json();
@@ -259,26 +353,37 @@ async function submitRegen() {
     }
 
     // Update card thumbnail
-    const card = document.querySelector(`.card[data-n="${selectedCut}"]`);
+    const card  = document.querySelector(`.card[data-n="${selectedCut}"]`);
     const thumb = card.querySelector('.card-thumb');
 
     if (mode === 'image') {
-      thumb.innerHTML = `<img src="${data.data_uri}" alt="C${selectedCut}"/>`;
+      // Update image slot
+      const imgEl = card.querySelector('.card-media-img');
+      if (imgEl) imgEl.src = data.data_uri;
       card.querySelector('.updated-badge')?.remove();
       const badge = document.createElement('span');
       badge.className = 'updated-badge';
-      badge.textContent = '✓ 업데이트됨';
+      badge.textContent = `✓ ${data.filename || '업데이트됨'}`;
       card.querySelector('.meta').appendChild(badge);
-      setStatus('✓ 이미지 업데이트 완료', 'ok');
+      const injected = (data.injected || []).join(' · ');
+      setStatus(`✓ 완료 (${data.filename}) — 주입: ${injected}`, 'ok');
     } else {
-      thumb.innerHTML = `<video src="${data.video_url}" autoplay loop muted playsinline
-        style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;"></video>`;
+      // Update video slot
+      const vidEl = card.querySelector('.card-media-vid');
+      if (vidEl) {
+        vidEl.src = SERVER + data.video_url;
+        vidEl.dataset.src = data.video_url;
+        vidEl.load();
+      }
+      card.classList.add('has-video');
+      videoCount++;
+      document.getElementById('vid-count').textContent = `영상 ${videoCount}/${cuts.length}`;
       card.querySelector('.updated-badge')?.remove();
       const badge = document.createElement('span');
       badge.className = 'updated-badge vid';
-      badge.textContent = '▶ 영상 추가됨';
+      badge.textContent = `▶ ${data.filename || '영상 추가됨'}`;
       card.querySelector('.meta').appendChild(badge);
-      setStatus('✓ 영상 생성 완료', 'ok');
+      setStatus(`✓ 영상 완료 (${data.filename})`, 'ok');
     }
   } catch (e) {
     setStatus('연결 오류: ' + e.message, 'err');
@@ -315,7 +420,11 @@ def main():
         cuts_json.append({"n": c["n"], "act": c["act"], "scene": c["scene"]})
         cards_html.append(f"""
       <div class="card" data-n="{c['n']}" style="{border}" onclick="selectCard({c['n']})">
-        <div class="card-thumb"><img src="{uri}" alt="C{c['n']:02d}"/></div>
+        <div class="card-thumb">
+          <img  class="card-media-img" src="{uri}" alt="C{c['n']:02d}"/>
+          <video class="card-media-vid" data-src="/api/videos/cut_{c['n']:02d}.mp4"
+                 autoplay loop muted playsinline></video>
+        </div>
         <div class="meta">
           <span class="cut" style="background:{accent_c}">{c['n']:02d}</span>
           <span class="tag">{c['act']}</span>
@@ -355,11 +464,26 @@ header p{{color:#6b7285;font-size:12px;line-height:1.7;max-width:820px}}
 /* ── grid ── */
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:24px 32px 120px}}
 
+/* ── global media toggle ── */
+#media-toggle{{display:flex;align-items:center;gap:0;border:1px solid #1e2330;border-radius:8px;overflow:hidden;align-self:center}}
+.mtgl-btn{{padding:7px 16px;border:none;background:#12151c;color:#8b93a7;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .15s;white-space:nowrap}}
+.mtgl-btn.active{{background:{ACCENT};color:#080a0e}}
+#vid-count{{font-size:10px;color:#5a6280;padding:0 10px;white-space:nowrap}}
+
 /* ── card ── */
 .card{{background:#0e1017;border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .2s}}
 .card:hover{{transform:translateY(-2px);box-shadow:0 6px 24px #0006}}
 .card.selected{{border-color:{ACCENT} !important;box-shadow:0 0 0 2px {ACCENT}44 !important}}
 .card-thumb img,.card-thumb video{{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}}
+.card-media-img{{display:block}}
+.card-media-vid{{display:none}}
+/* video mode: grid-level class controls all cards at once */
+.grid.vid-mode .card-media-img{{display:none}}
+.grid.vid-mode .card-media-vid{{display:block}}
+/* no-video cards in vid-mode: keep showing image */
+.grid.vid-mode .card:not(.has-video) .card-media-img{{display:block}}
+.grid.vid-mode .card:not(.has-video) .card-media-vid{{display:none}}
+
 .meta{{display:flex;align-items:center;gap:8px;padding:10px 12px 0;flex-wrap:wrap}}
 .cut{{color:#080a0e;font-weight:900;font-size:11px;padding:3px 8px;border-radius:5px;letter-spacing:.02em}}
 .tag{{font-size:11px;color:#7a8299;font-weight:600}}
@@ -407,11 +531,24 @@ header p{{color:#6b7285;font-size:12px;line-height:1.7;max-width:820px}}
 #gen-btn:disabled{{opacity:.4;cursor:not-allowed}}
 
 /* status */
-.gen-status{{font-size:12px;font-weight:600;min-height:18px;text-align:center}}
+.gen-status{{font-size:12px;font-weight:600;min-height:18px;text-align:center;word-break:break-all}}
 .gen-status.loading{{color:#c9a227;animation:pulse 1.4s ease-in-out infinite}}
 .gen-status.ok{{color:#3dca6e}}
 .gen-status.err{{color:#e05555}}
 @keyframes pulse{{0%,100%{{opacity:1}}50%{{opacity:.5}}}}
+
+/* ── scene context ── */
+.scene-ctx{{background:#0a0c13;border:1px solid #1a1d28;border-radius:8px;padding:10px 12px;font-size:11.5px;color:#7a8299;line-height:1.55;max-height:100px;overflow-y:auto}}
+
+/* ── inject badges ── */
+.inj-row{{display:flex;gap:6px;flex-wrap:wrap;align-items:center}}
+.inj-badge{{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#12151c;border:1px solid #2a3040;color:#5a6280;letter-spacing:.03em}}
+.inj-badge.on{{border-color:#c9a22766;color:{ACCENT}}}
+
+/* ── ref toggles ── */
+.ref-toggle-row{{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#0d1018;border:1px solid #1e2330;border-radius:8px}}
+.ref-toggle-row label{{font-size:12px;color:#c8d0e0;cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none}}
+input[type=checkbox]{{accent-color:{ACCENT};width:14px;height:14px;cursor:pointer}}
 </style>
 </head><body>
 
@@ -422,7 +559,14 @@ header p{{color:#6b7285;font-size:12px;line-height:1.7;max-width:820px}}
     <h1>{TITLE}</h1>
     <p>{SUB}</p>
   </div>
-  <span id="srv-badge" class="srv-badge off" title="">○ 확인 중…</span>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <div id="media-toggle">
+      <button class="mtgl-btn active" id="mtgl-img" onclick="setMediaMode('img')">🖼 이미지</button>
+      <button class="mtgl-btn"        id="mtgl-vid" onclick="setMediaMode('vid')">▶ 영상</button>
+    </div>
+    <span id="vid-count"></span>
+    <span id="srv-badge" class="srv-badge off" title="">○ 확인 중…</span>
+  </div>
 </header>
 
 <div id="file-banner">
@@ -445,6 +589,33 @@ header p{{color:#6b7285;font-size:12px;line-height:1.7;max-width:820px}}
     <button id="panel-close" title="닫기 (Esc)">✕</button>
   </div>
   <div class="panel-body">
+
+    <!-- 자동주입 뱃지 -->
+    <div class="prow">
+      <span class="plabel">자동 주입 (항상)</span>
+      <div class="inj-row">
+        <span class="inj-badge on">규칙0[A]</span>
+        <span class="inj-badge on">IMG_ENHANCE</span>
+        <span class="inj-badge on">씬 컨텍스트</span>
+        <span class="inj-badge on" id="ref-label">주인공 ref</span>
+      </div>
+    </div>
+
+    <!-- 씬 컨텍스트 표시 -->
+    <div class="prow">
+      <span class="plabel">원본 씬 컨텍스트</span>
+      <div class="scene-ctx" id="scene-context-text">카드를 선택하면 로드됩니다…</div>
+    </div>
+
+    <!-- ref 토글 -->
+    <div class="prow">
+      <span class="plabel">레퍼런스 이미지 주입</span>
+      <div class="ref-toggle-row">
+        <label><input type="checkbox" id="tog-face" checked> 주인공 얼굴 ref</label>
+        <label><input type="checkbox" id="tog-product" checked> 병 ref</label>
+        <label><input type="checkbox" id="tog-logo" checked> 로고 ref</label>
+      </div>
+    </div>
 
     <!-- 생성 타입 -->
     <div class="prow">
@@ -482,9 +653,9 @@ header p{{color:#6b7285;font-size:12px;line-height:1.7;max-width:820px}}
       <div class="prow">
         <span class="plabel">길이</span>
         <div class="pills">
-          <button class="pill pill-dur" data-val="3">3초</button>
+          <button class="pill pill-dur active" data-val="3">3초</button>
           <button class="pill pill-dur" data-val="4">4초</button>
-          <button class="pill pill-dur active" data-val="5">5초</button>
+          <button class="pill pill-dur" data-val="5">5초</button>
           <button class="pill pill-dur" data-val="8">8초</button>
         </div>
       </div>
@@ -499,8 +670,8 @@ header p{{color:#6b7285;font-size:12px;line-height:1.7;max-width:820px}}
 
     <!-- 수정 요청 -->
     <div class="prow" style="flex:1">
-      <span class="plabel">수정 요청사항</span>
-      <textarea id="prompt-input" placeholder="수정 요청사항을 입력하세요…"></textarea>
+      <span class="plabel">수정 요청사항 (delta만 입력)</span>
+      <textarea id="prompt-input" placeholder="수정 요청사항만 입력 — 씬 컨텍스트·규칙0·IMG_ENHANCE·ref는 자동주입됩니다"></textarea>
       <span class="input-hint">Enter = 생성 · Shift+Enter = 줄바꿈</span>
     </div>
 

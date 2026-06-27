@@ -26,7 +26,24 @@
 ## 📁 작업 디렉터리·경로 (공유용 — 절대경로 금지)
 - **이 폴더가 작업 루트다.** 여기서 실행한다. 문서는 `18_commercial_storyboard_playbook_v2/...`, 스크립트는 `system_v2/...`로 참조.
 - ⚠️ 모든 경로는 **상대경로**다. `F:\`·`C:\` 같은 절대경로를 새로 만들지 마라.
-- 스크립트의 `ROOT`는 파일 위치(`__file__`)에서 자동 탐지되므로 PC·드라이브가 달라도 동작한다. 산출물은 `이폴더/projects/{project}/{version}/...`에 쌓인다. (type 층 없음 — 프로젝트명 바로 아래 버전 폴더.)
+- 스크립트의 `ROOT`는 파일 위치(`__file__`)에서 자동 탐지되므로 PC·드라이브가 달라도 동작한다. 산출물은 `이폴더/projects/{project}/{version}/`에 쌓인다.
+
+**버전 폴더 표준 구조 (항상 이 구조를 만들고 유지한다):**
+```
+{version}/
+├── assets/              ← 모든 생성 소재 (하위 폴더만 노출)
+│   ├── audio/           ← TTS · VO · SFX 파일
+│   ├── images/          ← 생성 이미지 컷
+│   ├── videos/          ← 생성 영상 컷
+│   ├── md/              ← scenario.md · tvcf_archetypes.md 등 문서
+│   └── ref/             ← 참조 원본 (수정 금지)
+│       ├── logo/
+│       ├── product/
+│       └── main_character/
+├── output/              ← 최종 조립 영상 · 내보내기 파일
+└── preview/             ← 스토리보드 HTML · 영상 리뷰 HTML
+```
+**탑레벨에 보이는 폴더: `assets/` · `output/` · `preview/` 3개만.** 낱개 파일·기타 폴더를 탑레벨에 두지 않는다.
 
 ## 🛠️ 생성 스택
 - 🖼️ **이미지·영상 = Higgsfield(MCP 또는 CLI) / Magnific MCP** (전부 OAuth, API 키 불필요 — 우열·강제 없음). 경로·특성은 `00_core.md`의 [생성 엔진] 표 참조.

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>LENTO — 로고 최종 확정</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0d0d; color: #666; font-family: 'DM Sans', sans-serif; padding: 60px 48px 80px; }
+
+  .header { border-bottom: 1px solid #1a1a1a; padding-bottom: 20px; margin-bottom: 48px; }
+  .label  { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: #333; margin-bottom: 4px; }
+  .title  { font-size: 14px; font-weight: 200; letter-spacing: 0.06em; color: #555; }
+  .title em { font-style: normal; color: #888; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 40px; }
+
+  .logo-box {
+    display: flex; align-items: center; justify-content: center;
+    padding: 56px 40px; position: relative;
+  }
+  .logo-box-light { background: #f5f0e8; }
+  .logo-box-dark  { background: #0a0a0a; border: 1px solid #1a1a1a; }
+
+  .logo { text-align: center; }
+
+  .l-word {
+    font-family: 'DM Sans', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 100; font-size: 60px; letter-spacing: 0.5em;
+    padding-right: 0.5em; text-transform: uppercase; display: block; line-height: 1;
+  }
+  .l-word-dark  { color: #0a0a0a; }
+  .l-word-light { color: #f0e8d8; }
+
+  .l-rule { width: 36px; height: 1px; margin: 10px auto 0; }
+  .l-rule-dark  { background: rgba(10,10,10,0.22); }
+  .l-rule-light { background: rgba(240,232,216,0.2); }
+
+  .l-sub {
+    font-family: 'DM Sans', sans-serif; font-weight: 200; font-size: 8px;
+    letter-spacing: 0.38em; padding-right: 0.38em; text-transform: uppercase;
+    display: block; margin-top: 8px;
+  }
+  .l-sub-dark  { color: rgba(10,10,10,0.35); }
+  .l-sub-light { color: rgba(240,232,216,0.32); }
+
+  .box-label {
+    position: absolute; bottom: 10px; right: 14px;
+    font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: #333;
+  }
+
+  .spec { border-top: 1px solid #1a1a1a; padding-top: 20px; margin-bottom: 40px; }
+  .spec table { width: 100%; border-collapse: collapse; }
+  .spec td {
+    padding: 8px 0; border-bottom: 1px solid #141414;
+    font-size: 11px; vertical-align: top;
+  }
+  .spec td:first-child { color: #333; width: 140px; letter-spacing: 0.08em; font-size: 9px; text-transform: uppercase; }
+  .spec td:last-child  { color: #666; }
+
+  .usage { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #1a1a1a; }
+  .use-item { background: #0d0d0d; padding: 16px; font-size: 10px; color: #444; line-height: 1.6; }
+  .use-item strong { display: block; font-size: 9px; color: #555; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; font-weight: 400; }
+
+  .files { margin-top: 32px; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+  .file-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .file-chip {
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 10px; border: 1px solid #222; color: #444; font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="label">COFFEE_WAIT · LENTO · G11 로고 확정</div>
+  <div class="title">Option A — <em>Ultra Minimal</em> &nbsp;·&nbsp; 확정</div>
+</div>
+
+<div class="row">
+  <div class="logo-box logo-box-light">
+    <div class="logo">
+      <span class="l-word l-word-dark">LENTO</span>
+      <div class="l-rule l-rule-dark"></div>
+      <span class="l-sub l-sub-dark">slow coffee</span>
+    </div>
+    <div class="box-label">Light</div>
+  </div>
+  <div class="logo-box logo-box-dark">
+    <div class="logo">
+      <span class="l-word l-word-light">LENTO</span>
+      <div class="l-rule l-rule-light"></div>
+      <span class="l-sub l-sub-light">slow coffee</span>
+    </div>
+    <div class="box-label" style="color:#222">Dark</div>
+  </div>
+</div>
+
+<div class="spec">
+  <table>
+    <tr><td>Typeface</td><td>DM Sans · Weight 100 (Hairline)</td></tr>
+    <tr><td>Wordmark</td><td>LENTO — 전각 대문자, letter-spacing 0.5em</td></tr>
+    <tr><td>Rule</td><td>수평선 36px · 0.8px · 22% opacity</td></tr>
+    <tr><td>Subtext</td><td>slow coffee — DM Sans 200, 8px, tracking 0.38em, 35% opacity</td></tr>
+    <tr><td>Light</td><td>배경 #f5f0e8 (크림) · 텍스트 #0a0a0a</td></tr>
+    <tr><td>Dark</td><td>배경 #0a0a0a (잉크) · 텍스트 #f0e8d8 (웜 화이트)</td></tr>
+    <tr><td>SVG 파일</td><td>lento_light.svg · lento_dark.svg (480×200px)</td></tr>
+  </table>
+</div>
+
+<div class="usage">
+  <div class="use-item"><strong>패키지</strong>파우치 정면 중앙배치. Light 버전. 실크 1도 인쇄.</div>
+  <div class="use-item"><strong>영상 엔딩</strong>Dark 버전. 블랙 배경 페이드인. Cut 29–30 오버레이.</div>
+  <div class="use-item"><strong>명함·스탬프</strong>Light on 크림지. 스탬프는 단색 잉크. 최소 크기 30mm.</div>
+  <div class="use-item"><strong>디지털·SNS</strong>Dark 버전 기본. 배경색 변경 시 텍스트 반전 유지.</div>
+</div>
+
+<div class="files">
+  <div class="label">산출물</div>
+  <div class="file-list">
+    <div class="file-chip">lento_light.svg</div>
+    <div class="file-chip">lento_dark.svg</div>
+    <div class="file-chip">logo_final.html</div>
+  </div>
+</div>
+
+</body>
+</html>

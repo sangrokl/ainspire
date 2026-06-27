@@ -15,11 +15,12 @@
      - 원본: `MEDIA_DIR/<cut>.<ext>` 를 `media_upload` → `media_confirm`
      - `generate_image({ model:<item.model>, prompt:request, medias:[{role:"image", value:<media_id>}], resolution:quality(1k/2k/4k) })`
      - 결과 PNG를 `MEDIA_DIR/_revisions/<cut>_rev<k>.png` 로 다운로드
-   - **영상(type `video`)**:
+   - **영상(type `video`, model `kling3_0_turbo` 또는 `seedance_2_0`)**:
      - 원본 컷 이미지를 `media_upload`/`media_confirm`
-     - `generate_video({ model:"seedance_2_0", prompt:request, duration, resolution:quality(480p/720p/1080p), medias:[{role:"start_image", value:<media_id>}] })`
+     - **`kling3_0_turbo`** (UI 기본값): `generate_video({ model:"kling3_0_turbo", prompt:request, duration, resolution:quality(720p/1080p), aspect_ratio:"16:9", medias:[{role:"start_image", value:<media_id>}] })` — duration 범위 3–15s.
+     - **`seedance_2_0`**: `generate_video({ model:"seedance_2_0", prompt:request, duration, resolution:quality(480p/720p/1080p), generate_audio:false, medias:[{role:"start_image", value:<media_id>}] })` — `generate_audio:false` 필수(No-BGM 규칙). duration 범위 4–15s.
      - 완료 폴링 후 mp4를 `MEDIA_DIR/_revisions/<cut>_rev<k>.mp4` 로 다운로드
-   - **`batch_video`**: 콘솔의 [전체 영상으로 돌리기]. 폴더의 모든 컷을 위 영상 절차로 일괄 생성(동시 8 한도 큐).
+   - **`batch_video`**: 콘솔의 [전체 영상으로 돌리기]. 폴더의 모든 컷 이미지를 위 영상 절차로 일괄 생성(동시 8 한도 큐). item의 model 필드 우선 사용(없으면 `kling3_0_turbo` 기본).
 3. 각 항목 완료 시 `runtime/results.json[cut] = { "status":"done", "src":"/media/_revisions/<파일>", "ts":<유닉스초> }` 로 갱신 → 콘솔이 자동으로 썸네일 교체.
 4. 실패는 GATE 12 핸들링(502 재시도 · `declined_preset_id` · NSFW 표현 우회 · `fetch failed` 재시도) 그대로. 실패 시 `{"status":"error","msg":"..."}`.
 

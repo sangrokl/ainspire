@@ -2,7 +2,7 @@
 """
 큐 워처 — revision_queue.jsonl 을 읽어 항목별 상태를 results.json 에 반영한다.
 
-★ 모든 실제 생성은 Higgsfield MCP 전용 (이미지: nano_banana_2 / gpt_image_2,  영상: seedance_2_0).
+★ 모든 실제 생성은 Higgsfield MCP 전용 (이미지: nano_banana_2 / gpt_image_2,  영상: kling3_0_turbo / seedance_2_0).
    Higgsfield MCP 는 Claude 에이전트만 호출할 수 있으므로, 이 워커는 직접 생성하지 않는다.
 
 백엔드(BACKEND 환경변수):
@@ -69,7 +69,7 @@ def do_mock(item):
     d = ImageDraw.Draw(img, "RGBA")
     d.rectangle([0, img.height - 84, img.width, img.height], fill=(10, 12, 18, 200))
     d.text((18, img.height - 64), f"수정본 · {item.get('request','')[:40]}", fill=(90, 224, 160, 255))
-    model = item.get("model") or ("seedance_2_0" if item.get("type") == "video" else "-")
+    model = item.get("model") or ("kling3_0_turbo" if item.get("type") == "video" else "nano_banana_2")
     d.text((18, img.height - 38), f"[mock] Higgsfield {model} · q={item.get('quality','-')}",
            fill=(174, 182, 200, 255))
     out = next_rev_path(cut, ".png"); img.save(out)
@@ -79,13 +79,14 @@ def do_mock(item):
 def process(item):
     t = item.get("type"); cut = item.get("cut", "")
     if t == "batch_video":
+        model = item.get("model", "kling3_0_turbo")
         return set_result("_batch", status="running",
-                          msg="전체 영상화 요청 — Claude 에이전트가 Higgsfield seedance_2_0 로 처리(AGENT_QUEUE_GUIDE)")
+                          msg=f"전체 영상화 요청 — Claude 에이전트가 Higgsfield {model} 로 처리(AGENT_QUEUE_GUIDE)")
     if BACKEND == "mock":
         set_result(cut, status="running")
         return do_mock(item)
     # agent(실가동): Higgsfield MCP 전용 → Claude 에이전트가 처리. 워커는 표시만.
-    model = item.get("model") or ("seedance_2_0" if t == "video" else "nano_banana_2")
+    model = item.get("model") or ("kling3_0_turbo" if t == "video" else "nano_banana_2")
     set_result(cut, status="running", needs_agent=True,
                msg=f"Higgsfield {model} 대기 — Claude 에이전트가 처리")
 

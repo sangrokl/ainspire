@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 200" width="480" height="200">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200&amp;display=swap');
+      .word { font-family: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 100; font-size: 64px; letter-spacing: 0.5em; fill: #f0e8d8; }
+      .sub  { font-family: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 200; font-size: 9px;  letter-spacing: 0.38em; fill: rgba(240,232,216,0.35); }
+    </style>
+  </defs>
+  <rect width="480" height="200" fill="#0a0a0a"/>
+  <text class="word" x="240" y="108" text-anchor="middle" dx="-16">LENTO</text>
+  <line x1="222" y1="122" x2="258" y2="122" stroke="#f0e8d8" stroke-width="0.8" opacity="0.18"/>
+  <text class="sub"  x="240" y="138" text-anchor="middle" dx="-1.7">slow coffee</text>
+</svg>

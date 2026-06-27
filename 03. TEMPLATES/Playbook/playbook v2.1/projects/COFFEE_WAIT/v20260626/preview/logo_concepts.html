@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LENTO — 로고 컨셉 3종</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:ital,wght@0,100;0,200;0,300;1,200&family=Space+Grotesk:wght@300;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d0d0d;
+    color: #e8e0d0;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    padding: 48px 40px 80px;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    margin-bottom: 52px;
+    border-bottom: 1px solid #1e1e1e;
+    padding-bottom: 22px;
+  }
+
+  .page-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 6px;
+  }
+
+  .page-title {
+    font-size: 18px;
+    font-weight: 200;
+    color: #666;
+    letter-spacing: 0.06em;
+  }
+
+  .page-title span { color: #c8c0b0; }
+
+  .options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .option { display: flex; flex-direction: column; }
+
+  .option-tag {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .option-tag em { font-style: normal; color: #666; }
+
+  /* ─── CANVAS BASE ─── */
+  .canvas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .canvas-main { aspect-ratio: 4/3; }
+  .canvas-dark-strip { aspect-ratio: 5/1; margin-top: 4px; }
+
+  /* ══════════════════════════════
+     OPTION A  ·  ULTRA MINIMAL
+  ══════════════════════════════ */
+
+  .bg-cream { background: #f5f0e8; }
+  .bg-ink   { background: #0a0a0a; }
+  .bg-warm  { background: #1a0e06; }
+
+  .logo-a {
+    text-align: center;
+    user-select: none;
+  }
+
+  .a-word {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 100;
+    font-size: 54px;
+    letter-spacing: 0.5em;
+    padding-right: 0.5em;
+    text-transform: uppercase;
+    display: block;
+    line-height: 1;
+  }
+
+  .a-rule {
+    width: 36px;
+    height: 1px;
+    margin: 10px auto 0;
+  }
+
+  .a-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 200;
+    font-size: 7.5px;
+    letter-spacing: 0.38em;
+    padding-right: 0.38em;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 8px;
+  }
+
+  /* ink palette */
+  .a-ink .a-word { color: #0a0a0a; }
+  .a-ink .a-rule { background: rgba(10,10,10,0.25); }
+  .a-ink .a-sub  { color: rgba(10,10,10,0.35); }
+
+  /* cream on dark */
+  .a-light .a-word { color: #f0e8d8; }
+  .a-light .a-rule { background: rgba(240,232,216,0.2); }
+  .a-light .a-sub  { color: rgba(240,232,216,0.3); }
+
+  /* ══════════════════════════════
+     OPTION B  ·  CINEMATIC SERIF
+  ══════════════════════════════ */
+
+  .logo-b { text-align: center; }
+
+  .b-pre {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    padding-right: 0.32em;
+    color: #c8860a;
+    text-transform: lowercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .b-word {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 72px;
+    letter-spacing: 0.12em;
+    padding-right: 0.12em;
+    color: #f0e8d8;
+    text-transform: uppercase;
+    display: block;
+    line-height: 0.88;
+  }
+
+  .b-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      #8b5a00 15%,
+      #c8860a 40%,
+      #d4a832 60%,
+      #8b5a00 85%,
+      transparent 100%);
+    margin: 14px 0;
+    opacity: 0.55;
+  }
+
+  .b-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: #666;
+    display: block;
+  }
+
+  /* ══════════════════════════════
+     OPTION C  ·  NEO CONDENSED
+  ══════════════════════════════ */
+
+  .canvas-c {
+    background: #1c0e04;
+    position: relative;
+  }
+
+  .canvas-c::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 55% 40%,
+      rgba(200,134,10,0.07) 0%,
+      transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo-c {
+    text-align: left;
+    padding: 0 28px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .c-word {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 82px;
+    letter-spacing: -0.04em;
+    color: #e8ddd0;
+    text-transform: uppercase;
+    display: block;
+    line-height: 0.86;
+  }
+
+  .c-word em {
+    font-style: normal;
+    color: #c8860a;
+  }
+
+  .c-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .c-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #c8860a, transparent);
+    opacity: 0.35;
+  }
+
+  .c-sub {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 300;
+    font-size: 8.5px;
+    letter-spacing: 0.22em;
+    color: #c8860a;
+    text-transform: uppercase;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  /* ─── DESCRIPTION ─── */
+  .desc {
+    margin-top: 14px;
+    font-size: 11px;
+    color: #444;
+    line-height: 1.75;
+    flex: 1;
+  }
+
+  .desc strong {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .tag {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border: 1px solid #2a2a2a;
+    color: #444;
+  }
+
+  /* ─── FOOTER COMPARISON ─── */
+  .footer-row {
+    margin-top: 52px;
+    border-top: 1px solid #1a1a1a;
+    padding-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .rec-item {
+    font-size: 10.5px;
+    color: #444;
+    line-height: 1.7;
+  }
+
+  .rec-item strong {
+    display: block;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-label">COFFEE_WAIT · 브랜드 아이덴티티</div>
+  <div class="page-title">로고 컨셉 3종 &nbsp;/&nbsp; <span>LENTO</span></div>
+</div>
+
+<div class="options">
+
+  <!-- ══ A: ULTRA MINIMAL ══ -->
+  <div class="option">
+    <div class="option-tag">A &nbsp;—&nbsp; <em>울트라 미니멀</em></div>
+
+    <div class="canvas canvas-main bg-cream">
+      <div class="logo-a a-ink">
+        <span class="a-word">LENTO</span>
+        <div class="a-rule"></div>
+        <span class="a-sub">slow coffee</span>
+      </div>
+    </div>
+
+    <div class="canvas canvas-dark-strip bg-ink">
+      <div class="logo-a a-light">
+        <span class="a-word">LENTO</span>
+        <div class="a-rule"></div>
+        <span class="a-sub">slow coffee</span>
+      </div>
+    </div>
+
+    <div class="desc">
+      <strong>Swiss Minimal</strong>
+      DM Sans 자중 100. 자간 0.5em. 수평 룰.
+      밝은 배경·어두운 배경 모두 동작.
+      파우치 실크인쇄, 스탬프, 명함 전 적합.
+      가장 타임리스. 경쟁사 차별화는 낮음.
+    </div>
+
+    <div class="tags">
+      <div class="tag">패키지</div>
+      <div class="tag">굿즈</div>
+      <div class="tag">디지털</div>
+      <div class="tag">범용</div>
+    </div>
+  </div>
+
+  <!-- ══ B: CINEMATIC SERIF ══ -->
+  <div class="option">
+    <div class="option-tag">B &nbsp;—&nbsp; <em>시네마틱 세리프</em></div>
+
+    <div class="canvas canvas-main bg-ink">
+      <div class="logo-b">
+        <span class="b-pre">caffè</span>
+        <span class="b-word">Lento</span>
+        <div class="b-rule"></div>
+        <span class="b-sub">기다림의 온도</span>
+      </div>
+    </div>
+
+    <div class="canvas canvas-dark-strip" style="background:#080808; border-top: 1px solid #111;">
+      <div class="logo-b" style="transform:scale(0.55)">
+        <span class="b-pre">caffè</span>
+        <span class="b-word">Lento</span>
+        <div class="b-rule"></div>
+        <span class="b-sub">기다림의 온도</span>
+      </div>
+    </div>
+
+    <div class="desc">
+      <strong>이탈리안 프리미엄</strong>
+      Cormorant Garamond 라이트. 골든 그라디언트 룰이
+      광고 색 아크(COLD→GOLDEN) 직접 반영.
+      영상 엔딩 카드에 최적. 이탈리아 원두 브랜드 감성.
+      소형 인쇄 시 세리프 가독성 주의.
+    </div>
+
+    <div class="tags">
+      <div class="tag">광고 엔딩</div>
+      <div class="tag">패키지</div>
+      <div class="tag">프리미엄</div>
+    </div>
+  </div>
+
+  <!-- ══ C: NEO CONDENSED ══ -->
+  <div class="option">
+    <div class="option-tag">C &nbsp;—&nbsp; <em>네오 콘덴스드</em></div>
+
+    <div class="canvas canvas-main canvas-c">
+      <div class="logo-c">
+        <span class="c-word">LE<em>N</em>TO</span>
+        <div class="c-bottom">
+          <div class="c-line"></div>
+          <span class="c-sub">coffee · slow</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas canvas-dark-strip" style="background:#100800; border-top: 1px solid #1a0e04;">
+      <div class="logo-c" style="transform:scale(0.5); transform-origin:left center; padding:0 56px;">
+        <span class="c-word">LE<em>N</em>TO</span>
+        <div class="c-bottom">
+          <div class="c-line"></div>
+          <span class="c-sub">coffee · slow</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="desc">
+      <strong>네오브루탈 임팩트</strong>
+      Space Grotesk Bold. N 한 자 앰버 강조 —
+      기다림의 순간을 시각화.
+      에스프레소 브라운 배경. SNS 썸네일·영상 엔딩 카드
+      임팩트 최강. 패키지 배경색 관리 필요.
+    </div>
+
+    <div class="tags">
+      <div class="tag">SNS</div>
+      <div class="tag">영상 엔딩</div>
+      <div class="tag">MZ 타겟</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-row">
+  <div class="rec-item">
+    <strong>A 선택 시</strong>
+    범용·타임리스. 파우치·스탬프·명함 전 영역 커버.
+    톤 차별화 필요하면 태그라인 컬러로 포인트 추가.
+  </div>
+  <div class="rec-item">
+    <strong>B 선택 시</strong>
+    광고 톤과 가장 일치. 프리미엄 원두·스페셜티 포지셔닝 명확.
+    영상 엔딩 카드 = 즉시 사용 가능.
+  </div>
+  <div class="rec-item">
+    <strong>C 선택 시</strong>
+    SNS 임팩트 1위. N 앰버가 브랜드 시그니처.
+    브랜드 확장 시 N 모티프 반복 가능.
+  </div>
+</div>
+
+</body>
+</html>

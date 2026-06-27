@@ -97,7 +97,7 @@ document.querySelectorAll('.req').forEach(inp=>{
       if(!inp.value.trim())return;
       const payload={type:MODE,cut:card.dataset.cut,request:inp.value.trim()};
       if(MODE==='image'){payload.model=card.querySelector('.model').value;payload.quality=card.querySelector('.quality').value;}
-      else{payload.duration=parseInt(card.querySelector('.duration').value);payload.quality=card.querySelector('.quality').value;}
+      else{payload.model=card.querySelector('.model').value;payload.duration=parseInt(card.querySelector('.duration').value);payload.quality=card.querySelector('.quality').value;}
       chip(card,'run','처리중…');
       fetch('/revise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
         .then(r=>r.ok?null:Promise.reject()).catch(()=>chip(card,'err','전송 실패'));
@@ -106,9 +106,12 @@ document.querySelectorAll('.req').forEach(inp=>{
 });
 const batch=document.getElementById('batchVideo');
 if(batch){batch.addEventListener('click',()=>{
-  if(!confirm('확정 스토리보드 전체를 영상으로 생성할까요?'))return;
+  const model=document.getElementById('batchModel')?.value||'kling3_0_turbo';
+  const dur=parseInt((document.getElementById('batchDur')?.value||'5s').replace('s',''));
+  const q=document.getElementById('batchQ')?.value||'720p';
+  if(!confirm(`전체 스토리보드를 영상으로 생성할까요?\n모델: ${model}  /  ${dur}초  /  ${q}`))return;
   fetch('/revise',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({type:'batch_video',duration:4,quality:'1080p'})}).then(()=>batch.textContent='영상 생성 요청됨 ✓');
+    body:JSON.stringify({type:'batch_video',model,duration:dur,quality:q})}).then(()=>batch.textContent='영상 생성 요청됨 ✓');
 });}
 // 결과 폴링: 완료된 카드 썸네일/상태 자동 교체
 async function poll(){
@@ -147,8 +150,14 @@ def build(media_dir, mode, title, out, accent):
             media_el = f'<video src="{src}" autoplay muted loop playsinline preload="metadata"></video>'
             controls = (
                 '<div class="row">'
-                '<select class="duration"><option selected>4</option><option>6</option><option>8</option></select>'
-                '<select class="quality"><option>480p</option><option>720p</option><option selected>1080p</option></select>'
+                '<select class="model">'
+                '<option value="kling3_0_turbo">Kling 3.0 Turbo (Higgsfield)</option>'
+                '<option value="seedance_2_0">Seedance 2.0 (Higgsfield)</option>'
+                '</select>'
+                '</div>'
+                '<div class="row">'
+                '<select class="duration"><option>4</option><option selected>5</option><option>6</option><option>8</option></select>'
+                '<select class="quality"><option>480p</option><option selected>720p</option><option>1080p</option></select>'
                 '</div>')
         cards.append(f"""
   <div class="card" data-cut="{html.escape(stem)}">
@@ -160,8 +169,20 @@ def build(media_dir, mode, title, out, accent):
       <div class="hk">Enter=재생성 요청 · Shift+Enter=줄바꿈</div>
     </div>
   </div>""")
-    batchbtn = '<button id="batchVideo">▶ 전체 영상으로 돌리기</button>' if mode == "image" else \
-               '<span class="hint">영상 리뷰 · 컷별 초수/화질 선택 후 Enter</span>'
+    batchbtn = (
+        '<button id="batchVideo">▶ 전체 영상으로 돌리기</button>'
+        '<select id="batchModel" style="background:#0e1117;color:#dfe5f0;border:1px solid #283042;border-radius:8px;padding:7px 10px;font-size:12px">'
+        '<option value="kling3_0_turbo">Kling 3.0 Turbo</option>'
+        '<option value="seedance_2_0">Seedance 2.0</option>'
+        '</select>'
+        '<select id="batchDur" style="background:#0e1117;color:#dfe5f0;border:1px solid #283042;border-radius:8px;padding:7px 10px;font-size:12px">'
+        '<option>4s</option><option selected>5s</option><option>6s</option><option>8s</option>'
+        '</select>'
+        '<select id="batchQ" style="background:#0e1117;color:#dfe5f0;border:1px solid #283042;border-radius:8px;padding:7px 10px;font-size:12px">'
+        '<option>480p</option><option selected>720p</option><option>1080p</option>'
+        '</select>'
+    ) if mode == "image" else \
+               '<span class="hint">영상 리뷰 · 컷별 모델/초수/화질 선택 후 Enter</span>'
     page = (PAGE
             .replace("__TITLE__", html.escape(title))
             .replace("__CSS__", CSS.replace("__ACCENT__", accent))

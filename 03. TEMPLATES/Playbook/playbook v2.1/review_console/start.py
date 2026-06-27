@@ -3,7 +3,7 @@
 원클릭 실행기: 콘솔 HTML 빌드 → 로컬 서버 기동 → 큐 워처 기동 → 브라우저 자동 오픈.
 
 예)
-  python start.py --media-dir "../projects/commercial/aether_energy/v2026-05-29_v4" --mode image --title "AETHER 스토리보드 리뷰"
+  python start.py --media-dir "../projects/AETHER_ENERGY/v2026-05-29_v4" --mode image --title "AETHER 스토리보드 리뷰"
   python start.py --media-dir "../projects/.../videos/seedance" --mode video --title "HALO 영상 리뷰"
 
 ★ 모든 생성은 Higgsfield MCP 전용. 실제 재생성은 Claude 에이전트가 큐를 받아 처리(AGENT_QUEUE_GUIDE).

@@ -12,13 +12,13 @@
 ```bash
 cd review_console
 pip install -r requirements.txt
-python start.py --media-dir "../projects/commercial/aether_energy/v2026-05-29_v4" --mode image --backend agent --title "AETHER 리뷰"
+python start.py --media-dir "../projects/AETHER_ENERGY/v2026-05-29_v4" --mode image --backend agent --title "AETHER 리뷰"
 ```
 → 브라우저가 `http://localhost:8765/` 로 자동 오픈. 카드 클릭 → 수정요청 입력 → **Enter**.
 
 영상 리뷰:
 ```bash
-python start.py --media-dir "../projects/commercial/halo_watch/v2026-05-29_v9/videos/seedance" --mode video --backend agent --title "HALO 영상 리뷰"
+python start.py --media-dir "../projects/HALO_WATCH/v2026-05-29_v9/assets/videos" --mode video --backend agent --title "HALO 영상 리뷰"
 ```
 
 ---
@@ -65,7 +65,7 @@ python start.py --media-dir "../projects/commercial/halo_watch/v2026-05-29_v9/vi
 ## UI 요약
 
 - **이미지 카드**: 모델(`nano_banana_2`/`gpt_image_2`) · 화질(1k/2k/4k) · 수정요청 + Enter
-- **영상 카드**: 초수(4/6/8s) · 화질(480/720/1080p) · 수정요청 + Enter
+- **영상 카드**: 모델(`kling3_0_turbo`/`seedance_2_0`) · 초수(4/5/6/8s) · 화질(480/720/1080p) · 수정요청 + Enter
 - 상단 **[전체 영상으로 돌리기]**(이미지 모드): 확정 스토리보드를 한 번에 영상화 요청(에이전트 처리)
 - 상태칩: 대기 → 처리중 → 완료(썸네일 교체)
 
